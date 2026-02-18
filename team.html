@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Team | DARE</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="is-internal-page"> 
+    
+    <header class="header-main">
+        <a href="index.html" class="logo">DARE</a>
+        <button class="menu-toggle" id="menu-btn">
+            <span class="line"></span>
+            <span class="line"></span>
+        </button>
+    </header>
+
+    <div class="full-menu" id="full-menu">
+        <nav class="menu-nav">
+            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
+            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
+            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
+            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
+        </nav>
+        <div class="menu-footer">Elevating your lifestyle since 2026</div>
+    </div>
+     
+    <main class="page-container">
+        
+        <section class="team-section-spheres" id="team">
+            <div class="team-header">
+                <h2 class="section-title">THE <span class="highlight">TEAM</span></h2>
+            </div>
+
+            <div class="synergy-field-container">
+                
+                <div class="expert-row left-sphere">
+                    <div class="sphere-container">
+                        <div class="rotating-ring"></div>
+                        <div class="sphere-image">
+                            <img src="./images/erikateam.jpg" alt="Erika Silva">
+                        </div>
+                    </div>
+                    
+                    <div class="sphere-details text-content-right">
+                        <span class="meta-role">BIOMECHANICS LEAD</span>
+                        <h3>Erika Silva</h3>
+                        <p class="meta-bio">
+                            Arquitecta del movimiento humano y especialista en hipertrofia funcional. Erika analiza tu estructura ósea y patrones musculares para diseñar un entrenamiento libre de lesiones y máximamente eficiente.
+                            <br><br>
+                            Su metodología integra principios de fisioterapia avanzada con entrenamiento de fuerza de élite, garantizando que cada repetición estimule el crecimiento muscular y corrija desequilibrios posturales.
+                        </p>
+                        <div class="skills-mini">
+                            <span>Biomecánica 3D</span> • <span>Neuro-Fuerza</span> • <span>Hipertrofia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-connector-section">
+                    <div class="v-line"></div>
+                    <div class="connector-icon">×</div>
+                    <div class="v-line"></div>
+                </div>
+
+                <div class="expert-row right-sphere">
+                     <div class="sphere-details text-content-left">
+                        <span class="meta-role">NUTRITION ENGINEER</span>
+                        <h3>Daniel Otero</h3>
+                        <p class="meta-bio">
+                            Especialista en bioquímica nutricional y optimización metabólica. Daniel no solo diseña dietas, construye protocolos de alimentación de precisión basados en tu respuesta hormonal y genética.
+                            <br><br>
+                            Su enfoque fusiona la alta cocina con la ciencia de datos, asegurando que cada caloría tenga un propósito estructural en tu transformación física sin sacrificar la experiencia gastronómica.
+                        </p>
+                        <div class="skills-mini">
+                            <span>Nutrición Clínica</span> • <span>Bio-Gastronomía</span> • <span>Performance</span>
+                        </div>
+                    </div>
+
+                    <div class="sphere-container">
+                        <div class="rotating-ring"></div>
+                        <div class="sphere-image">
+                            <img src="./images/daniteam.jpg" alt="Daniel Otero">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="bg-particles"></div>
+        </section>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

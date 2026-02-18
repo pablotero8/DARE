@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARE</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header-main">
+        <div class="logo">DARE</div>
+        <button class="menu-toggle" id="menu-btn">
+            <span class="line"></span>
+            <span class="line"></span>
+        </button>
+    </header>
+
+    <div class="full-menu" id="full-menu">
+        <nav class="menu-nav">
+            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
+            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
+            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
+            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
+        </nav>
+        <div class="menu-footer">
+            <p>Elevating your lifestyle through science and prep.</p>
+        </div>
+    </div>
+
+    <main>
+        
+        <section class="hero-section">
+           <div class="hero-container">
+    <div class="hero-light-gradient"></div>
+    <div id="black-overlay"></div>
+
+    <h1 id="hero-title">
+    <span class="logo-part left">
+        <span class="txt-verde">D</span><span class="txt-marron">A</span>
+    </span>
+    
+    <span class="logo-part right">
+        <span class="txt-marron">R</span><span class="txt-verde">E</span>
+    </span>
+</h1>
+</div>
+        </section>
+
+        <section class="invasion-section">
+            <div class="content-box">
+                <h2 id="invasion-text">
+                    <div class="line-mask"><span class="line-inner-text">Healthy living,</span></div>
+                    <div class="line-mask"><span class="line-inner-text"> Effortlessly</span></div>
+                </h2>
+                
+                <div id="invasion-description">
+                    <div class="line-mask"><span class="line-inner">Bespoke fitness meets high-end nutrition in one seamless experience.</span></div>
+                    <div class="line-mask"><span class="line-inner">A dedicated partnership between your personal trainer and your chef.</span></div>
+                    <div class="line-mask"><span class="line-inner">We handle the science and the prep you lead the transformation.</span></div>
+                    <div class="line-mask"><span class="line-inner">Start your change today.</span></div>
+                </div>
+            </div>
+        </section>
+        
+         <section class="energy-pulse-section">
+    <div class="pulse-container">
+        <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path class="pulse-wave wave-white" d="M0,100 Q100,20 200,100 T400,100 T600,100 T800,100" />
+            <path class="pulse-wave wave-gold" d="M0,100 Q100,180 200,100 T400,100 T600,100 T800,100" />
+        </svg>
+    </div>
+</section>
+
+       <section class="method-formula-section" id="method-section">
+    
+    <div class="formula-header">
+        <h2>THE METHOD</h2>
+        <p>Pure logic. Pure performance.</p>
+    </div>
+
+    <div class="formula-container">
+
+         <div class="formula-row reverse" data-aos="fade-up">
+            <div class="formula-content text-left">
+                <span class="formula-number">01</span>
+                <h3>MEASURED TRAINING</h3>
+                <p>Adapted to your level,<br> projected to your goals.</p>
+            </div>
+            <div class="formula-visual">
+                <div class="image-circle">
+                    <img src="images/method1.jpg" alt="Training">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="formula-connector">
+            <span class="symbol-gold">+</span>
+        </div>
+
+        <div class="formula-row" data-aos="fade-up">
+            <div class="formula-content text-right">
+                <span class="formula-number">02</span>
+                <h3>ADAPTED NUTRITION</h3>
+                <p>Formulated for you, <br>based on your needs.</p>
+            </div>
+            <div class="formula-visual">
+                <div class="image-circle">
+                    <img src="images/method2.jpg" alt="Nutrition">
+                </div>
+            </div>
+        </div>
+
+        <div class="formula-connector">
+            <span class="symbol-gold">=</span>
+        </div>
+
+        <div class="formula-result" data-aos="zoom-in">
+            <div class="synergy-glow-bg"></div>
+            <div class="result-content">
+                <h3>DARE</h3>
+            </div>
+        </div>
+
+    </div>
+</section>
+         <section class="energy-pulse-section">
+    <div class="pulse-container">
+        <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path class="pulse-wave wave-white" d="M0,100 Q100,20 200,100 T400,100 T600,100 T800,100" />
+            <path class="pulse-wave wave-gold" d="M0,100 Q100,180 200,100 T400,100 T600,100 T800,100" />
+        </svg>
+    </div>
+</section>
+       
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
