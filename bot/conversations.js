@@ -174,7 +174,7 @@ INSTRUCCIÓN CRÍTICA: Tienes toda la información necesaria. DEBES llamar la fu
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4-turbo',
-      max_tokens: 8192,
+      max_tokens: 4096,
       messages: messagesWithSystem,
       tools: [toolDef],
       tool_choice: { type: 'function', function: { name: tool.name } },
