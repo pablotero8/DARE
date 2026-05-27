@@ -11,10 +11,13 @@
 
     <header class="header-main">
         <a href="index.html" class="logo">DARE</a>
-        <button class="menu-toggle" id="menu-btn">
-            <span class="line"></span>
-            <span class="line"></span>
-        </button>
+        <div class="header-actions">
+            <a href="client.html" class="header-login-btn">Log in</a>
+            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </div>
     </header>
 
     <div class="full-menu" id="full-menu">
@@ -77,6 +80,29 @@
             </div>
         </section>
     </main>
+
+    <footer class="p-footer">
+        <div class="p-shell">
+            <div class="p-footer-grid">
+                <div class="p-footer-brand">
+                    <span class="p-footer-logo">DARE</span>
+                    <p class="p-footer-tagline">Private Health OS — Dubai, UAE</p>
+                </div>
+                <nav class="p-footer-nav" aria-label="Footer navigation">
+                    <a href="index.html">Home</a>
+                    <a href="plans.html">Plans</a>
+                    <a href="index.html#contact">Contact</a>
+                </nav>
+                <div class="p-footer-contact-col">
+                    <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                </div>
+            </div>
+            <div class="p-footer-bottom">
+                <span>© 2026 DARE. Private &amp; Confidential.</span>
+                <span>Training · Nutrition · Culinary Execution</span>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>

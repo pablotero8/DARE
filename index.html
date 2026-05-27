@@ -13,10 +13,13 @@
 
     <header class="header-main">
         <div class="logo">DARE</div>
-        <button class="menu-toggle" id="menu-btn">
-            <span class="line"></span>
-            <span class="line"></span>
-        </button>
+        <div class="header-actions">
+            <a href="client.html" class="header-login-btn">Client Area</a>
+            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </div>
     </header>
 
     <div class="full-menu" id="full-menu">
@@ -62,7 +65,8 @@
                             </p>
 
                             <div class="p-cta-row">
-                                <a class="p-btn p-btn-primary" href="#contact">Request private consultation</a>
+                                <!-- Replace 971501234567 with your actual WhatsApp business number -->
+                                <a class="p-btn p-btn-primary" href="https://wa.me/34666076489?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" target="_blank" rel="noopener">Request private consultation</a>
                                 <a class="p-btn p-btn-ghost" href="plans.html">View engagement models</a>
                                 <a class="p-btn p-btn-ghost" href="team.html">Meet the team</a>
                             </div>
@@ -72,98 +76,102 @@
             </div>
         </section>
 
-        <div class="p-separator" aria-hidden="true"><span class="p-separator-line"></span><span class="p-separator-dot"></span><span class="p-separator-line"></span></div>
+        <section class="p-philosophy" id="philosophy" aria-label="DARE philosophy">
+            <div class="p-philosophy-inner">
+                <p class="p-philosophy-statement">Most programs are built<br>for the average.<br>DARE is built for<br>the exception.</p>
+                <span class="p-philosophy-sub">Dubai · Private · By application only</span>
+            </div>
+        </section>
 
-        <section class="p-section p-invasion" id="our-method" aria-label="Our method">
+        <section class="p-section" id="our-method" aria-label="Our method">
             <div class="p-shell">
                 <div class="p-section-head">
                     <h2 class="p-title p-split" data-split="lines">OUR METHOD</h2>
                     <p class="p-sub">Training drives the plan. Nutrition supports the work. Integration makes it sustainable.</p>
                 </div>
 
-                <div class="p-method-visual" aria-label="Training plus nutrition equals integration">
-                    <div class="p-method-col-stack">
-                        <a href="method-training.html" class="p-method-card p-method-card-training p-method-card-photo p-method-card-link">
-                            <div class="p-method-card-content">
-                                <div class="p-method-label">TRAINING</div>
-                                <div class="p-method-sub">Personalized program</div>
-                                <p class="p-method-copy">Built around biomechanics, recovery and your real schedule.</p>
-                                <span class="p-method-card-cta">Learn more</span>
+                <div class="p-method-trio" aria-label="Training, nutrition and integration">
+                    <a href="method-training.html" class="p-method-pillar p-pillar-training">
+                        <div class="p-method-pillar-bg"></div>
+                        <div class="p-method-pillar-overlay"></div>
+                        <div class="p-method-pillar-content">
+                            <span class="p-pillar-index">01</span>
+                            <div class="p-pillar-body">
+                                <span class="p-pillar-label">TRAINING</span>
+                                <h3 class="p-pillar-title">Personalized program</h3>
+                                <p class="p-pillar-copy">Built around biomechanics, recovery and your real schedule.</p>
+                                <span class="p-pillar-cta">Learn more →</span>
                             </div>
-                        </a>
+                        </div>
+                    </a>
 
-                        <span class="p-method-symbol p-method-symbol-plus" aria-hidden="true">+</span>
 
-                        <a href="method-nutrition.html" class="p-method-card p-method-card-nutrition p-method-card-photo p-method-card-link">
-                            <div class="p-method-card-content">
-                                <div class="p-method-label">NUTRITION</div>
-                                <div class="p-method-sub">Training-led protocol</div>
-                                <p class="p-method-copy">Nutrition engineered to support the work you do in the gym.</p>
-                                <span class="p-method-card-cta">Learn more</span>
+                    <a href="method-system.html" class="p-method-pillar p-pillar-system">
+                        <div class="p-method-pillar-bg"></div>
+                        <div class="p-method-pillar-overlay"></div>
+                        <div class="p-method-pillar-content">
+                            <span class="p-pillar-index">03</span>
+                            <div class="p-pillar-body">
+                                <span class="p-pillar-label">ONE SYSTEM</span>
+                                <h3 class="p-pillar-title">Integration</h3>
+                                <p class="p-pillar-copy">Training + nutrition working as a single operating system.</p>
+                                <span class="p-pillar-cta">Learn more →</span>
                             </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
 
-                    <span class="p-method-symbol p-method-symbol-eq" aria-hidden="true">=</span>
-
-                    <a href="method-system.html" class="p-method-card p-method-card-integration p-method-card-link">
-                        <div class="p-method-card-content">
-                            <div class="p-method-label">ONE SYSTEM</div>
-                            <div class="p-method-sub">Integration</div>
-                            <p class="p-method-copy">Training + nutrition working as a single operating system.</p>
-                            <span class="p-method-card-cta">Learn more</span>
+                                        <a href="method-nutrition.html" class="p-method-pillar p-pillar-nutrition">
+                        <div class="p-method-pillar-bg"></div>
+                        <div class="p-method-pillar-overlay"></div>
+                        <div class="p-method-pillar-content">
+                            <span class="p-pillar-index">02</span>
+                            <div class="p-pillar-body">
+                                <span class="p-pillar-label">NUTRITION</span>
+                                <h3 class="p-pillar-title">Training-led protocol</h3>
+                                <p class="p-pillar-copy">Nutrition engineered to support the work you do in the gym.</p>
+                                <span class="p-pillar-cta">Learn more →</span>
+                            </div>
                         </div>
                     </a>
                 </div>
 
-                <div class="p-method-footer">
-                    <span class="p-method-footline"></span>
-                    <span class="p-method-foottext">Weekly refinement. Private execution.</span>
-                </div>
             </div>
         </section>
-
-        <div class="p-separator" aria-hidden="true"><span class="p-separator-line"></span><span class="p-separator-dot"></span><span class="p-separator-line"></span></div>
 
         <section class="p-section p-section-tight" id="method" aria-label="Method">
             <div class="p-shell">
                 <div class="p-section-head">
-                    <h2 class="p-title p-split" data-split="lines">How do we create your program</h2>
+                    <h2 class="p-title p-split" data-split="lines">How we build your program</h2>
                     <p class="p-sub">Audit → build → execute. Zero ambiguity. Full follow‑through.</p>
                 </div>
 
-                <div class="p-stepper" role="list">
-                    <article class="p-step" role="listitem">
-                        <div class="p-step-top">
-                            <span class="p-step-num">01</span>
-                            <span class="p-step-dot" aria-hidden="true"></span>
+                <div class="p-process-list" role="list">
+                    <div class="p-process-item" role="listitem">
+                        <span class="p-process-num" aria-hidden="true">01</span>
+                        <div class="p-process-body">
+                            <h3 class="p-process-title">Personal assessment</h3>
+                            <p class="p-process-copy">Constraints, patterns, and current baselines — mapped with clarity before we touch execution.</p>
                         </div>
-                        <h3 class="p-step-title">Personal assessment</h3>
-                        <p class="p-step-copy">Constraints, patterns, and current baselines — mapped with clarity before we touch execution.</p>
-                    </article>
+                    </div>
 
-                    <article class="p-step" role="listitem">
-                        <div class="p-step-top">
-                            <span class="p-step-num">02</span>
-                            <span class="p-step-dot" aria-hidden="true"></span>
+                    <div class="p-process-item" role="listitem">
+                        <span class="p-process-num" aria-hidden="true">02</span>
+                        <div class="p-process-body">
+                            <h3 class="p-process-title">System design</h3>
+                            <p class="p-process-copy">One integrated plan across training + nutrition + culinary execution. Built to survive your calendar.</p>
                         </div>
-                        <h3 class="p-step-title">System design</h3>
-                        <p class="p-step-copy">One integrated plan across training + nutrition + culinary execution. Built to survive your calendar.</p>
-                    </article>
+                    </div>
 
-                    <article class="p-step" role="listitem">
-                        <div class="p-step-top">
-                            <span class="p-step-num">03</span>
-                            <span class="p-step-dot" aria-hidden="true"></span>
+                    <div class="p-process-item" role="listitem">
+                        <span class="p-process-num" aria-hidden="true">03</span>
+                        <div class="p-process-body">
+                            <h3 class="p-process-title">Execution &amp; monitoring</h3>
+                            <p class="p-process-copy">Weekly adjustments, tight feedback loops, and hands‑on control — so outcomes are inevitable.</p>
                         </div>
-                        <h3 class="p-step-title">Execution & monitoring</h3>
-                        <p class="p-step-copy">Weekly adjustments, tight feedback loops, and hands‑on control — so outcomes are inevitable.</p>
-                    </article>
+                    </div>
                 </div>
 
-                <div class="p-separator p-separator-tight" aria-hidden="true"><span class="p-separator-line"></span><span class="p-separator-dot"></span><span class="p-separator-line"></span></div>
-
-                <section class="p-standards" aria-label="Private service standards">
+                <!-- <section class="p-standards" aria-label="Private service standards">
                     <div class="p-standards-inner p-glass">
                         <div class="p-standards-left">
                             <div class="p-standards-k">PRIVATE SERVICE STANDARDS</div>
@@ -190,74 +198,214 @@
                             </div>
                         </div>
                     </div>
-                </section>
+                </section> -->
 
-                <div class="p-separator p-separator-tight" aria-hidden="true"><span class="p-separator-line"></span><span class="p-separator-dot"></span><span class="p-separator-line"></span></div>
+            </div>
+        </section>
 
-                <div class="p-bridge">
-                    <div class="p-bridge-head" aria-hidden="true">
-                        <div class="p-bridge-brand">DARE</div>
+<section class="p-section p-section-tight" id="onboarding" aria-label="Your first 7 days">
+            <div class="p-shell">
+                <div class="p-section-head">
+                    <h2 class="p-title p-split" data-split="lines">Your first 7 days</h2>
+                    <p class="p-sub">From first contact to full execution — no friction, no ambiguity.</p>
+                </div>
+                <div class="p-timeline">
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 1</span>
+                            <span class="p-timeline-line"></span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Private consultation</h3>
+                            <p class="p-timeline-copy">Direct call with Erika and Daniel. No forms, no intake assistants — just an honest conversation about your goals, constraints, and standard.</p>
+                        </div>
                     </div>
-
-                    <div class="p-bridge-grid">
-                        <div class="p-bridge-actions">
-                            <div class="p-action-row p-action-row-plans">
-                                <a href="plans.html" class="p-bridge-card p-glass">
-                                    <span class="p-bridge-word">PLANS</span>
-                                    <span class="p-bridge-t">Engagement models built around your lifestyle</span>
-                                    <span class="p-bridge-a">View plans →</span>
-                                </a>
-                            </div>
-
-                            <div class="p-action-row p-action-row-team">
-                                <a href="team.html" class="p-bridge-card p-glass">
-                                    <span class="p-bridge-word">TEAM</span>
-                                    <span class="p-bridge-t">Meet the people behind the system</span>
-                                    <span class="p-bridge-a">Explore →</span>
-                                </a>
-                            </div>
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 2–3</span>
+                            <span class="p-timeline-line"></span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Full baseline assessment</h3>
+                            <p class="p-timeline-copy">Movement screening, metabolic markers, lifestyle audit and schedule mapping. Every variable accounted for before we design a single session.</p>
+                        </div>
+                    </div>
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 4–5</span>
+                            <span class="p-timeline-line"></span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Program delivered</h3>
+                            <p class="p-timeline-copy">Your integrated training and nutrition protocol — built around your biology, your calendar and your standard. Reviewed together before execution begins.</p>
+                        </div>
+                    </div>
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 7</span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Execution begins</h3>
+                            <p class="p-timeline-copy">First session. First meals. Full system active. No ramp-up period — you are already on protocol.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <div class="p-separator" aria-hidden="true"><span class="p-separator-line"></span><span class="p-separator-dot"></span><span class="p-separator-line"></span></div>
-
-        <section class="contact-section" id="contact">
-            <div class="contact-inner">
-                <div class="contact-copy">
-                    <h2>DISCREET ENQUIRIES</h2>
-                    <p>All contact is handled directly by the founding team. No assistants. No mailing lists.</p>
+        <section class="p-section p-section-tight" id="data" aria-label="Measured outcomes">
+            <div class="p-shell">
+                <div class="p-section-head">
+                    <h2 class="p-title p-split" data-split="lines">MEASURED PROGRESS</h2>
+                    <p class="p-sub">Composite data across DARE clients — 12 weeks of integrated training and nutrition, tracked and verified.</p>
                 </div>
-                <form class="contact-form">
-                    <div class="contact-grid">
-                        <div class="field">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" placeholder="Optional" />
+
+                <div class="p-charts-grid">
+                    <div class="p-chart-wrap p-glass">
+                        <div class="p-chart-head">
+                            <span class="p-chart-kicker">12-Week Composite</span>
+                            <h3 class="p-chart-title">Body Composition Shift</h3>
+                            <p class="p-chart-note">Body fat reduction vs. lean mass gain across a full quarterly engagement.</p>
                         </div>
-                        <div class="field">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="Private contact email" />
+                        <div class="p-chart-canvas-wrap">
+                            <canvas id="progressChart"></canvas>
+                        </div>
+                        <div class="p-chart-legend">
+                            <span class="p-chart-legend-item p-chart-legend-fat">
+                                <span class="p-chart-legend-dot"></span>Body Fat %
+                            </span>
+                            <span class="p-chart-legend-item p-chart-legend-lean">
+                                <span class="p-chart-legend-dot"></span>Lean Mass Index
+                            </span>
                         </div>
                     </div>
-                    <div class="field">
-                        <label for="message">How can we help?</label>
-                        <textarea id="message" name="message" rows="4" placeholder="Share context, constraints or questions. No details are shared outside DARE."></textarea>
+
+                    <div class="p-chart-wrap p-glass">
+                        <div class="p-chart-head">
+                            <span class="p-chart-kicker">Protocol Design</span>
+                            <h3 class="p-chart-title">Macronutrient Architecture</h3>
+                            <p class="p-chart-note">Precision allocation adjusted to training phase and individual metabolic response.</p>
+                        </div>
+                        <div class="p-chart-goal-tabs" role="tablist" aria-label="Training goal">
+                            <button class="p-chart-tab is-active" data-goal="fat-loss" role="tab">Fat Loss</button>
+                            <button class="p-chart-tab" data-goal="recomp" role="tab">Recomposition</button>
+                            <button class="p-chart-tab" data-goal="performance" role="tab">Performance</button>
+                        </div>
+                        <div class="p-chart-canvas-wrap">
+                            <canvas id="macroChart"></canvas>
+                        </div>
                     </div>
-                    <button type="submit" class="contact-submit">SEND ENQUIRY</button>
-                </form>
+
+                    <div class="p-chart-wrap p-glass p-chart-full" id="weekChartWrap">
+                        <div class="p-week-chart-head">
+                            <div>
+                                <span class="p-chart-kicker">Weekly Monitoring</span>
+                                <h3 class="p-chart-title">Training &amp; Nutrition Example Week</h3>
+                                <p class="p-chart-note">Calories cycle with training load. Carbohydrates adapt to daily stimulus; protein anchors the rebuild throughout.</p>
+                            </div>
+                            <div class="p-week-tabs" role="tablist">
+                                <button class="p-chart-tab p-week-tab is-active" data-week="strength" role="tab">Strength Week</button>
+                                <button class="p-chart-tab p-week-tab" data-week="performance" role="tab">Performance Week</button>
+                            </div>
+                        </div>
+                        <div class="p-chart-canvas-wrap p-chart-canvas-tall">
+                            <canvas id="weekChart"></canvas>
+                        </div>
+                        <div class="p-week-day-strip">
+                            <div class="p-week-day-cell p-day-strength">STRENGTH</div>
+                            <div class="p-week-day-cell p-day-cardio">CARDIO</div>
+                            <div class="p-week-day-cell p-day-rest">REST</div>
+                            <div class="p-week-day-cell p-day-strength">STRENGTH</div>
+                            <div class="p-week-day-cell p-day-mobility">MOBILITY</div>
+                            <div class="p-week-day-cell p-day-strength">STRENGTH</div>
+                            <div class="p-week-day-cell p-day-rest">REST</div>
+                        </div>
+                        <div class="p-week-legend">
+                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-protein"></span>Protein</span>
+                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-carbs"></span>Carbohydrates</span>
+                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-fat"></span>Fat</span>
+                            <span class="p-wl-item"><span class="p-wl-line-sample"></span>Training Load</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="p-section p-founders-section" id="founders" aria-label="The founders">
+            <div class="p-shell">
+                <blockquote class="p-founders-quote">
+                    <p class="p-founders-quote-text">"Two disciplines. One operating system."</p>
+                    <cite class="p-founders-cite">Erika Silva &amp; Daniel Otero — Co-Founders, DARE Dubai</cite>
+                </blockquote>
+
+                <div class="p-founders-unified">
+                    <div class="p-founders-duo">
+                        <div class="p-founders-duo-card">
+                            <div class="p-founders-duo-photo">
+                                <img src="images/erikaa.jpg" alt="Erika Silva">
+                            </div>
+                            <div class="p-founders-duo-overlay">
+                                <span class="p-founders-duo-role">Biomechanics &amp; Training</span>
+                                <span class="p-founders-duo-name">Erika Silva</span>
+                            </div>
+                        </div>
+                        <div class="p-founders-duo-divider" aria-hidden="true"></div>
+                        <div class="p-founders-duo-card">
+                            <div class="p-founders-duo-photo">
+                                <img src="images/DANI3.jpg" alt="Daniel Otero">
+                            </div>
+                            <div class="p-founders-duo-overlay">
+                                <span class="p-founders-duo-role">Nutrition &amp; Culinary Execution</span>
+                                <span class="p-founders-duo-name">Daniel Otero</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="p-founders-unified-bio"><em>A movement architect and a clinical nutritionist — a decade each, at the highest level. Together: one integrated system built around your body, your calendar, and your standard.</em></p>
+                    <a href="team.html" class="p-btn p-btn-ghost p-founders-team-btn">Meet the team →</a>
+                </div>
+
+                <p class="p-founders-slogan">Placeholder slogan — edit me.</p>
             </div>
         </section>
 
 
-       
     </main>
+
+    <a class="p-wa-float" href="https://wa.me/34651585260?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" target="_blank" rel="noopener" aria-label="WhatsApp Enquiry">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+    </a>
+
+    <footer class="p-footer">
+        <div class="p-shell">
+            <div class="p-footer-grid">
+                <div class="p-footer-brand">
+                    <span class="p-footer-logo">DARE</span>
+                    <p class="p-footer-tagline">Private Health OS — Dubai, UAE</p>
+                </div>
+                <nav class="p-footer-nav" aria-label="Footer navigation">
+                    <a href="plans.html">Plans</a>
+                    <a href="team.html">The Team</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+                <div class="p-footer-contact-col">
+                    <!-- Replace 971501234567 with your actual WhatsApp number -->
+                    <a href="https://wa.me/34651585260?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                </div>
+            </div>
+            <div class="p-footer-bottom">
+                <span>© 2026 DARE. Private &amp; Confidential.</span>
+                <span>Training · Nutrition · Culinary Execution</span>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
     <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

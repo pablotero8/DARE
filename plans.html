@@ -13,10 +13,13 @@
     
     <header class="header-main">
         <a href="index.html" class="logo">DARE</a>
-        <button class="menu-toggle" id="menu-btn">
-            <span class="line"></span>
-            <span class="line"></span>
-        </button>
+        <div class="header-actions">
+            <a href="client.html" class="header-login-btn">Log in</a>
+            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </div>
     </header>
 
     <div class="full-menu" id="full-menu">
@@ -38,36 +41,37 @@
             
             <div class="plans-container" id="plans-container">
                 
-                <div class="plan-card">
+                <div class="plan-card" onclick="location.href='plan-online.html'" style="cursor:pointer;">
                     <div class="plan-content">
                         <h3 class="plan-name">ONLINE PROTOCOL</h3>
-                        <div class="plan-price">REMOTE, DAILY STRUCTURE</div>
+                        <div class="plan-price">From AED 8,500 <span class="period">/ month</span></div>
                         <div class="divider-line"></div>
                         <ul class="plan-features">
                             <li>Personal food preferences, routines and constraints fully evaluated.</li>
-                            <li>Chef-designed recipes aligned with your goals and schedule.</li>
-                            <li>Daily delivery of measured ingredients to your home in Dubai.</li>
-                            <li>You only execute: follow precise, minimal‑effort instructions.</li>
+                            <li>Chef-designed recipes aligned with your training load and goals.</li>
+                            <li>Daily delivery of precisely measured ingredients to your Dubai residence.</li>
+                            <li>You only execute: clear, minimal-effort daily instructions.</li>
+                            <li>Weekly nutrition and training review with protocol adjustments.</li>
                         </ul>
                         <div class="plan-footer">
-                            <a href="#" class="btn-know-more">DISCREET ENQUIRY</a>
+                            <a href="plan-online.html" class="btn-know-more">EXPLORE PROTOCOL →</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="plan-card highlight-card">
+                <div class="plan-card highlight-card" onclick="location.href='plan-inhome.html'" style="cursor:pointer;">
                     <div class="plan-content">
                         <h3 class="plan-name">IN‑HOME PRESENCE</h3>
-                        <div class="plan-price">PRIVATE, ON‑SITE EXECUTION</div>
+                        <div class="plan-price">By private arrangement</div>
                         <div class="divider-line"></div>
                         <ul class="plan-features">
-                            <li>Trainer and chef operate directly from your residence or private facility.</li>
-                            <li>Training, nutrition and culinary execution handled end‑to‑end.</li>
-                            <li>Daily presence and adjustments around your agenda and travel.</li>
-                            <li>Limited availability in Dubai; engagements by interview only.</li>
+                            <li>Trainer and chef operate daily from your residence or private facility.</li>
+                            <li>Training, nutrition and culinary execution handled fully end‑to‑end.</li>
+                            <li>Continuous presence and real-time adjustments around your agenda and travel.</li>
+                            <li>Maximum 3 active clients — engagements by interview and invitation only.</li>
                         </ul>
                         <div class="plan-footer">
-                            <a href="#" class="btn-know-more">REQUEST PRIVATE CONSULTATION</a>
+                            <a href="plan-inhome.html" class="btn-know-more">EXPLORE ENGAGEMENT →</a>
                         </div>
                     </div>
                 </div>
@@ -101,6 +105,29 @@
             </div>
         </section>
     </main>
+
+    <footer class="p-footer">
+        <div class="p-shell">
+            <div class="p-footer-grid">
+                <div class="p-footer-brand">
+                    <span class="p-footer-logo">DARE</span>
+                    <p class="p-footer-tagline">Private Health OS — Dubai, UAE</p>
+                </div>
+                <nav class="p-footer-nav" aria-label="Footer navigation">
+                    <a href="index.html">Home</a>
+                    <a href="team.html">The Team</a>
+                    <a href="index.html#contact">Contact</a>
+                </nav>
+                <div class="p-footer-contact-col">
+                    <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                </div>
+            </div>
+            <div class="p-footer-bottom">
+                <span>© 2026 DARE. Private &amp; Confidential.</span>
+                <span>Training · Nutrition · Culinary Execution</span>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>

@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Protocol | DARE</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #f8f8d9;
+            --text-color: #151515;
+            --gold: #c9a24a;
+            --green: #8aaa2c;
+        }
+
+        /* ── HERO ── */
+        .op-hero {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 6vw 7vh;
+            background:
+                radial-gradient(ellipse at 60% 0%, rgba(170,140,44,0.13) 0%, transparent 55%),
+                #f8f8d9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .op-hero-eyebrow {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+        }
+
+        .op-hero-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(5rem, 14vw, 11rem);
+            line-height: 0.85;
+            text-transform: uppercase;
+            color: #151515;
+            max-width: 900px;
+        }
+
+        .op-hero-title span { color: var(--gold); }
+
+        .op-hero-sub {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            color: #666;
+            margin-top: 2rem;
+            max-width: 520px;
+            line-height: 1.7;
+            letter-spacing: 0.03em;
+        }
+
+        .op-hero-price {
+            margin-top: 2rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #808570;
+        }
+
+        .op-hero-price strong {
+            color: #151515;
+            font-size: 1.15rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── HOW IT WORKS ── */
+        .op-how {
+            padding: 10vh 6vw;
+            background: #151515;
+            color: #f4f1e8;
+        }
+
+        .op-how-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .op-section-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .op-how-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3.5rem, 7vw, 6rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            margin-bottom: 5rem;
+        }
+
+        .op-how-title span { color: var(--gold); }
+
+        .op-pillars {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .op-pillar {
+            border-top: 1px solid rgba(244,241,232,0.12);
+            padding-top: 2rem;
+        }
+
+        .op-pillar-num {
+            font-family: 'Tulpen One', serif;
+            font-size: 3.5rem;
+            color: rgba(201,162,74,0.25);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .op-pillar h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #f4f1e8;
+            margin-bottom: 0.9rem;
+        }
+
+        .op-pillar p {
+            font-size: 0.93rem;
+            color: rgba(244,241,232,0.55);
+            line-height: 1.72;
+        }
+
+        /* ── CLIENT AREA PREVIEW ── */
+        .op-preview {
+            padding: 12vh 6vw;
+            background: #f8f8d9;
+            overflow: hidden;
+        }
+
+        .op-preview-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .op-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .op-preview-header-copy { max-width: 560px; }
+
+        .op-preview-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            color: #151515;
+        }
+
+        .op-preview-title span { color: var(--gold); }
+
+        .op-preview-desc {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.7;
+            margin-top: 1.2rem;
+        }
+
+        .op-preview-note {
+            max-width: 280px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            color: #999;
+            line-height: 1.65;
+            text-align: right;
+            border-right: 2px solid rgba(201,162,74,0.4);
+            padding-right: 1.2rem;
+        }
+
+        /* ── DEVICE FRAME ── */
+        .device-frame {
+            background: #050507;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow:
+                0 40px 100px rgba(0,0,0,0.35),
+                0 0 0 1px rgba(244,241,232,0.07);
+            position: relative;
+        }
+
+        .device-bar {
+            background: rgba(5,5,7,0.92);
+            border-bottom: 1px solid rgba(244,241,232,0.08);
+            padding: 0.6rem 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .device-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+        }
+
+        .device-dot-r { background: rgba(255,95,86,0.7); }
+        .device-dot-y { background: rgba(255,189,46,0.7); }
+        .device-dot-g { background: rgba(39,201,63,0.7); }
+
+        .device-url {
+            flex: 1;
+            margin: 0 1rem;
+            background: rgba(255,255,255,0.06);
+            border-radius: 6px;
+            padding: 0.28rem 0.85rem;
+            font-size: 0.68rem;
+            color: rgba(244,241,232,0.35);
+            font-family: 'Manrope', monospace;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── MOCK APP INSIDE FRAME ── */
+        .mock-app {
+            font-family: 'Manrope', sans-serif;
+            color: #f4f1e8;
+        }
+
+        /* Mock header */
+        .mock-ch {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.75rem 1.6rem;
+            background: rgba(5,5,7,0.85);
+            border-bottom: 1px solid rgba(244,241,232,0.08);
+        }
+
+        .mock-logo {
+            font-family: 'Tulpen One', serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            color: #f4f1e8;
+        }
+
+        .mock-daynav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .mock-nav-arrow {
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 1px solid rgba(244,241,232,0.18);
+            background: none;
+            color: #f4f1e8;
+            font-size: 0.75rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .mock-day-center { text-align: center; min-width: 160px; }
+
+        .mock-badge {
+            display: inline-block;
+            font-size: 0.52rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 0.18rem 0.6rem;
+            border-radius: 999px;
+            margin-bottom: 0.12rem;
+            background: rgba(166,200,94,0.15);
+            border: 1px solid rgba(166,200,94,0.3);
+            color: #a6c85e;
+        }
+
+        .mock-badge.gold {
+            background: rgba(201,162,74,0.15);
+            border-color: rgba(201,162,74,0.3);
+            color: #c9a24a;
+        }
+
+        .mock-day-name {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #f4f1e8;
+        }
+
+        .mock-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(244,241,232,0.18);
+            border-radius: 999px;
+            padding: 0.3rem 0.65rem 0.3rem 0.3rem;
+        }
+
+        .mock-avatar {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: linear-gradient(135deg, rgba(201,162,74,0.4), rgba(166,200,94,0.35));
+            border: 1.5px solid rgba(201,162,74,0.4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.55rem; font-weight: 700; color: #c9a24a;
+        }
+
+        .mock-profile-label { font-size: 0.62rem; color: rgba(244,241,232,0.5); }
+
+        /* Mock week strip */
+        .mock-week-strip {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.6rem 1.6rem;
+            border-bottom: 1px solid rgba(244,241,232,0.07);
+            background: rgba(5,5,7,0.5);
+        }
+
+        .mock-chip {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 0.25rem; padding: 0.35rem 0.55rem;
+            border-radius: 8px; border: 1px solid transparent;
+            min-width: 38px;
+        }
+
+        .mock-chip.active {
+            border-color: rgba(201,162,74,0.45);
+            background: rgba(201,162,74,0.08);
+        }
+
+        .mock-chip-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(244,241,232,0.4); }
+        .mock-chip.active .mock-chip-label { color: #c9a24a; }
+
+        .mock-chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .dot-s { background: #a6c85e; }
+        .dot-c { background: #c9a24a; }
+        .dot-r { background: #c0a8e8; }
+
+        /* Mock grid */
+        .mock-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1.2rem 1.6rem 1.6rem;
+            background:
+                radial-gradient(900px 520px at 14% 12%, rgba(201,162,74,0.08) 0%, transparent 60%),
+                radial-gradient(900px 520px at 86% 18%, rgba(166,200,94,0.07) 0%, transparent 60%),
+                #050507;
+        }
+
+        .mock-card {
+            background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+            border: 1px solid rgba(244,241,232,0.10);
+            border-radius: 14px;
+            padding: 1.2rem 1.1rem;
+            backdrop-filter: blur(18px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mock-card::before {
+            content: '';
+            position: absolute; inset: -60%; pointer-events: none; opacity: 0.7;
+            background:
+                radial-gradient(circle at 30% 25%, rgba(201,162,74,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 72% 74%, rgba(166,200,94,0.08) 0%, transparent 50%);
+            filter: blur(22px);
+        }
+
+        .mock-card > * { position: relative; z-index: 1; }
+
+        .mock-expert {
+            display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;
+        }
+
+        .mock-eb-img {
+            width: 32px; height: 32px; border-radius: 50%; overflow: hidden;
+            border: 1.5px solid rgba(201,162,74,0.38);
+            background: rgba(255,255,255,0.08);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.6rem; color: rgba(244,241,232,0.5);
+        }
+
+        .mock-eb-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(20%); }
+
+        .mock-eb-name { font-size: 0.72rem; font-weight: 700; color: #f4f1e8; }
+        .mock-eb-role { font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase; color: #c9a24a; }
+
+        .mock-eyebrow { font-size: 0.52rem; letter-spacing: 0.22em; text-transform: uppercase; color: #c9a24a; font-weight: 700; margin-bottom: 0.25rem; }
+
+        .mock-plan-title { font-family: 'Tulpen One', serif; font-size: 2rem; text-transform: uppercase; line-height: 0.88; margin-bottom: 1rem; }
+
+        .mock-pill {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            padding: 0.2rem 0.65rem; border-radius: 999px;
+            font-size: 0.52rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+            margin-bottom: 0.9rem;
+        }
+
+        .mock-pill-strength { background: rgba(166,200,94,0.13); border: 1px solid rgba(166,200,94,0.32); color: #a6c85e; }
+        .mock-pill-nutrition { background: rgba(201,162,74,0.13); border: 1px solid rgba(201,162,74,0.32); color: #c9a24a; }
+
+        .mock-ex-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+        .mock-ex-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.55rem 0.75rem;
+            background: rgba(255,255,255,0.032); border: 1px solid rgba(244,241,232,0.08);
+            border-radius: 8px; gap: 0.5rem;
+        }
+
+        .mock-ex-name { font-size: 0.68rem; font-weight: 600; color: #f4f1e8; }
+        .mock-ex-detail { font-size: 0.57rem; color: rgba(244,241,232,0.45); margin-top: 1px; }
+
+        .mock-ex-badge {
+            font-size: 0.55rem; font-weight: 700; color: #a6c85e;
+            background: rgba(166,200,94,0.1); border: 1px solid rgba(166,200,94,0.22);
+            padding: 0.18rem 0.5rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0;
+        }
+
+        /* Nutrition mock */
+        .mock-kcal-row { display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 0.75rem; }
+
+        .mock-kcal-num {
+            font-family: 'Tulpen One', serif;
+            font-size: 2.2rem; line-height: 1; letter-spacing: 0.04em;
+            background: linear-gradient(135deg, #d9d4c8, #c9a24a);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mock-kcal-label { font-size: 0.57rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(244,241,232,0.45); }
+
+        .mock-macro-bars { display: flex; flex-direction: column; gap: 0.38rem; margin-bottom: 0.9rem; }
+
+        .mock-macro-row { display: flex; align-items: center; gap: 0.6rem; }
+
+        .mock-macro-name { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(244,241,232,0.45); width: 46px; flex-shrink: 0; }
+
+        .mock-macro-track { flex: 1; height: 3px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; }
+
+        .mock-macro-fill { height: 100%; border-radius: 999px; }
+
+        .mock-macro-g { font-size: 0.6rem; font-weight: 700; color: #f4f1e8; width: 32px; text-align: right; flex-shrink: 0; }
+
+        .mock-divider { border: none; border-top: 1px solid rgba(244,241,232,0.07); margin: 0.7rem 0 0.8rem; }
+
+        .mock-meal-list { display: flex; flex-direction: column; gap: 0.38rem; }
+
+        .mock-meal-item {
+            display: flex; align-items: flex-start; gap: 0.65rem;
+            padding: 0.55rem 0.75rem;
+            background: rgba(255,255,255,0.032); border: 1px solid rgba(244,241,232,0.08);
+            border-radius: 8px;
+        }
+
+        .mock-meal-time { font-size: 0.57rem; font-weight: 700; color: #c9a24a; width: 34px; flex-shrink: 0; }
+        .mock-meal-name { font-size: 0.68rem; font-weight: 600; color: #f4f1e8; }
+        .mock-meal-desc { font-size: 0.57rem; color: rgba(244,241,232,0.45); margin-top: 1px; }
+
+        .mock-note {
+            margin-top: 0.8rem; padding: 0.65rem 0.75rem;
+            background: rgba(166,200,94,0.065); border: 1px solid rgba(166,200,94,0.18);
+            border-radius: 8px; font-size: 0.62rem; color: rgba(244,241,232,0.55); line-height: 1.55;
+        }
+
+        .mock-note-gold {
+            background: rgba(201,162,74,0.065); border-color: rgba(201,162,74,0.18);
+        }
+
+        .mock-note strong { color: #a6c85e; font-weight: 600; }
+        .mock-note-gold strong { color: #c9a24a; }
+
+        /* ── CALLOUTS ── */
+        .preview-callouts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 3.5rem;
+        }
+
+        .callout-item {
+            padding: 1.6rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,248,217,0.85));
+            border: 1px solid rgba(170,140,44,0.2);
+            border-radius: 16px;
+        }
+
+        .callout-num {
+            font-family: 'Tulpen One', serif;
+            font-size: 2.5rem;
+            color: rgba(201,162,74,0.3);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .callout-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #151515;
+            margin-bottom: 0.5rem;
+        }
+
+        .callout-desc {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.65;
+        }
+
+        /* ── FEATURES ── */
+        .op-features {
+            padding: 10vh 6vw;
+            background: #151515;
+            color: #f4f1e8;
+        }
+
+        .op-features-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .op-features-copy {}
+
+        .op-features-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .op-features-title span { color: var(--gold); }
+
+        .op-features-sub {
+            font-size: 0.93rem;
+            color: rgba(244,241,232,0.52);
+            line-height: 1.72;
+            margin-bottom: 2.5rem;
+        }
+
+        .op-features-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .op-features-list li {
+            padding: 1.1rem 0;
+            border-bottom: 1px solid rgba(244,241,232,0.07);
+            font-size: 0.92rem;
+            color: rgba(244,241,232,0.65);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .op-features-list li::before {
+            content: '→';
+            color: var(--gold);
+            flex-shrink: 0;
+            font-size: 0.82rem;
+            margin-top: 0.15rem;
+        }
+
+        /* ── CTA ── */
+        .op-cta {
+            padding: 10vh 6vw;
+            background: #f8f8d9;
+            text-align: center;
+        }
+
+        .op-cta-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            color: #151515;
+            margin-bottom: 1.5rem;
+        }
+
+        .op-cta-title span { color: var(--gold); }
+
+        .op-cta-sub {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            color: #666;
+            max-width: 460px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        .op-cta-btn {
+            display: inline-block;
+            padding: 1.1rem 3rem;
+            background: #151515;
+            color: #f4f1e8;
+            text-decoration: none;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            border: 1px solid #151515;
+            transition: all 0.3s ease;
+        }
+
+        .op-cta-btn:hover {
+            background: transparent;
+            color: #151515;
+        }
+
+        .op-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #999;
+            text-decoration: none;
+            margin-bottom: 3rem;
+            transition: color 0.2s;
+        }
+
+        .op-back-link:hover { color: #151515; }
+
+        @media (max-width: 1024px) {
+            .op-pillars { grid-template-columns: 1fr; gap: 1.5rem; }
+            .mock-grid { grid-template-columns: 1fr; }
+            .preview-callouts { grid-template-columns: 1fr; }
+            .op-features-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+            .op-preview-header { flex-direction: column; align-items: flex-start; }
+            .op-preview-note { text-align: left; border-right: none; border-left: 2px solid rgba(201,162,74,0.4); padding-right: 0; padding-left: 1.2rem; }
+        }
+
+        @media (max-width: 600px) {
+            .op-hero { min-height: 80vh; }
+            .mock-ch { padding: 0.6rem 0.85rem; }
+            .mock-grid { padding: 0.85rem; gap: 0.75rem; }
+        }
+    </style>
+</head>
+<body class="is-internal-page">
+
+    <header class="header-main">
+        <a href="index.html" class="logo">DARE</a>
+        <div class="header-actions">
+            <a href="client.html" class="header-login-btn">Log in</a>
+            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="full-menu" id="full-menu">
+        <nav class="menu-nav">
+            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
+            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
+            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
+            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
+        </nav>
+        <div class="menu-footer">Elevating your lifestyle since 2026</div>
+    </div>
+
+    <main class="page-container" style="padding-top:0;">
+
+        <!-- ── HERO ── -->
+        <section class="op-hero">
+            <a href="plans.html" class="op-back-link">← Back to Plans</a>
+            <p class="op-hero-eyebrow">Engagement Model · Online</p>
+            <h1 class="op-hero-title">ONLINE<br><span>PROTOCOL</span></h1>
+            <p class="op-hero-sub">Your full training and nutrition system, planned weekly around your life — delivered daily to your phone, ready to execute.</p>
+            <p class="op-hero-price"><strong>From AED 8,500</strong> &nbsp;/&nbsp; month</p>
+        </section>
+
+        <!-- ── HOW IT WORKS ── -->
+        <section class="op-how">
+            <div class="op-how-inner">
+                <p class="op-section-label">How it works</p>
+                <h2 class="op-how-title">PLANNED WEEKLY.<br><span>DELIVERED DAILY.</span></h2>
+
+                <div class="op-pillars">
+                    <div class="op-pillar">
+                        <div class="op-pillar-num">01</div>
+                        <h3>Weekly Planning Session</h3>
+                        <p>Every week your coaches review your progress, energy levels, and upcoming agenda. Training sessions and daily nutrition are designed specifically for the week ahead — no copy-paste templates.</p>
+                    </div>
+                    <div class="op-pillar">
+                        <div class="op-pillar-num">02</div>
+                        <h3>Adapts to Your Schedule</h3>
+                        <p>Business trip on Thursday? Late meetings mid-week? Your plan adapts. Training intensity, session duration and meal timing shift around your actual week — not the other way around.</p>
+                    </div>
+                    <div class="op-pillar">
+                        <div class="op-pillar-num">03</div>
+                        <h3>Everything Ready Each Day</h3>
+                        <p>You wake up and open your dashboard. Today's training session, every exercise, every set. Today's meals, every ingredient, every step. Nothing to decide — just execute.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── CLIENT AREA PREVIEW ── -->
+        <section class="op-preview">
+            <div class="op-preview-inner">
+                <div class="op-preview-header">
+                    <div class="op-preview-header-copy">
+                        <p class="op-section-label" style="color:#808570;">Your Private Dashboard</p>
+                        <h2 class="op-preview-title">YOUR PLAN,<br><span>EVERY DAY.</span></h2>
+                        <p class="op-preview-desc">The moment you log in, your day is ready. Training on the left, nutrition on the right — clear instructions for each meal, each exercise, each set. Built for people with no time to plan, and no tolerance for guesswork.</p>
+                    </div>
+                    <p class="op-preview-note">The example below shows a real client's Tuesday — a strength day with a full nutrition protocol designed around that specific session.</p>
+                </div>
+
+                <!-- Device frame with mock app -->
+                <div class="device-frame">
+                    <div class="device-bar">
+                        <div class="device-dot device-dot-r"></div>
+                        <div class="device-dot device-dot-y"></div>
+                        <div class="device-dot device-dot-g"></div>
+                        <div class="device-url">client.dare.ae · Private Area</div>
+                    </div>
+
+                    <div class="mock-app">
+                        <!-- Mock nav header -->
+                        <div class="mock-ch">
+                            <span class="mock-logo">DARE</span>
+                            <div class="mock-daynav">
+                                <div class="mock-nav-arrow">←</div>
+                                <div class="mock-day-center">
+                                    <span class="mock-badge">STRENGTH · Upper Body</span>
+                                    <span class="mock-day-name">Thursday, 28 May · TODAY</span>
+                                </div>
+                                <div class="mock-nav-arrow">→</div>
+                            </div>
+                            <div class="mock-profile">
+                                <div class="mock-avatar">AH</div>
+                                <span class="mock-profile-label">Profile</span>
+                            </div>
+                        </div>
+
+                        <!-- Mock week strip -->
+                        <div class="mock-week-strip">
+                            <div class="mock-chip"><span class="mock-chip-label">Mon</span><span class="mock-chip-dot dot-s"></span></div>
+                            <div class="mock-chip"><span class="mock-chip-label">Tue</span><span class="mock-chip-dot dot-c"></span></div>
+                            <div class="mock-chip"><span class="mock-chip-label">Wed</span><span class="mock-chip-dot dot-r"></span></div>
+                            <div class="mock-chip active"><span class="mock-chip-label">Thu</span><span class="mock-chip-dot dot-s"></span></div>
+                            <div class="mock-chip"><span class="mock-chip-label">Fri</span><span class="mock-chip-dot dot-c"></span></div>
+                            <div class="mock-chip"><span class="mock-chip-label">Sat</span><span class="mock-chip-dot dot-s"></span></div>
+                            <div class="mock-chip"><span class="mock-chip-label">Sun</span><span class="mock-chip-dot dot-r"></span></div>
+                        </div>
+
+                        <!-- Mock content grid -->
+                        <div class="mock-grid">
+                            <!-- Training card -->
+                            <div class="mock-card">
+                                <div class="mock-expert">
+                                    <div class="mock-eb-img"><img src="images/erikaa.jpg" alt="Erika"></div>
+                                    <div>
+                                        <div class="mock-eb-name">Erika</div>
+                                        <div class="mock-eb-role">Head of Performance</div>
+                                    </div>
+                                </div>
+                                <p class="mock-eyebrow">Today's Session</p>
+                                <h3 class="mock-plan-title">TRAINING<br>PLAN</h3>
+                                <span class="mock-pill mock-pill-strength">● &nbsp; Upper Body</span>
+                                <div class="mock-ex-list">
+                                    <div class="mock-ex-item">
+                                        <div>
+                                            <div class="mock-ex-name">Barbell Bench Press</div>
+                                            <div class="mock-ex-detail">Warm-up 2×8 @60% · Main 4 sets · 90s rest</div>
+                                        </div>
+                                        <span class="mock-ex-badge">4×6 @80%</span>
+                                    </div>
+                                    <div class="mock-ex-item">
+                                        <div>
+                                            <div class="mock-ex-name">Wide-Grip Pull-ups</div>
+                                            <div class="mock-ex-detail">Strict form · full range · no kipping · 90s rest</div>
+                                        </div>
+                                        <span class="mock-ex-badge">4×8</span>
+                                    </div>
+                                    <div class="mock-ex-item">
+                                        <div>
+                                            <div class="mock-ex-name">Standing Overhead Press</div>
+                                            <div class="mock-ex-detail">Barbell · braced core · controlled descent</div>
+                                        </div>
+                                        <span class="mock-ex-badge">3×8 @75%</span>
+                                    </div>
+                                    <div class="mock-ex-item">
+                                        <div>
+                                            <div class="mock-ex-name">Cable Row</div>
+                                            <div class="mock-ex-detail">3s hold at chest · slow eccentric · 75s rest</div>
+                                        </div>
+                                        <span class="mock-ex-badge">4×10</span>
+                                    </div>
+                                </div>
+                                <div class="mock-note">
+                                    <strong>Erika's note:</strong> Prioritise form on the bench — we're building shoulder stability. Log weights on every set. If the last 2 reps of set 4 feel easy, we add 2.5 kg next week.
+                                </div>
+                            </div>
+
+                            <!-- Nutrition card -->
+                            <div class="mock-card">
+                                <div class="mock-expert">
+                                    <div class="mock-eb-img"><img src="images/DANI3.jpg" alt="Daniel"></div>
+                                    <div>
+                                        <div class="mock-eb-name">Daniel</div>
+                                        <div class="mock-eb-role">Head of Nutrition</div>
+                                    </div>
+                                </div>
+                                <p class="mock-eyebrow">Today's Protocol</p>
+                                <h3 class="mock-plan-title">NUTRITION<br>PLAN</h3>
+                                <div class="mock-kcal-row">
+                                    <span class="mock-kcal-num">2,280</span>
+                                    <span class="mock-kcal-label">kcal target</span>
+                                </div>
+                                <div class="mock-macro-bars">
+                                    <div class="mock-macro-row">
+                                        <span class="mock-macro-name">Protein</span>
+                                        <div class="mock-macro-track"><div class="mock-macro-fill" style="width:64%;background:linear-gradient(90deg,#a6c85e,#8fb85a)"></div></div>
+                                        <span class="mock-macro-g">182g</span>
+                                    </div>
+                                    <div class="mock-macro-row">
+                                        <span class="mock-macro-name">Carbs</span>
+                                        <div class="mock-macro-track"><div class="mock-macro-fill" style="width:74%;background:linear-gradient(90deg,#c9a24a,#b8922a)"></div></div>
+                                        <span class="mock-macro-g">210g</span>
+                                    </div>
+                                    <div class="mock-macro-row">
+                                        <span class="mock-macro-name">Fat</span>
+                                        <div class="mock-macro-track"><div class="mock-macro-fill" style="width:39%;background:rgba(217,212,200,0.6)"></div></div>
+                                        <span class="mock-macro-g">50g</span>
+                                    </div>
+                                </div>
+                                <hr class="mock-divider">
+                                <div class="mock-meal-list">
+                                    <div class="mock-meal-item">
+                                        <span class="mock-meal-time">07:00</span>
+                                        <div>
+                                            <div class="mock-meal-name">Pre-workout Breakfast</div>
+                                            <div class="mock-meal-desc">Banana · peanut butter toast · black coffee</div>
+                                        </div>
+                                    </div>
+                                    <div class="mock-meal-item">
+                                        <span class="mock-meal-time">10:30</span>
+                                        <div>
+                                            <div class="mock-meal-name">Post-workout Recovery</div>
+                                            <div class="mock-meal-desc">Whey shake · 2 rice cakes · honey</div>
+                                        </div>
+                                    </div>
+                                    <div class="mock-meal-item">
+                                        <span class="mock-meal-time">13:00</span>
+                                        <div>
+                                            <div class="mock-meal-name">Lunch</div>
+                                            <div class="mock-meal-desc">Beef stir-fry · jasmine rice · pak choi · sesame oil</div>
+                                        </div>
+                                    </div>
+                                    <div class="mock-meal-item">
+                                        <span class="mock-meal-time">20:00</span>
+                                        <div>
+                                            <div class="mock-meal-name">Dinner</div>
+                                            <div class="mock-meal-desc">Grilled salmon · pasta primavera · parmesan</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mock-note mock-note-gold">
+                                    <strong>Daniel's note:</strong> Highest carb day — designed around your heaviest training load. Post-workout window is critical: eat within 30 min. Hydration: 3.5L.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Callouts below mockup -->
+                <div class="preview-callouts">
+                    <div class="callout-item">
+                        <div class="callout-num">7</div>
+                        <p class="callout-label">Days planned in advance</p>
+                        <p class="callout-desc">Every Monday your full week is ready — training sessions, meal plans, and daily targets adjusted to your upcoming schedule.</p>
+                    </div>
+                    <div class="callout-item">
+                        <div class="callout-num">2</div>
+                        <p class="callout-label">Experts behind your day</p>
+                        <p class="callout-desc">Erika designs each training session. Daniel builds each nutrition protocol. Every day reflects both disciplines working together.</p>
+                    </div>
+                    <div class="callout-item">
+                        <div class="callout-num">0</div>
+                        <p class="callout-label">Decisions left to you</p>
+                        <p class="callout-desc">What to eat, when to eat it, what to train, how many sets. All answered before your day begins. You execute — nothing else.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── FEATURES ── -->
+        <section class="op-features">
+            <div class="op-features-inner">
+                <div class="op-features-copy">
+                    <p class="op-section-label">What's included</p>
+                    <h2 class="op-features-title">BUILT FOR<br><span>YOUR LIFE.</span></h2>
+                    <p class="op-features-sub">Not a generic programme. A weekly system designed around your constraints, preferences, and goals — and rebuilt every seven days.</p>
+                </div>
+                <ul class="op-features-list">
+                    <li>Full onboarding: food preferences, intolerances, training history, lifestyle constraints and weekly schedule evaluated before day one.</li>
+                    <li>Weekly planning call with your coaches — sessions designed around your actual week, not a fixed template.</li>
+                    <li>Daily training plan with exercise selection, sets, reps, loads and rest periods tailored to your training phase.</li>
+                    <li>Daily nutrition protocol with calorie and macro targets, meal timing, and step-by-step recipes for every meal.</li>
+                    <li>Private client dashboard — accessible 24/7 from any device, updated every Monday morning.</li>
+                    <li>Weekly progress review and protocol adjustments based on biometrics, feedback and performance data.</li>
+                    <li>Direct coach messaging — questions answered by Erika or Daniel directly, not by a support team.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ── CTA ── -->
+        <section class="op-cta">
+            <h2 class="op-cta-title">READY TO<br><span>START?</span></h2>
+            <p class="op-cta-sub">All enquiries are handled directly by the founding team. No assistants. No mailing lists. Just a private conversation.</p>
+            <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20am%20interested%20in%20the%20Online%20Protocol.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="op-cta-btn" target="_blank" rel="noopener">DISCREET ENQUIRY →</a>
+        </section>
+
+        <section class="contact-section">
+            <div class="contact-inner">
+                <div class="contact-copy">
+                    <h2>DIRECT ENQUIRY</h2>
+                    <p>Leave your contact and a brief note. We will reach out privately within 24 hours.</p>
+                </div>
+                <form class="contact-form">
+                    <div class="contact-grid">
+                        <div class="field">
+                            <label for="name-op">Name</label>
+                            <input type="text" id="name-op" name="name" placeholder="Optional" />
+                        </div>
+                        <div class="field">
+                            <label for="email-op">Email</label>
+                            <input type="email" id="email-op" name="email" placeholder="Private contact email" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="message-op">Context</label>
+                        <textarea id="message-op" name="message" rows="4" placeholder="Goals, current schedule, any constraints. No details shared outside DARE."></textarea>
+                    </div>
+                    <button type="submit" class="contact-submit">SEND ENQUIRY</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="p-footer">
+        <div class="p-shell">
+            <div class="p-footer-grid">
+                <div class="p-footer-brand">
+                    <span class="p-footer-logo">DARE</span>
+                    <p class="p-footer-tagline">Private Health OS — Dubai, UAE</p>
+                </div>
+                <nav class="p-footer-nav" aria-label="Footer navigation">
+                    <a href="index.html">Home</a>
+                    <a href="plans.html">Plans</a>
+                    <a href="team.html">The Team</a>
+                </nav>
+                <div class="p-footer-contact-col">
+                    <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                </div>
+            </div>
+            <div class="p-footer-bottom">
+                <span>© 2026 DARE. Private &amp; Confidential.</span>
+                <span>Training · Nutrition · Culinary Execution</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

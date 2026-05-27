@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In-Home Presence | DARE</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #f8f8d9;
+            --text-color: #151515;
+            --gold: #c9a24a;
+            --green: #8aaa2c;
+        }
+
+        .ih-hero {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 6vw 7vh;
+            background:
+                radial-gradient(ellipse at 40% 0%, rgba(201,162,74,0.18) 0%, transparent 55%),
+                #151515;
+            color: #f4f1e8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ih-hero-eyebrow {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+        }
+
+        .ih-hero-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(5rem, 14vw, 11rem);
+            line-height: 0.85;
+            text-transform: uppercase;
+            color: #f4f1e8;
+            max-width: 900px;
+        }
+
+        .ih-hero-title span { color: var(--gold); }
+
+        .ih-hero-sub {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            color: rgba(244,241,232,0.55);
+            margin-top: 2rem;
+            max-width: 520px;
+            line-height: 1.7;
+        }
+
+        .ih-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gold);
+            border: 1px solid rgba(201,162,74,0.4);
+            padding: 0.5rem 1.1rem;
+            border-radius: 999px;
+            width: fit-content;
+        }
+
+        .op-section-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ── WHAT IT IS ── */
+        .ih-what {
+            padding: 10vh 6vw;
+            background: #f8f8d9;
+        }
+
+        .ih-what-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: start;
+        }
+
+        .ih-what-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3.5rem, 7vw, 6rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            color: #151515;
+            margin-bottom: 2rem;
+        }
+
+        .ih-what-title span { color: var(--gold); }
+
+        .ih-what-copy p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.75;
+            margin-bottom: 1.2rem;
+        }
+
+        .ih-pillars {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .ih-pillar {
+            padding: 1.8rem 0;
+            border-bottom: 1px solid rgba(170,140,44,0.15);
+        }
+
+        .ih-pillar:first-child { border-top: 1px solid rgba(170,140,44,0.15); }
+
+        .ih-pillar-head {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .ih-pillar-num {
+            font-family: 'Tulpen One', serif;
+            font-size: 1.8rem;
+            color: rgba(201,162,74,0.4);
+            line-height: 1;
+            flex-shrink: 0;
+            width: 2rem;
+        }
+
+        .ih-pillar h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #151515;
+        }
+
+        .ih-pillar p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.68;
+            padding-left: 3rem;
+        }
+
+        /* ── ACCESS ── */
+        .ih-access {
+            padding: 10vh 6vw;
+            background: #151515;
+            color: #f4f1e8;
+            text-align: center;
+        }
+
+        .ih-access-inner {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .ih-access-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3.5rem, 7vw, 6rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .ih-access-title span { color: var(--gold); }
+
+        .ih-access-copy {
+            font-size: 0.95rem;
+            color: rgba(244,241,232,0.52);
+            line-height: 1.75;
+            margin-bottom: 3rem;
+        }
+
+        .ih-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 3rem;
+        }
+
+        .ih-slot {
+            padding: 1.8rem 1.4rem;
+            border-radius: 16px;
+            border: 1px solid rgba(244,241,232,0.1);
+            background: rgba(255,255,255,0.04);
+            text-align: center;
+        }
+
+        .ih-slot.taken {
+            border-color: rgba(244,241,232,0.06);
+            opacity: 0.45;
+        }
+
+        .ih-slot.available {
+            border-color: rgba(201,162,74,0.45);
+            background: rgba(201,162,74,0.07);
+        }
+
+        .ih-slot-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.62rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(244,241,232,0.4);
+            margin-bottom: 0.5rem;
+        }
+
+        .ih-slot.available .ih-slot-label { color: var(--gold); }
+
+        .ih-slot-status {
+            font-family: 'Tulpen One', serif;
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+
+        .taken .ih-slot-status { color: rgba(244,241,232,0.3); }
+        .available .ih-slot-status { color: var(--gold); }
+
+        /* ── CTA ── */
+        .ih-cta {
+            padding: 10vh 6vw;
+            background: #f8f8d9;
+            text-align: center;
+        }
+
+        .ih-cta-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            color: #151515;
+            margin-bottom: 1.5rem;
+        }
+
+        .ih-cta-title span { color: var(--gold); }
+
+        .ih-cta-sub {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            color: #666;
+            max-width: 460px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        .ih-cta-btn {
+            display: inline-block;
+            padding: 1.1rem 3rem;
+            background: #151515;
+            color: #f4f1e8;
+            text-decoration: none;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            border: 1px solid #151515;
+            transition: all 0.3s ease;
+        }
+
+        .ih-cta-btn:hover { background: transparent; color: #151515; }
+
+        .op-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(244,241,232,0.4);
+            text-decoration: none;
+            margin-bottom: 3rem;
+            transition: color 0.2s;
+        }
+
+        .op-back-link:hover { color: #f4f1e8; }
+
+        @media (max-width: 1024px) {
+            .ih-what-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+            .ih-slots { grid-template-columns: 1fr; max-width: 320px; margin-left: auto; margin-right: auto; }
+        }
+    </style>
+</head>
+<body class="is-internal-page">
+
+    <header class="header-main">
+        <a href="index.html" class="logo">DARE</a>
+        <div class="header-actions">
+            <a href="client.html" class="header-login-btn">Log in</a>
+            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="full-menu" id="full-menu">
+        <nav class="menu-nav">
+            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
+            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
+            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
+            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
+        </nav>
+        <div class="menu-footer">Elevating your lifestyle since 2026</div>
+    </div>
+
+    <main class="page-container" style="padding-top:0;">
+
+        <!-- ── HERO ── -->
+        <section class="ih-hero">
+            <a href="plans.html" class="op-back-link">← Back to Plans</a>
+            <p class="ih-hero-eyebrow">Engagement Model · Private</p>
+            <h1 class="ih-hero-title">IN‑HOME<br><span>PRESENCE</span></h1>
+            <p class="ih-hero-sub">Your trainer and chef operate daily from your residence. Training, nutrition and culinary execution handled fully end-to-end — nothing delegated to you.</p>
+            <div class="ih-badge">By private arrangement · Maximum 3 clients</div>
+        </section>
+
+        <!-- ── WHAT IT IS ── -->
+        <section class="ih-what">
+            <div class="ih-what-inner">
+                <div class="ih-what-copy">
+                    <p class="op-section-label" style="color:#808570;">The engagement</p>
+                    <h2 class="ih-what-title">COMPLETE<br><span>EXECUTION.</span></h2>
+                    <p>This is not a coaching programme. Erika and Daniel are physically present at your residence or private facility daily — training you, preparing your food, and managing every variable of your health protocol in real time.</p>
+                    <p>No app to check. No meals to prepare. No decisions to make. Your only task is to show up and follow through.</p>
+                    <p>Designed for those for whom time is the primary constraint and results are non-negotiable.</p>
+                </div>
+
+                <div class="ih-pillars">
+                    <div class="ih-pillar">
+                        <div class="ih-pillar-head">
+                            <span class="ih-pillar-num">01</span>
+                            <h3>Daily On-Site Presence</h3>
+                        </div>
+                        <p>Trainer and chef arrive at your residence each day. Training happens in your private gym or outdoor space. Meals are prepared in your kitchen using precision-sourced ingredients.</p>
+                    </div>
+                    <div class="ih-pillar">
+                        <div class="ih-pillar-head">
+                            <span class="ih-pillar-num">02</span>
+                            <h3>Real-Time Adjustments</h3>
+                        </div>
+                        <p>Last-minute travel? Stress spike? Poor sleep? Your protocol adjusts immediately. No waiting for a weekly review — decisions are made on the spot, by the people who know your body.</p>
+                    </div>
+                    <div class="ih-pillar">
+                        <div class="ih-pillar-head">
+                            <span class="ih-pillar-num">03</span>
+                            <h3>Total Culinary Execution</h3>
+                        </div>
+                        <p>Every meal is sourced, prepared and served. Ingredients are measured to the gram. Your kitchen is stocked weekly. You eat exactly what your protocol requires, with zero friction.</p>
+                    </div>
+                    <div class="ih-pillar">
+                        <div class="ih-pillar-head">
+                            <span class="ih-pillar-num">04</span>
+                            <h3>Around Your Agenda</h3>
+                        </div>
+                        <p>Board meetings, family commitments, international travel — the team works around your calendar, not against it. Engagements are structured with maximum 3 active clients to ensure full availability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── ACCESS ── -->
+        <section class="ih-access">
+            <div class="ih-access-inner">
+                <p class="op-section-label">Availability</p>
+                <h2 class="ih-access-title">MAXIMUM<br><span>3 CLIENTS.</span></h2>
+                <p class="ih-access-copy">To maintain the standard this engagement requires, we operate with a maximum of three active clients at any time. Engagements are offered by interview and invitation only. Current availability below.</p>
+                <div class="ih-slots">
+                    <div class="ih-slot taken">
+                        <p class="ih-slot-label">Client 01</p>
+                        <p class="ih-slot-status">Engaged</p>
+                    </div>
+                    <div class="ih-slot taken">
+                        <p class="ih-slot-label">Client 02</p>
+                        <p class="ih-slot-status">Engaged</p>
+                    </div>
+                    <div class="ih-slot available">
+                        <p class="ih-slot-label">Client 03</p>
+                        <p class="ih-slot-status">Available</p>
+                    </div>
+                </div>
+                <p style="font-size:0.78rem;color:rgba(244,241,232,0.32);letter-spacing:0.08em;">One position currently open. Enquiries reviewed in order of receipt.</p>
+            </div>
+        </section>
+
+        <!-- ── CTA ── -->
+        <section class="ih-cta">
+            <h2 class="ih-cta-title">REQUEST A<br><span>PRIVATE CONSULTATION</span></h2>
+            <p class="ih-cta-sub">All contact is handled directly by Erika and Daniel. No intermediaries. No process. A private conversation to determine if this is the right engagement.</p>
+            <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20am%20interested%20in%20the%20In-Home%20Presence%20engagement.%20Could%20we%20arrange%20a%20private%20consultation%3F" class="ih-cta-btn" target="_blank" rel="noopener">REQUEST PRIVATE CONSULTATION →</a>
+        </section>
+
+        <section class="contact-section">
+            <div class="contact-inner">
+                <div class="contact-copy">
+                    <h2>PRIVATE ENQUIRY</h2>
+                    <p>Share brief context below. All communication handled directly by the founding team.</p>
+                </div>
+                <form class="contact-form">
+                    <div class="contact-grid">
+                        <div class="field">
+                            <label for="name-ih">Name</label>
+                            <input type="text" id="name-ih" name="name" placeholder="Optional" />
+                        </div>
+                        <div class="field">
+                            <label for="email-ih">Email</label>
+                            <input type="email" id="email-ih" name="email" placeholder="Private contact email" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="message-ih">Context</label>
+                        <textarea id="message-ih" name="message" rows="4" placeholder="Goals, location, schedule constraints. No details shared outside DARE."></textarea>
+                    </div>
+                    <button type="submit" class="contact-submit">SEND ENQUIRY</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="p-footer">
+        <div class="p-shell">
+            <div class="p-footer-grid">
+                <div class="p-footer-brand">
+                    <span class="p-footer-logo">DARE</span>
+                    <p class="p-footer-tagline">Private Health OS — Dubai, UAE</p>
+                </div>
+                <nav class="p-footer-nav" aria-label="Footer navigation">
+                    <a href="index.html">Home</a>
+                    <a href="plans.html">Plans</a>
+                    <a href="team.html">The Team</a>
+                </nav>
+                <div class="p-footer-contact-col">
+                    <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                </div>
+            </div>
+            <div class="p-footer-bottom">
+                <span>© 2026 DARE. Private &amp; Confidential.</span>
+                <span>Training · Nutrition · Culinary Execution</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
