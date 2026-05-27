@@ -14,13 +14,14 @@ mkdirSync(STATE_DIR, { recursive: true });
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Registered team members — loaded from env
+// Daniel can do BOTH training and nutrition plans
 function getUsers() {
   return {
     ...(process.env.ERIKA_PHONE
       ? { [process.env.ERIKA_PHONE]: { name: 'Erika', role: 'trainer' } }
       : {}),
     ...(process.env.DANIEL_PHONE
-      ? { [process.env.DANIEL_PHONE]: { name: 'Daniel', role: 'nutritionist' } }
+      ? { [process.env.DANIEL_PHONE]: { name: 'Daniel', role: 'both' } }
       : {}),
   };
 }
