@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Area | DARE</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tulpen+One&family=Manrope:wght@300;400;600;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050507;--border:rgba(244,241,232,.10);--border2:rgba(244,241,232,.18);
+  --text:#f4f1e8;--muted:rgba(244,241,232,.55);--muted2:rgba(244,241,232,.32);
+  --gold:#c9a24a;--gold-dim:rgba(201,162,74,.16);
+  --green:#a6c85e;--green-dim:rgba(166,200,94,.15);
+  --lav-text:#c0a8e8;--lav-dim:rgba(170,130,220,.15);
+  --shadow:0 24px 60px rgba(0,0,0,.6);--r:16px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(900px 520px at 14% 12%,rgba(201,162,74,.10) 0%,transparent 60%),
+    radial-gradient(900px 520px at 86% 18%,rgba(166,200,94,.09) 0%,transparent 60%),
+    var(--bg);
+  background-attachment:fixed,fixed,scroll;
+  color:var(--text);font-family:'Manrope',system-ui,sans-serif;
+  min-height:100vh;overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07em}
+::selection{background:rgba(201,162,74,.32);color:var(--text)}
+
+.glass{
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+  border:1px solid var(--border);border-radius:var(--r);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  position:relative;overflow:hidden;
+}
+.glass::before{
+  content:'';position:absolute;inset:-60%;pointer-events:none;opacity:.7;
+  background:radial-gradient(circle at 30% 25%,var(--gold-dim) 0%,transparent 50%),
+    radial-gradient(circle at 72% 74%,var(--green-dim) 0%,transparent 50%);
+  filter:blur(22px);
+}
+.glass>*{position:relative;z-index:1}
+
+/* ─── LOGIN ─── */
+#login-screen{
+  position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:1.5rem;
+  background:radial-gradient(900px 520px at 14% 12%,rgba(201,162,74,.13) 0%,transparent 60%),
+    radial-gradient(900px 520px at 86% 18%,rgba(166,200,94,.11) 0%,transparent 60%),var(--bg);
+  transition:opacity .6s,visibility .6s;
+}
+#login-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.login-card{width:100%;max-width:420px;padding:3rem 2.5rem 2.8rem;border-radius:22px;box-shadow:var(--shadow),0 0 0 1px rgba(201,162,74,.12)}
+.login-logo{
+  font-family:'Tulpen One',serif;font-size:3.2rem;letter-spacing:.12em;text-align:center;margin-bottom:.25rem;
+  background:linear-gradient(135deg,#d9d4c8,#c9a24a,#8fb85a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.login-sub{text-align:center;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem}
+.lf{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.2rem}
+.lf label{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lf input{background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:10px;padding:.85rem 1rem;color:var(--text);font-family:'Manrope',sans-serif;font-size:.92rem;outline:none;transition:border-color .2s,background .2s}
+.lf input:focus{border-color:rgba(201,162,74,.60);background:rgba(255,255,255,.09)}
+.lf input::placeholder{color:var(--muted2)}
+.login-btn{width:100%;margin-top:.8rem;padding:1rem;border:none;border-radius:999px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(201,162,74,.28)}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(201,162,74,.40)}
+.login-hint{text-align:center;font-size:.72rem;color:var(--muted2);margin-top:1.8rem;line-height:1.6;padding-top:1.4rem;border-top:1px solid var(--border)}
+.login-hint strong{color:var(--gold);font-weight:600}
+.login-error{display:none;background:rgba(220,60,60,.12);border:1px solid rgba(220,60,60,.28);border-radius:8px;padding:.65rem 1rem;font-size:.78rem;color:#f08080;margin-top:.8rem;text-align:center}
+.login-error.visible{display:block}
+
+/* ─── APP ─── */
+#app{display:none;flex-direction:column;min-height:100vh}
+#app.visible{display:flex}
+
+/* ─── HEADER ─── */
+.ch{
+  position:sticky;top:0;z-index:800;
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem;
+  padding:.9rem 2rem;background:rgba(5,5,7,.80);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border);
+}
+.ch-logo{font-family:'Tulpen One',serif;font-size:2rem;letter-spacing:.1em;text-decoration:none;color:var(--text)}
+.ch-daynav{display:flex;align-items:center;justify-content:center;gap:.75rem}
+.nav-arrow{background:none;border:1px solid var(--border2);border-radius:50%;width:36px;height:36px;cursor:pointer;color:var(--text);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s;flex-shrink:0}
+.nav-arrow:hover:not(:disabled){background:rgba(255,255,255,.07);border-color:rgba(244,241,232,.3)}
+.nav-arrow:disabled{opacity:.25;cursor:default}
+.day-center{text-align:center;min-width:180px}
+.day-type-badge{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:.2rem .7rem;border-radius:999px;margin-bottom:.15rem}
+.badge-strength{background:rgba(166,200,94,.15);border:1px solid rgba(166,200,94,.3);color:var(--green)}
+.badge-cardio{background:rgba(201,162,74,.15);border:1px solid rgba(201,162,74,.3);color:var(--gold)}
+.badge-rest{background:rgba(170,130,220,.13);border:1px solid rgba(170,130,220,.3);color:var(--lav-text)}
+.day-full-name{display:block;font-size:.82rem;font-weight:600;color:var(--text);letter-spacing:.03em}
+.ch-profile{display:flex;align-items:center;gap:.7rem;cursor:pointer;background:none;border:1px solid var(--border2);padding:.4rem .8rem .4rem .4rem;border-radius:999px;transition:background .2s,border-color .2s}
+.ch-profile:hover{background:rgba(255,255,255,.06);border-color:rgba(244,241,232,.28)}
+.ch-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(201,162,74,.4),rgba(166,200,94,.35));border:1.5px solid rgba(201,162,74,.4);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--gold);flex-shrink:0}
+.ch-profile-label{font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.05em}
+
+/* ─── WEEK STRIP ─── */
+.week-strip{display:flex;justify-content:center;gap:.4rem;padding:.75rem 2rem;border-bottom:1px solid var(--border);background:rgba(5,5,7,.5);overflow-x:auto;scrollbar-width:none}
+.week-strip::-webkit-scrollbar{display:none}
+.day-chip{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.45rem .7rem;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:all .2s;min-width:44px;flex-shrink:0}
+.day-chip:hover:not(.chip-active){background:rgba(255,255,255,.04);border-color:var(--border)}
+.day-chip.chip-active{border-color:rgba(201,162,74,.45);background:rgba(201,162,74,.08)}
+.day-chip.chip-past{opacity:.42}
+.chip-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chip-active .chip-label{color:var(--gold)}
+.chip-dot{width:6px;height:6px;border-radius:50%}
+.dot-strength{background:var(--green)}
+.dot-cardio{background:var(--gold)}
+.dot-rest{background:var(--lav-text)}
+
+/* ─── DAY PLANS GRID ─── */
+#day-plans{
+  flex:1;padding:1.8rem 2rem 4rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;align-items:stretch;
+  max-width:1400px;width:100%;margin:0 auto;
+  transition:opacity .2s ease,transform .25s ease;
+}
+
+/* ─── PLAN CARD ─── */
+.plan-card{
+  padding:1.8rem 1.6rem;
+  display:flex;flex-direction:column;
+}
+.expert-badge{display:flex;align-items:center;gap:.8rem;margin-bottom:1.4rem}
+.eb-img{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(201,162,74,.38)}
+.eb-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(20%)}
+.eb-name{font-size:.88rem;font-weight:700;color:var(--text)}
+.eb-role{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-top:2px}
+.plan-eyebrow{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.35rem}
+.plan-title{font-size:clamp(2rem,3.5vw,2.8rem);text-transform:uppercase;line-height:.88;margin-bottom:1.4rem}
+.session-pill{display:inline-flex;align-items:center;gap:.45rem;padding:.28rem .8rem;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:1.2rem}
+.pill-strength{background:rgba(166,200,94,.13);border:1px solid rgba(166,200,94,.32);color:var(--green)}
+.pill-cardio{background:rgba(201,162,74,.13);border:1px solid rgba(201,162,74,.32);color:var(--gold)}
+.pill-rest{background:rgba(170,130,220,.12);border:1px solid rgba(170,130,220,.28);color:var(--lav-text)}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* EXERCISES */
+.ex-list,.act-list{display:flex;flex-direction:column;gap:.55rem;flex:1}
+.ex-item{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;padding:.72rem .95rem;background:rgba(255,255,255,.032);border:1px solid var(--border);border-radius:10px;transition:border-color .2s,background .2s}
+.ex-item:hover{border-color:rgba(201,162,74,.22);background:rgba(255,255,255,.052)}
+.ex-name{font-size:.8rem;font-weight:600;color:var(--text)}
+.ex-detail{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.45}
+.ex-badge{font-size:.65rem;font-weight:700;color:var(--green);background:rgba(166,200,94,.1);border:1px solid rgba(166,200,94,.22);padding:.22rem .6rem;border-radius:6px;white-space:nowrap;flex-shrink:0}
+.ex-badge.gold{color:var(--gold);background:rgba(201,162,74,.1);border-color:rgba(201,162,74,.22)}
+.act-item{display:flex;align-items:flex-start;gap:.9rem;padding:.72rem .95rem;background:rgba(170,130,220,.045);border:1px solid rgba(170,130,220,.15);border-radius:10px}
+.act-icon{font-size:.5rem;color:var(--lav-text);margin-top:4px;flex-shrink:0}
+.act-name{font-size:.8rem;font-weight:600;color:var(--text)}
+.act-detail{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.45}
+
+/* EXPERT NOTE */
+.expert-note{margin-top:auto;padding-top:1rem}
+.note-inner{padding:.8rem .95rem;border-radius:10px;font-size:.73rem;color:var(--muted);line-height:1.65}
+.note-strength{background:rgba(166,200,94,.065);border:1px solid rgba(166,200,94,.18)}
+.note-strength strong{color:var(--green);font-weight:600}
+.note-cardio{background:rgba(201,162,74,.065);border:1px solid rgba(201,162,74,.18)}
+.note-cardio strong{color:var(--gold);font-weight:600}
+.note-rest{background:rgba(170,130,220,.065);border:1px solid rgba(170,130,220,.18)}
+.note-rest strong{color:var(--lav-text);font-weight:600}
+.note-nutrition{background:rgba(201,162,74,.07);border:1px solid rgba(201,162,74,.18)}
+.note-nutrition strong{color:var(--gold);font-weight:600}
+
+/* ─── NUTRITION ─── */
+.kcal-row{display:flex;align-items:baseline;gap:.4rem;margin-bottom:1.1rem}
+.kcal-num{font-family:'Tulpen One',serif;font-size:3rem;line-height:1;letter-spacing:.04em;background:linear-gradient(135deg,#d9d4c8,#c9a24a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.kcal-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.macro-bars{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem}
+.macro-row{display:flex;align-items:center;gap:.75rem}
+.macro-name{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);width:60px;flex-shrink:0}
+.macro-track{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+.macro-fill{height:100%;border-radius:999px}
+.macro-g{font-size:.7rem;font-weight:700;color:var(--text);width:40px;text-align:right;flex-shrink:0}
+.divider{border:none;border-top:1px solid var(--border);margin:.9rem 0 1rem}
+
+/* ─── MEAL ACCORDION ─── */
+.meal-list{display:flex;flex-direction:column;gap:.55rem;flex:1}
+.meal-item{
+  background:rgba(255,255,255,.032);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;transition:border-color .2s,background .2s;
+}
+.meal-item:hover,.meal-item.open{border-color:rgba(201,162,74,.28);background:rgba(255,255,255,.052)}
+.meal-header{
+  display:flex;align-items:flex-start;gap:.85rem;
+  padding:.72rem .95rem;cursor:pointer;
+}
+.meal-time{font-size:.66rem;font-weight:700;color:var(--gold);letter-spacing:.06em;width:40px;flex-shrink:0;padding-top:1px}
+.meal-body{flex:1}
+.meal-name{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.meal-desc{font-size:.68rem;color:var(--muted);line-height:1.45}
+.meal-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0;padding-top:1px}
+.meal-kcal{font-size:.65rem;color:var(--muted2);font-weight:600}
+.meal-toggle{
+  width:20px;height:20px;border-radius:50%;border:1px solid var(--border2);
+  background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;color:var(--muted);line-height:1;
+  transition:transform .28s,background .2s,border-color .2s,color .2s;flex-shrink:0;
+}
+.meal-item.open .meal-toggle{transform:rotate(45deg);background:rgba(201,162,74,.15);border-color:rgba(201,162,74,.4);color:var(--gold)}
+.meal-steps{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s cubic-bezier(.4,0,.2,1),padding .3s;
+  padding:0 .95rem;
+}
+.meal-item.open .meal-steps{max-height:400px;padding:.05rem .95rem .85rem}
+.meal-steps ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.4rem}
+.meal-steps li{font-size:.7rem;color:var(--muted);line-height:1.55;padding-left:.15rem}
+.meal-steps li::marker{color:var(--gold);font-size:.65rem;font-weight:700}
+
+/* ─── PROFILE PANEL ─── */
+#profile-panel{
+  position:fixed;inset:0;z-index:5000;
+  background:radial-gradient(900px 520px at 14% 12%,rgba(201,162,74,.10) 0%,transparent 60%),
+    radial-gradient(900px 520px at 86% 18%,rgba(166,200,94,.09) 0%,transparent 60%),var(--bg);
+  display:flex;flex-direction:column;overflow-y:auto;
+  transform:translateX(100%);transition:transform .45s cubic-bezier(.4,0,.2,1);
+}
+#profile-panel.open{transform:translateX(0)}
+.pp-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(5,5,7,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+.pp-back{display:flex;align-items:center;gap:.55rem;background:none;border:1px solid var(--border2);border-radius:999px;padding:.45rem 1rem;cursor:pointer;color:var(--text);font-family:'Manrope',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:background .2s}
+.pp-back:hover{background:rgba(255,255,255,.07)}
+.pp-back svg{width:14px;height:14px}
+.pp-title{font-family:'Tulpen One',serif;font-size:1.4rem;letter-spacing:.1em}
+.pp-logout{background:none;border:1px solid var(--border2);border-radius:999px;padding:.45rem 1rem;cursor:pointer;color:var(--muted);font-family:'Manrope',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;transition:color .2s,border-color .2s,background .2s}
+.pp-logout:hover{color:var(--text);border-color:rgba(244,241,232,.3);background:rgba(255,255,255,.05)}
+.pp-body{max-width:1100px;width:100%;margin:0 auto;padding:2rem 2rem 4rem}
+.pp-client-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.8rem}
+.pp-avatar-lg{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,rgba(201,162,74,.4),rgba(166,200,94,.35));border:2px solid rgba(201,162,74,.45);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;color:var(--gold);flex-shrink:0}
+.pp-client-name{font-family:'Tulpen One',serif;font-size:2rem;line-height:1;letter-spacing:.06em;text-transform:uppercase}
+.pp-client-sub{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:4px;line-height:1.6}
+
+/* METRICS */
+.pp-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.8rem}
+.pp-metric{padding:1.1rem 1.2rem;border-radius:14px}
+.pp-metric-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);margin-bottom:.4rem}
+.pp-metric-val{font-family:'Tulpen One',serif;font-size:2.2rem;line-height:1;letter-spacing:.04em}
+.pp-metric-val sup{font-size:.9rem;vertical-align:super}
+.pp-metric-delta{font-size:.68rem;margin-top:.25rem;font-weight:600;color:var(--green)}
+
+/* CHARTS */
+.pp-charts{display:grid;grid-template-columns:1.3fr 1fr;gap:1.4rem}
+.pp-chart-card{padding:1.6rem 1.6rem 1.4rem}
+.pp-chart-eyebrow{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.3rem}
+.pp-chart-title{font-size:1.7rem;text-transform:uppercase;line-height:.9;margin-bottom:.8rem}
+.chart-legend-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-size:.68rem;color:var(--muted)}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pp-chart-wrap{height:210px}
+/* Donut legends */
+.donut-legend{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-top:1rem}
+.donut-legend-item{display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:var(--muted)}
+.donut-legend-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.donut-pct{font-weight:700;color:var(--text);margin-left:auto;font-size:.72rem}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:960px){
+  #day-plans{grid-template-columns:1fr;padding:1.2rem 1rem 3rem;align-items:start}
+  .pp-charts{grid-template-columns:1fr}
+  .pp-metrics{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .ch{padding:.8rem 1.1rem}
+  .ch-profile-label{display:none}
+  .week-strip{justify-content:flex-start;padding:.6rem 1rem}
+  .pp-body{padding:1.5rem 1rem 3rem}
+  .pp-metrics{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-card glass">
+    <div class="login-logo">DARE</div>
+    <p class="login-sub">Private Health OS &mdash; Client Portal</p>
+    <div class="lf"><label for="email">Email</label><input type="email" id="email" placeholder="your@email.com" autocomplete="email"></div>
+    <div class="lf"><label for="pw">Password</label><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="login-error" id="login-error">Incorrect credentials. Please try again.</div>
+    <button class="login-btn" id="login-btn">Enter Portal</button>
+    <p class="login-hint">Demo access<br><strong>client@dare.ae</strong> &nbsp;/&nbsp; <strong>dare2026</strong></p>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <header class="ch">
+    <a href="index.html" class="ch-logo">DARE</a>
+    <div class="ch-daynav">
+      <button class="nav-arrow" id="prev-day">&#8592;</button>
+      <div class="day-center">
+        <span class="day-type-badge" id="day-badge"></span>
+        <span class="day-full-name" id="day-name"></span>
+      </div>
+      <button class="nav-arrow" id="next-day">&#8594;</button>
+    </div>
+    <button class="ch-profile" id="profile-btn">
+      <div class="ch-avatar">AH</div>
+      <span class="ch-profile-label">Profile</span>
+    </button>
+  </header>
+
+  <div class="week-strip" id="week-strip"></div>
+
+  <div id="day-plans">
+    <div class="plan-card glass" id="training-card">
+      <div class="expert-badge">
+        <div class="eb-img"><img src="images/erikaa.jpg" alt="Erika"></div>
+        <div><div class="eb-name">Erika</div><div class="eb-role">Head of Performance</div></div>
+      </div>
+      <p class="plan-eyebrow">Today's Session</p>
+      <h2 class="plan-title">TRAINING<br>PLAN</h2>
+      <div id="training-content"></div>
+    </div>
+    <div class="plan-card glass" id="nutrition-card">
+      <div class="expert-badge">
+        <div class="eb-img"><img src="images/DANI3.jpg" alt="Daniel"></div>
+        <div><div class="eb-name">Daniel</div><div class="eb-role">Head of Nutrition</div></div>
+      </div>
+      <p class="plan-eyebrow">Today's Protocol</p>
+      <h2 class="plan-title">NUTRITION<br>PLAN</h2>
+      <div id="nutrition-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROFILE PANEL ═══ -->
+<div id="profile-panel">
+  <div class="pp-header">
+    <button class="pp-back" id="close-profile">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+      Back to Plans
+    </button>
+    <span class="pp-title">MY PROFILE</span>
+    <button class="pp-logout" id="logout-btn">Log out</button>
+  </div>
+  <div class="pp-body">
+    <div class="pp-client-row">
+      <div class="pp-avatar-lg">AH</div>
+      <div>
+        <div class="pp-client-name">Alex Hammond</div>
+        <div class="pp-client-sub">Fat-Loss Protocol &nbsp;·&nbsp; Week 8 of 12 &nbsp;·&nbsp; 181 cm &nbsp;·&nbsp; Next check-in: Fri 30 May</div>
+      </div>
+    </div>
+    <div class="pp-metrics">
+      <div class="pp-metric glass"><div class="pp-metric-label">Weight</div><div class="pp-metric-val">82.8<sup>kg</sup></div><div class="pp-metric-delta">↓ 5.2 kg since start</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label">BMI</div><div class="pp-metric-val">25.6</div><div class="pp-metric-delta">↓ 1.6 since start</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label">Body Fat</div><div class="pp-metric-val">18.8<sup>%</sup></div><div class="pp-metric-delta">↓ 3.6% since start</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label">Lean Mass</div><div class="pp-metric-val">67.4<sup>kg</sup></div><div class="pp-metric-delta">↑ 3.3 kg since start</div></div>
+    </div>
+    <div class="pp-charts">
+      <div class="pp-chart-card glass">
+        <p class="pp-chart-eyebrow">12-Week Protocol</p>
+        <h3 class="pp-chart-title">BODY PROGRESS</h3>
+        <div class="chart-legend-row">
+          <div class="legend-item"><span class="legend-dot" style="background:#c9a24a"></span>Weight (kg)</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#a6c85e"></span>Body Fat %</div>
+          <div class="legend-item" style="opacity:.5"><span style="display:inline-block;width:18px;height:1px;border-top:2px dashed rgba(244,241,232,.45);vertical-align:middle;margin-right:.4rem"></span>Projection</div>
+        </div>
+        <div class="pp-chart-wrap"><canvas id="progressChart"></canvas></div>
+      </div>
+      <div class="pp-chart-card glass">
+        <p class="pp-chart-eyebrow">Current State</p>
+        <h3 class="pp-chart-title">BODY COMPOSITION</h3>
+        <div class="pp-chart-wrap" style="height:170px"><canvas id="donutChart"></canvas></div>
+        <div class="donut-legend">
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(166,200,94,.8)"></span>Muscle Mass<span class="donut-pct">42.2%</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(201,162,74,.75)"></span>Body Fat<span class="donut-pct">18.8%</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(100,160,220,.65)"></span>Water<span class="donut-pct">29.0%</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(180,170,155,.5)"></span>Bone &amp; Other<span class="donut-pct">10.0%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+// Configura la URL del servidor del bot
+// En producción: usa tu URL de Railway
+// En local: usa localhost:3001 para testing
+const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+window.DARE_API_URL = isDev ? 'http://localhost:3001' : 'https://web-production-df21c.up.railway.app';
+/* ═══ DYNAMIC PLAN LOADING ═══
+ * Reads ?client=<clientId> from the URL.
+ * Tries to fetch the plan from the bot API (window.DARE_API_URL).
+ * Falls back to the hardcoded DEMO_WEEK if API is unavailable.
+ * ═══════════════════════════════════════════════════════════ */
+
+function getClientIdFromUrl(){
+  return new URLSearchParams(location.search).get('client') || 'alex-hammond';
+}
+
+function todayIndex(week){
+  const todayStr = new Date().toLocaleDateString('en-GB',{weekday:'short'});
+  // weekday short: Mon Tue Wed Thu Fri Sat Sun
+  const abbr = todayStr.slice(0,3);
+  const idx = week.findIndex(d=>d.label===abbr);
+  return idx>=0 ? idx : 0;
+}
+
+async function fetchLivePlan(clientId){
+  const apiUrl = window.DARE_API_URL;
+  if(!apiUrl) return null;
+  try{
+    const r = await fetch(`${apiUrl}/api/plans/${clientId}`);
+    if(!r.ok) return null;
+    const data = await r.json();
+    // Only use merged week when both training + nutrition are ready
+    if(data.week && Array.isArray(data.week)) return data.week;
+    return null;
+  }catch{ return null; }
+}
+
+/* ═══ DEMO DATA (fallback) ═══ */
+const DEMO_TODAY = 1;
+
+const WEEK = [
+/* ── MONDAY ── */
+{
+  label:'Mon', fullDate:'Monday, 25 May', type:'strength', past:true,
+  training:{
+    session:'Upper Body',
+    items:[
+      {name:'Barbell Bench Press', detail:'Warm-up 2×8 @60% · Main 4 sets · 90s rest', badge:'4×6 @80%'},
+      {name:'Wide-Grip Pull-ups', detail:'Strict form · full range · no kipping · 90s rest', badge:'4×8'},
+      {name:'Standing Overhead Press', detail:'Barbell · braced core · controlled descent', badge:'3×8 @75%'},
+      {name:'Cable Row', detail:'3s hold at chest · slow eccentric · 75s rest', badge:'4×10'},
+      {name:'Face Pulls + Tricep Pushdown', detail:'Superset · minimal rest within pair · 3 rounds', badge:'3×15'},
+    ],
+    note:"Prioritise form on the bench — we're building shoulder stability. Log weights on every set. If the last 2 reps of set 4 feel easy, we add 2.5 kg next Monday.",
+    noteType:'strength',
+  },
+  nutrition:{
+    kcal:2200, protein:185, carbs:195, fat:55,
+    meals:[
+      {time:'07:00', name:'Pre-workout Breakfast', desc:'Oat porridge · 2 boiled eggs · espresso', kcal:460, steps:["Bring 280ml water to a boil. Add 70g rolled oats, reduce heat, stir 3–4 min until creamy","Season with a pinch of salt and ½ tsp cinnamon","Place 2 eggs in cold water, bring to boil, cook 7 min — peel and halve","Serve oats in a bowl with eggs alongside","Brew espresso — black, no sugar"]},
+      {time:'10:30', name:'Post-workout Recovery', desc:'Whey isolate shake · rice cake · honey', kcal:380, steps:["Add 1 scoop (30g) whey isolate to 300ml cold water","Shake 20 seconds until fully dissolved — no blender needed","Drizzle 1 tsp raw honey over 1 plain rice cake","Consume within 20 min of finishing your last set"]},
+      {time:'13:00', name:'Lunch', desc:'Chicken breast · brown rice · roasted courgette · olive oil', kcal:680, steps:["Preheat oven to 200°C. Slice 1 courgette, toss in 1 tsp olive oil, season, roast 20 min","Season 180g chicken breast with salt, pepper and garlic powder","Pan-fry on medium-high heat 5–6 min per side until cooked through — rest 3 min","Cook 180g brown rice per packet (~25 min)","Plate: rice base, sliced chicken, roasted courgette, drizzle 1 tsp extra virgin olive oil"]},
+      {time:'16:30', name:'Afternoon Snack', desc:'Greek yoghurt · granola · mixed berries', kcal:320, steps:["Spoon 200g full-fat Greek yoghurt into a bowl","Add 40g low-sugar granola","Top with 80g fresh or thawed mixed berries","Optional: drizzle ½ tsp honey and a pinch of cinnamon"]},
+      {time:'20:00', name:'Dinner', desc:'Sea bass · sweet potato purée · asparagus · lemon dressing', kcal:560, steps:["Boil 200g peeled sweet potato (cubed) for 15 min, drain — mash with 1 tsp butter and salt","Steam 150g asparagus 4 min until vibrant and tender-crisp","Season sea bass fillet with salt, pepper, lemon zest","Pan-fry skin-side down in 1 tsp olive oil 4 min, flip 2 min","Whisk: juice of ½ lemon + 1 tsp olive oil + pinch of capers — drizzle over fish"]},
+    ],
+    note:"Upper body day — keep carbs high around training. Post-workout window is critical: eat within 30 min of finishing. Hydration target: 3.2 L.",
+  },
+},
+/* ── TUESDAY (TODAY) ── */
+{
+  label:'Tue', fullDate:'Tuesday, 26 May', type:'cardio', today:true,
+  training:{
+    session:'HIIT & Cardio',
+    items:[
+      {name:'Warm-up jog', detail:'Easy pace · HR below 130 bpm · 5 min steady', badge:'5 min', gold:true},
+      {name:'HIIT Intervals', detail:'40s max effort / 20s full rest · 8 rounds total', badge:'8 rounds', gold:true},
+      {name:'Battle Ropes', detail:'Alternating waves · 30s on / 30s rest', badge:'3×30s', gold:true},
+      {name:'Jump Rope', detail:'Continuous rhythm · double unders if comfortable', badge:'3×2 min', gold:true},
+      {name:'Cool-down walk', detail:'Steady pace · HR below 100 bpm before leaving', badge:'10 min', gold:true},
+    ],
+    note:"Push hard in the 40-second windows — RPE 9. Full recovery in the 20 seconds. No training tomorrow so leave it all here. Log your peak HR.",
+    noteType:'cardio',
+  },
+  nutrition:{
+    kcal:1980, protein:175, carbs:165, fat:52,
+    meals:[
+      {time:'07:00', name:'Breakfast', desc:'Egg white omelette · spinach · feta · wholemeal toast', kcal:390, steps:["Wilt 60g spinach in a non-stick pan with a spray of oil for 30 seconds","Whisk 4 egg whites with a pinch of salt until foamy","Pour over spinach on medium heat — let set 1 min, crumble 30g feta on top","Fold omelette in half, cook 30s more until firm","Toast 1 slice wholemeal bread and serve alongside"]},
+      {time:'11:00', name:'Post-workout', desc:'Whey protein shake · banana · almond butter', kcal:360, steps:["Blend 1 scoop (30g) whey protein with 250ml cold almond milk until smooth","Slice 1 medium banana into rounds — do not blend in (cleaner glycaemic response)","Measure 1 tbsp natural almond butter on the side","Consume everything together within 30 min of finishing training"]},
+      {time:'13:30', name:'Lunch', desc:'Grilled chicken · quinoa · roasted red peppers · tahini', kcal:620, steps:["Rinse 150g quinoa, cook in 300ml water 15 min — fluff with fork, leave to steam off heat 5 min","Halve and deseed 2 red peppers, roast at 200°C for 20–25 min until edges char","Grill 180g chicken in a griddle pan 5 min each side, rest 3 min before slicing","Whisk: 1.5 tbsp tahini + juice of ½ lemon + 1 tbsp water + pinch of salt","Bowl: quinoa base, sliced chicken, peppers, generous tahini drizzle"]},
+      {time:'17:00', name:'Afternoon Snack', desc:'Cottage cheese · sliced pear · walnuts', kcal:300, steps:["Spoon 200g low-fat cottage cheese into a bowl","Core and thinly slice 1 ripe pear into fans","Add 25g walnut halves alongside","Optional: freshly ground black pepper over the cottage cheese — it pairs well"]},
+      {time:'20:00', name:'Dinner', desc:'Sea bass · steamed broccoli · sweet potato · lemon-herb dressing', kcal:430, steps:["Steam 150g broccoli florets 5–6 min until vibrant green and tender","Cube 160g sweet potato, toss in olive oil, roast at 200°C for 22 min","Pat sea bass dry, season skin with salt — cook skin-down in 1 tsp olive oil 4 min, flip 2 min","Blend: 1 tbsp olive oil + juice of ½ lemon + 1 tbsp fresh parsley, chopped fine","Plate broccoli and potato, lay fish on top, drizzle herb dressing generously"]},
+    ],
+    note:"Moderate carb day aligned with HIIT. Protein quality is the priority across all meals. Avoid heavy food after 20:30 — tomorrow is active rest and overnight recovery matters.",
+  },
+},
+/* ── WEDNESDAY ── */
+{
+  label:'Wed', fullDate:'Wednesday, 27 May', type:'rest',
+  training:{
+    session:'Active Rest',
+    activities:[
+      {name:'30-min outdoor walk', detail:'Easy pace · natural light · barefoot on grass if possible'},
+      {name:'20-min yoga flow', detail:'Focus: hip flexors, thoracic spine, hamstrings'},
+      {name:'Full-body foam rolling', detail:'Calves · quads · IT band · lats · thoracic · 15 min'},
+      {name:'Diaphragmatic breathing', detail:'4-7-8 pattern · lying flat · 10 min · no screens'},
+    ],
+    note:"Rest day is where adaptation happens. Movement keeps circulation moving to trained muscles. Don't skip the foam rolling — Thursday's squat session depends on it.",
+    noteType:'rest',
+  },
+  nutrition:{
+    kcal:1860, protein:165, carbs:142, fat:60,
+    meals:[
+      {time:'08:00', name:'Breakfast', desc:'Avocado toast · 2 poached eggs · smoked salmon · capers', kcal:520, steps:["Bring a wide pan of water to a gentle simmer, add 1 tsp white vinegar","Crack eggs one at a time into a small cup — swirl water and slide eggs in, poach 3–4 min","Toast 2 slices sourdough until firm and golden","Mash ½ ripe avocado with lemon juice, salt and black pepper — spread on toast","Top with 50g smoked salmon, poached eggs, scatter capers and finish with chilli flakes"]},
+      {time:'13:00', name:'Lunch', desc:'Red lentil soup · sourdough · mixed leaf salad', kcal:560, steps:["Sauté ½ onion + 1 garlic clove + 1 tsp ground cumin in 1 tsp olive oil, 3 min","Add 150g red lentils, 1 diced carrot, 700ml vegetable stock — simmer 20 min","Blend until smooth; season with salt, lemon juice and a pinch of smoked paprika","Dress a handful of mixed leaves with 1 tsp olive oil + a splash of lemon","Serve soup in a deep bowl with 1 slice toasted sourdough and the salad alongside"]},
+      {time:'17:00', name:'Afternoon Snack', desc:'Medjool dates · almonds · green tea', kcal:280, steps:["Set out 3 medjool dates — remove pits","Weigh 25g whole almonds","Brew green tea with water at 80°C (not boiling) for 2–3 min","Eat slowly — this is a recovery snack, not a performance refuel"]},
+      {time:'20:00', name:'Dinner', desc:'Roasted turkey · beets · wilted spinach · tahini dressing', kcal:500, steps:["Rub 200g turkey breast fillet with olive oil, minced garlic and dried oregano — roast at 190°C for 25 min","Slice pre-cooked beets into rounds (or roast raw beets wrapped in foil at 200°C for 45 min)","Wilt 80g baby spinach in a dry pan with 1 crushed garlic clove, 2 min","Whisk: 1.5 tbsp tahini + juice of ½ lemon + 1 tbsp warm water + salt until smooth","Plate turkey slices over beets and spinach — drizzle tahini generously"]},
+    ],
+    note:"Recovery nutrition today. Anti-inflammatory priority: no processed sugar, no alcohol. High-quality fats support joint and hormonal health. Aim for 3.0 L water.",
+  },
+},
+/* ── THURSDAY ── */
+{
+  label:'Thu', fullDate:'Thursday, 28 May', type:'strength',
+  training:{
+    session:'Lower Body',
+    items:[
+      {name:'Back Squat', detail:'Warm-up 2×8 @55% · Main 4 sets · 2 min rest', badge:'4×6 @85%'},
+      {name:'Romanian Deadlift', detail:'4s eccentric · hinge at hip · neutral spine · 90s rest', badge:'3×8 @75%'},
+      {name:'Bulgarian Split Squat', detail:'Rear foot elevated · dumbbell hold · each leg separately', badge:'3×10/side'},
+      {name:'Hip Thrust', detail:'Barbell · 1s pause at top · full glute squeeze', badge:'4×12'},
+      {name:'Leg Curl (seated)', detail:'Full range of motion · 3s negative · controlled lowering', badge:'3×12'},
+    ],
+    note:"Heaviest squat session this week. Take warm-up sets seriously — they're not optional. Track RPE on every working set. If the last 2 reps feel easy, we're adding 2.5 kg next Thursday.",
+    noteType:'strength',
+  },
+  nutrition:{
+    kcal:2280, protein:182, carbs:210, fat:50,
+    meals:[
+      {time:'07:00', name:'Pre-workout', desc:'Banana · peanut butter toast · black coffee', kcal:360, steps:["Toast 1 slice wholemeal bread until golden and firm","Spread 1.5 tbsp natural peanut butter evenly — no added sugar varieties only","Slice ½ banana on top, eat the other half separately","Brew black coffee (americano or espresso) — no milk, no sugar","Eat 60–75 min before your session"]},
+      {time:'10:30', name:'Post-workout', desc:'Whey shake · 2 rice cakes · honey', kcal:420, steps:["Shake 1 scoop (30g) whey isolate with 300ml cold water for 20s","Spread ½ tsp raw honey on each of 2 plain rice cakes","Consume within 30 min of finishing — timing is especially critical on leg day","Sit and eat — don't rush this window"]},
+      {time:'13:00', name:'Lunch', desc:'Beef stir-fry · jasmine rice · pak choi · sesame oil', kcal:740, steps:["Cook 200g jasmine rice in 400ml water: bring to boil, lid on low heat 12 min — rest 5 min off heat","Slice 180g lean beef sirloin into thin strips, season with soy sauce and black pepper","Heat wok until very hot with 1 tsp sesame oil — stir-fry beef 2–3 min until browned","Add 2 heads pak choi (halved), 1 clove garlic, 1 tsp fresh ginger — toss 2 min","Serve over rice, drizzle extra ½ tsp sesame oil, optional red chilli slices"]},
+      {time:'16:30', name:'Afternoon Snack', desc:'Greek yoghurt · granola · diced mango', kcal:380, steps:["Dice ½ fresh mango into small cubes (or use 100g frozen, thawed completely)","Spoon 200g Greek yoghurt into a bowl","Add 40g granola, spread the mango on top","Eat 90 min before dinner — don't rush this meal"]},
+      {time:'20:00', name:'Dinner', desc:'Grilled salmon · pasta primavera · parmesan · herbs', kcal:680, steps:["Cook 120g rigatoni al dente — reserve ½ cup pasta water before draining","Sauté 1 courgette (sliced) + handful cherry tomatoes + ½ bell pepper in 1 tsp olive oil, 5 min","Add pasta + 2 tbsp pasta water, toss to combine, season with salt and black pepper","Season 180g salmon fillet, grill skin-up 4–5 min, flip and cook 3 min until just cooked","Plate pasta, lay salmon alongside, finish with 15g grated parmesan and fresh basil"]},
+    ],
+    note:"Highest carb day — designed around your heaviest training load. Don't skip the pre-workout meal. Pasta at dinner ensures full glycogen replenishment before Saturday's full-body session.",
+  },
+},
+/* ── FRIDAY ── */
+{
+  label:'Fri', fullDate:'Friday, 29 May', type:'cardio',
+  training:{
+    session:'Cardio & Core',
+    items:[
+      {name:'Zone 2 Cycling', detail:'Moderate pace · HR 130–145 bpm · steady throughout', badge:'40 min', gold:true},
+      {name:'Plank hold', detail:'Strict form · no hip drop · full 60 seconds', badge:'3×60s', gold:true},
+      {name:'Side Plank', detail:'Level hips · each side · switch each round', badge:'3×30s/side', gold:true},
+      {name:'Dead Bug', detail:'Slow and controlled · lower back pressed firmly into floor', badge:'3×10', gold:true},
+      {name:'Mobility cool-down', detail:'Hip flexors · hamstrings · thoracic rotation · no rushing', badge:'10 min', gold:true},
+    ],
+    note:"Easy aerobic day before Saturday's peak session. Keep cycling in zone 2 — you should be able to hold a full conversation. Leave the gym feeling fresh, not fatigued.",
+    noteType:'cardio',
+  },
+  nutrition:{
+    kcal:2020, protein:172, carbs:175, fat:55,
+    meals:[
+      {time:'07:00', name:'Breakfast', desc:'Scrambled eggs · smoked salmon · avocado · wholemeal toast', kcal:460, steps:["Whisk 3 whole eggs + 1 egg white with 1 tbsp milk, salt and freshly ground pepper","Cook on low heat in a buttered non-stick pan, stirring slowly — pull off heat when slightly glossy","Toast 1 slice wholemeal bread","Slice ½ avocado, fan out and season with lemon and black pepper","Plate: eggs on toast, 50g smoked salmon on the side, avocado to complement"]},
+      {time:'12:30', name:'Lunch', desc:'Tuna salad · bulgur wheat · cucumber · cherry tomatoes · olive oil', kcal:580, steps:["Pour boiling water over 120g bulgur wheat (1:1.5 ratio), cover and rest 15 min — fluff","Drain 1 tin tuna in spring water (160g) and break into large chunks","Dice ½ cucumber and halve 100g cherry tomatoes","Combine everything, dress with 1.5 tbsp olive oil + juice of 1 lemon + salt + fresh mint","Can be made 4 hours ahead and refrigerated — flavour improves with time"]},
+      {time:'16:00', name:'Afternoon Snack', desc:'Protein bar · apple · black coffee', kcal:300, steps:["Choose a protein bar with 20g+ protein and under 10g sugar (read the label)","Eat with 1 whole apple — don't slice it, the skin has the fibre you want","Brew black coffee to keep metabolism engaged","This snack exists to bridge to dinner without spiking hunger"]},
+      {time:'20:00', name:'Dinner', desc:'Chicken thigh · Puy lentils · roasted peppers · coriander', kcal:680, steps:["Season 2 bone-in chicken thighs, roast at 200°C skin-up for 35–40 min until skin is crisp","Cook 150g Puy lentils in vegetable stock for 20 min until just tender — drain","Roast 2 red peppers at 200°C for 25 min, peel skin when cool and slice into strips","Dress lentils with 1 tbsp olive oil + splash of red wine vinegar + salt + pepper","Plate lentils, lay chicken thighs alongside, top with peppers and fresh coriander"]},
+    ],
+    note:"Friday evening meal is your pre-load for Saturday's peak session — don't skip it. Keep it balanced and generous. Sleep 8+ hours tonight. That's where the gains actually happen.",
+  },
+},
+/* ── SATURDAY ── */
+{
+  label:'Sat', fullDate:'Saturday, 30 May', type:'strength',
+  training:{
+    session:'Full Body Power',
+    items:[
+      {name:'Deadlift', detail:'Warm-up 2×5 @60% · Main 4 sets · 2.5 min rest · record all', badge:'4×5 @87%'},
+      {name:'Overhead Press', detail:'Standing barbell · controlled descent · 90s rest', badge:'4×6 @78%'},
+      {name:'Weighted Pull-ups', detail:'Belt + plates · full hang · chin clears bar each rep', badge:'3×6'},
+      {name:'Dips', detail:'Chest-forward lean · full range · bodyweight', badge:'3×10'},
+      {name:'Farmer Carry', detail:'Heaviest dumbbells with correct posture · 20m per rep', badge:'3×20m'},
+    ],
+    note:"Weekly peak session. Deadlift is the priority — everything else follows. If energy is high, chase a small PR. Record all weights. This is your weekly evidence of progress.",
+    noteType:'strength',
+  },
+  nutrition:{
+    kcal:2320, protein:188, carbs:220, fat:52,
+    meals:[
+      {time:'07:00', name:'Pre-workout', desc:'Overnight oats · protein powder · blueberries · chia seeds', kcal:460, steps:["Night before: mix 80g rolled oats + 1 scoop protein powder + 1 tbsp chia seeds in a jar","Add 250ml oat milk, stir well, cover and refrigerate overnight","Morning: top with 80g fresh blueberries","Remove from fridge 15 min before eating — serve at room temperature","Consume 60–90 min before training"]},
+      {time:'10:30', name:'Post-workout', desc:'Recovery shake · banana · almond butter (2 tbsp)', kcal:490, steps:["Blend 1 scoop recovery protein (carb + protein blend) with 300ml cold milk until smooth","Slice 1 large banana","Measure 2 tbsp natural almond butter","Eat banana + almond butter alongside the shake — don't blend in","Consume within 30 min — Saturday is peak day and this window is everything"]},
+      {time:'13:00', name:'Lunch', desc:'Sirloin steak · sweet potato · asparagus · garlic butter', kcal:780, steps:["Remove steak from fridge 30 min before cooking to reach room temperature","Cube 220g sweet potato, toss in 1 tsp olive oil + salt, roast at 200°C for 25 min","Season steak generously with coarse salt and cracked pepper on both sides","Sear in a screaming-hot cast iron pan: 3 min per side for medium-rare — rest 5 min on a board","Steam 150g asparagus 4 min, toss in 1 tsp butter + 1 crushed garlic clove — plate everything, drizzle resting juices over steak"]},
+      {time:'16:30', name:'Afternoon Snack', desc:'Cottage cheese · tropical fruit · crushed walnuts', kcal:360, steps:["Cube 100g fresh mango + 80g pineapple — fresh is optimal, avoid syrup-packed tinned fruit","Spoon 200g cottage cheese into a bowl","Add fruit and crush 30g walnuts coarsely over the top","Sprinkle ¼ tsp cinnamon — improves insulin sensitivity around strength training"]},
+      {time:'20:00', name:'Dinner', desc:'Sea bass · saffron risotto · cherry tomatoes · parmesan', kcal:690, steps:["Warm 750ml vegetable stock in a saucepan — keep at a gentle simmer throughout","Sauté ½ finely diced onion in 1 tsp olive oil until soft; add 150g arborio rice, toast 2 min","Dissolve a pinch of saffron in 2 tbsp hot water — add to rice and stir","Add stock one ladle at a time, stirring every 2 min, for 18–20 min until creamy","Pan-fry sea bass skin-down 4 min, flip 2 min — serve over risotto with halved cherry tomatoes and 15g grated parmesan"]},
+    ],
+    note:"Highest calorie day of the week — you've earned it. The steak at lunch is intentional: creatine and iron for peak performance. Sunday is active rest so eat generously tonight.",
+  },
+},
+/* ── SUNDAY ── */
+{
+  label:'Sun', fullDate:'Sunday, 31 May', type:'rest',
+  training:{
+    session:'Active Rest',
+    activities:[
+      {name:'45-min beach walk', detail:'Leisurely pace · barefoot on sand if possible · no agenda'},
+      {name:'Full-body static stretching', detail:'45–60s per stretch · focus on legs after Saturday'},
+      {name:'Light swim (optional)', detail:'20 min · easy freestyle · not competitive · enjoy the water'},
+      {name:'No structured training', detail:'Let the body consolidate this week\'s adaptations fully'},
+    ],
+    note:"End of the week. You trained hard — now let the body build. The walk and swim keep circulation moving, nothing more. Monday starts a new block. Arrive rested.",
+    noteType:'rest',
+  },
+  nutrition:{
+    kcal:1820, protein:158, carbs:130, fat:65,
+    meals:[
+      {time:'09:00', name:'Brunch', desc:'Smoked salmon · scrambled eggs · avocado · sourdough · capers', kcal:580, steps:["Whisk 3 eggs with 1 tbsp crème fraîche, salt and freshly chopped dill","Cook slowly in a buttered pan, stirring gently — pull off heat when just set and still glossy","Toast 1 slice sourdough until golden","Mash ½ avocado with lemon juice and black pepper — spread on toast","Top with 60g smoked salmon, eggs alongside, scatter capers and extra dill"]},
+      {time:'14:00', name:'Lunch', desc:'Buddha bowl · falafel · hummus · tabbouleh · tahini', kcal:580, steps:["Warm 5 falafel in oven at 180°C for 10 min (ready-made or homemade)","Tabbouleh: finely chop 1 cup flat-leaf parsley + handful mint + 1 tomato + juice of 1 lemon + 1 tsp olive oil","Cook 100g bulgur wheat per packet, cool slightly and fold into tabbouleh","Spoon 3 tbsp good-quality hummus into the bowl","Arrange falafel, tabbouleh, hummus — drizzle 1 tbsp tahini over everything, finish with a pinch of sumac"]},
+      {time:'18:00', name:'Afternoon Snack', desc:'Mixed nuts · dark chocolate · herbal tea', kcal:330, steps:["Weigh 40g mixed nuts (almonds, cashews, brazil nuts, macadamias)","Break 2 squares (20g) of 70%+ dark chocolate","Brew chamomile or peppermint tea — herbal, not caffeinated (it's Sunday evening)","Eat slowly and mindfully — no screens if possible. Wind down."]},
+      {time:'20:30', name:'Dinner', desc:'Chicken broth · seasonal vegetables · soba noodles', kcal:330, steps:["Simmer 1 litre quality chicken stock with 1 garlic clove + 1 tsp fresh grated ginger for 10 min","Cook 60g soba noodles per packet (3–4 min), drain and rinse under cold water","Add seasonal veg to simmering broth: pak choi, broccoli florets, carrot matchsticks — 3 min","Place noodles in a deep bowl, ladle hot broth and vegetables over","Garnish: sliced spring onions, a few drops sesame oil, optional soft-boiled egg"]},
+    ],
+    note:"Calorie reset day — lighter on quantity, high on micronutrients and healthy fats. Eat slowly, hydrate well, sleep 9 hours tonight. Prep for next week starts now.",
+  },
+},
+];
+
+/* ═══ STATE ═══ */
+let ACTIVE_WEEK = WEEK;           // may be replaced with live data
+let currentDay  = DEMO_TODAY;
+let chartsInit  = false;
+
+/* ═══ AUTH ═══ */
+const loginScreen = document.getElementById('login-screen');
+const app         = document.getElementById('app');
+const loginError  = document.getElementById('login-error');
+
+async function showDash(){
+  loginScreen.classList.add('hidden');
+  app.classList.add('visible');
+
+  // Try to load a live plan from the bot API
+  const clientId = getClientIdFromUrl();
+  const live = await fetchLivePlan(clientId);
+  if(live && live.length===7){
+    ACTIVE_WEEK = live;
+    currentDay  = todayIndex(live);
+  }
+
+  renderDay(currentDay);
+  buildWeekStrip();
+}
+
+function showLogin(){ app.classList.remove('visible'); loginScreen.classList.remove('hidden'); }
+
+if(sessionStorage.getItem('dare_auth')==='1') showDash();
+
+document.getElementById('login-btn').addEventListener('click',()=>{
+  const e = document.getElementById('email').value.trim().toLowerCase();
+  const p = document.getElementById('pw').value;
+  if(e==='client@dare.ae'&&p==='dare2026'){ sessionStorage.setItem('dare_auth','1'); loginError.classList.remove('visible'); showDash(); }
+  else { loginError.classList.add('visible'); }
+});
+document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-btn').click(); });
+document.getElementById('logout-btn').addEventListener('click',()=>{ sessionStorage.removeItem('dare_auth'); showLogin(); document.getElementById('profile-panel').classList.remove('open'); });
+
+/* ═══ WEEK STRIP ═══ */
+function buildWeekStrip(){
+  const strip = document.getElementById('week-strip');
+  strip.innerHTML='';
+  ACTIVE_WEEK.forEach((d,i)=>{
+    const c = document.createElement('div');
+    c.className='day-chip'+(i===currentDay?' chip-active':'')+(d.past?' chip-past':'');
+    c.innerHTML=`<span class="chip-label">${d.label}</span><span class="chip-dot dot-${d.type}"></span>`;
+    c.addEventListener('click',()=>goToDay(i));
+    strip.appendChild(c);
+  });
+}
+
+/* ═══ NAV ═══ */
+function goToDay(idx){
+  if(idx===currentDay) return;
+  const plans=document.getElementById('day-plans');
+  const dir=idx>currentDay?1:-1;
+  plans.style.transition='opacity .18s ease,transform .18s ease';
+  plans.style.opacity='0';
+  plans.style.transform=`translateX(${dir*28}px)`;
+  setTimeout(()=>{
+    currentDay=idx; renderDay(currentDay); buildWeekStrip();
+    plans.style.transition='none'; plans.style.transform=`translateX(${-dir*24}px)`; plans.style.opacity='0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      plans.style.transition='opacity .22s ease,transform .26s ease';
+      plans.style.opacity='1'; plans.style.transform='translateX(0)';
+    }));
+  },190);
+}
+
+document.getElementById('prev-day').addEventListener('click',()=>{ if(currentDay>0) goToDay(currentDay-1); });
+document.getElementById('next-day').addEventListener('click',()=>{ if(currentDay<6) goToDay(currentDay+1); });
+
+/* ═══ RENDER ═══ */
+function renderDay(idx){
+  const d=ACTIVE_WEEK[idx];
+  document.getElementById('prev-day').disabled=idx===0;
+  document.getElementById('next-day').disabled=idx===6;
+  const badge=document.getElementById('day-badge');
+  badge.textContent=d.type==='strength'?'STRENGTH · '+d.training.session:d.type==='cardio'?'CARDIO · '+d.training.session:'ACTIVE REST';
+  badge.className='day-type-badge badge-'+d.type;
+  document.getElementById('day-name').textContent=d.fullDate+(d.today?' · TODAY':'');
+  document.getElementById('training-content').innerHTML=renderTraining(d.training,d.type);
+  document.getElementById('nutrition-content').innerHTML=renderNutrition(d.nutrition);
+  setupAccordions();
+}
+
+function renderTraining(t,type){
+  const pc='pill-'+type;
+  let h=`<div class="session-pill ${pc}"><span class="pill-dot"></span>${t.session}</div>`;
+  if(type==='rest'){
+    h+='<div class="act-list">';
+    t.activities.forEach(a=>{
+      h+=`<div class="act-item"><span class="act-icon">◆</span><div><div class="act-name">${a.name}</div><div class="act-detail">${a.detail}</div></div></div>`;
+    });
+    h+='</div>';
+  } else {
+    h+='<div class="ex-list">';
+    t.items.forEach(ex=>{
+      const bc=(type==='cardio'||ex.gold)?'ex-badge gold':'ex-badge';
+      h+=`<div class="ex-item"><div><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail}</div></div><span class="${bc}">${ex.badge}</span></div>`;
+    });
+    h+='</div>';
+  }
+  const nc=`note-${t.noteType}`;
+  h+=`<div class="expert-note"><div class="note-inner ${nc}"><strong>Erika's note:</strong> ${t.note}</div></div>`;
+  return h;
+}
+
+function renderNutrition(n){
+  const pP=Math.round(n.protein*4/n.kcal*100);
+  const cP=Math.round(n.carbs*4/n.kcal*100);
+  const fP=Math.round(n.fat*9/n.kcal*100);
+  let h=`<div class="kcal-row"><span class="kcal-num">${n.kcal.toLocaleString()}</span><span class="kcal-label">kcal target</span></div>
+    <div class="macro-bars">
+      <div class="macro-row"><span class="macro-name">Protein</span><div class="macro-track"><div class="macro-fill" style="width:${pP}%;background:linear-gradient(90deg,#a6c85e,#8fb85a)"></div></div><span class="macro-g">${n.protein}g</span></div>
+      <div class="macro-row"><span class="macro-name">Carbs</span><div class="macro-track"><div class="macro-fill" style="width:${cP}%;background:linear-gradient(90deg,#c9a24a,#b8922a)"></div></div><span class="macro-g">${n.carbs}g</span></div>
+      <div class="macro-row"><span class="macro-name">Fat</span><div class="macro-track"><div class="macro-fill" style="width:${fP}%;background:linear-gradient(90deg,rgba(217,212,200,.7),rgba(180,175,160,.6))"></div></div><span class="macro-g">${n.fat}g</span></div>
+    </div>
+    <hr class="divider">
+    <div class="meal-list">`;
+  n.meals.forEach(m=>{
+    const steps=m.steps.map(s=>`<li>${s}</li>`).join('');
+    h+=`<div class="meal-item">
+      <div class="meal-header">
+        <span class="meal-time">${m.time}</span>
+        <div class="meal-body"><div class="meal-name">${m.name}</div><div class="meal-desc">${m.desc}</div></div>
+        <div class="meal-right"><span class="meal-kcal">${m.kcal} kcal</span><span class="meal-toggle">+</span></div>
+      </div>
+      <div class="meal-steps"><ol>${steps}</ol></div>
+    </div>`;
+  });
+  h+=`</div><div class="expert-note"><div class="note-inner note-nutrition"><strong>Daniel's note:</strong> ${n.note}</div></div>`;
+  return h;
+}
+
+function setupAccordions(){
+  document.querySelectorAll('.meal-header').forEach(header=>{
+    header.addEventListener('click',()=>{
+      const item=header.closest('.meal-item');
+      item.classList.toggle('open');
+    });
+  });
+}
+
+/* ═══ PROFILE PANEL ═══ */
+const profilePanel=document.getElementById('profile-panel');
+document.getElementById('profile-btn').addEventListener('click',()=>{ profilePanel.classList.add('open'); if(!chartsInit){ initProfileCharts(); chartsInit=true; } });
+document.getElementById('close-profile').addEventListener('click',()=>profilePanel.classList.remove('open'));
+
+/* ═══ PROFILE CHARTS ═══ */
+function initProfileCharts(){
+  if(typeof Chart==='undefined') return;
+  Chart.defaults.color='rgba(244,241,232,.42)';
+  Chart.defaults.font.family="'Manrope',system-ui,sans-serif";
+  Chart.defaults.font.size=11;
+  const tt={backgroundColor:'rgba(5,5,7,.94)',borderColor:'rgba(244,241,232,.12)',borderWidth:1,padding:{x:14,y:10},titleColor:'rgba(244,241,232,.48)',bodyColor:'rgba(244,241,232,.88)',cornerRadius:10};
+  const wks=['W0','W2','W4','W6','W8','W10','W12'];
+
+  /* 12-week progress chart */
+  new Chart(document.getElementById('progressChart'),{
+    type:'line',
+    data:{
+      labels:wks,
+      datasets:[
+        {label:'Weight (kg)',data:[88.0,87.0,85.8,84.2,82.8,null,null],borderColor:'rgba(201,162,74,.92)',backgroundColor:'rgba(201,162,74,.07)',tension:.42,fill:true,spanGaps:false,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'rgba(201,162,74,.92)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:2,yAxisID:'yW'},
+        {label:'Weight projection',data:[null,null,null,null,82.8,81.5,80.2],borderColor:'rgba(201,162,74,.4)',borderDash:[5,5],borderWidth:1.5,tension:.42,fill:false,spanGaps:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'rgba(201,162,74,.4)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:1,yAxisID:'yW',showLine:true},
+        {label:'Body Fat %',data:[22.4,21.6,20.7,19.8,18.8,null,null],borderColor:'rgba(166,200,94,.92)',backgroundColor:'rgba(166,200,94,.06)',tension:.42,fill:true,spanGaps:false,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'rgba(166,200,94,.92)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:2,yAxisID:'yBF'},
+        {label:'BF% projection',data:[null,null,null,null,18.8,17.8,16.9],borderColor:'rgba(166,200,94,.38)',borderDash:[5,5],borderWidth:1.5,tension:.42,fill:false,spanGaps:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'rgba(166,200,94,.38)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:1,yAxisID:'yBF',showLine:true},
+      ],
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      animation:{duration:1200,easing:'easeInOutQuart'},
+      plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>{if(ctx.dataset.label.includes('projection')) return null; return `  ${ctx.dataset.label}: ${ctx.raw}`;}}}},
+      scales:{
+        x:{grid:{color:'rgba(244,241,232,.04)'},border:{display:false},ticks:{color:'rgba(244,241,232,.35)',font:{size:10}}},
+        yW:{type:'linear',position:'left',min:79,max:90,grid:{color:'rgba(244,241,232,.05)'},border:{display:false},ticks:{color:'rgba(201,162,74,.65)',callback:v=>v+' kg',font:{size:10}}},
+        yBF:{type:'linear',position:'right',min:15,max:24,grid:{display:false},border:{display:false},ticks:{color:'rgba(166,200,94,.65)',callback:v=>v+'%',font:{size:10}}},
+      },
+    },
+  });
+
+  /* Body composition donut */
+  new Chart(document.getElementById('donutChart'),{
+    type:'doughnut',
+    data:{
+      labels:['Muscle Mass','Body Fat','Water','Bone & Other'],
+      datasets:[{
+        data:[42.2,18.8,29.0,10.0],
+        backgroundColor:['rgba(166,200,94,.72)','rgba(201,162,74,.68)','rgba(100,160,220,.58)','rgba(180,170,155,.46)'],
+        borderColor:['rgba(166,200,94,.9)','rgba(201,162,74,.88)','rgba(100,160,220,.75)','rgba(180,170,155,.62)'],
+        borderWidth:1.5,hoverOffset:10,
+      }],
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'70%',
+      animation:{duration:1200,easing:'easeInOutQuart'},
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tt,callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.raw}%`}},
+      },
+    },
+  });
+}
+
+})();
+</script>
+</body>
+</html>
