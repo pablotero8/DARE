@@ -263,29 +263,41 @@ const isDev = location.hostname === 'localhost' || location.hostname === '127.0.
 const BASE = isDev ? 'http://localhost:3001' : API;
 
 // ── Auth ──────────────────────────────────────────────────────
-function token(){ return sessionStorage.getItem('dare_token') }
-function coach(){ try{ return JSON.parse(sessionStorage.getItem('dare_client')||'null') }catch{ return null } }
+function storedToken(){ return sessionStorage.getItem('dare_token') }
 
-function guard(){
-  const c = coach();
-  if(!c || !token() || c.role !== 'coach'){ location.href = '/client.html'; }
-  return c;
+function logout(){ sessionStorage.clear(); location.href = BASE + '/client.html?logout'; }
+
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+// Pick up token from URL (?t=...) for cross-domain redirects, then clean URL
+const _urlToken = new URLSearchParams(location.search).get('t');
+if(_urlToken){ sessionStorage.setItem('dare_token', _urlToken); history.replaceState(null,'','/coach.html'); }
+
+let me = null; // set after async init
+
+async function initAuth(){
+  const t = storedToken();
+  if(!t){ location.href = BASE + '/client.html'; return false; }
+  try{
+    const r = await fetch(`${BASE}/api/auth/me`, { headers:{ Authorization:`Bearer ${t}` } });
+    if(!r.ok){ sessionStorage.clear(); location.href = BASE + '/client.html'; return false; }
+    const user = await r.json();
+    if(user.role !== 'coach'){ location.href = BASE + '/client.html'; return false; }
+    sessionStorage.setItem('dare_client', JSON.stringify(user));
+    me = user;
+    return true;
+  }catch{ location.href = BASE + '/client.html'; return false; }
 }
 
-const me = guard();
-
-// ── Init UI ───────────────────────────────────────────────────
-const initials = (me.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-document.getElementById('coach-avatar').textContent = initials;
-document.getElementById('coach-name').textContent   = me.name;
-document.getElementById('coach-role').textContent   = me.specialty === 'training' ? 'Entrenamiento' : 'Nutrición';
-document.getElementById('welcome-name').textContent = `Hola, ${me.name.split(' ')[0]}`;
-
-document.getElementById('logout-btn').addEventListener('click', () => {
-  sessionStorage.removeItem('dare_token');
-  sessionStorage.removeItem('dare_client');
-  location.href = '/client.html';
-});
+// ── Init UI (runs after auth) ────────────────────────────────
+let initials = '';
+function initUI(){
+  initials = (me.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('coach-avatar').textContent = initials;
+  document.getElementById('coach-name').textContent   = me.name;
+  document.getElementById('coach-role').textContent   = me.specialty === 'training' ? 'Entrenamiento' : 'Nutrición';
+  document.getElementById('welcome-name').textContent = `Hola, ${me.name.split(' ')[0]}`;
+}
 
 // ── Client list ───────────────────────────────────────────────
 let allClients = [];
@@ -293,7 +305,7 @@ let activeClient = null;
 
 async function loadClients(){
   try{
-    const r = await fetch(`${BASE}/api/coach/clients`, { headers:{ Authorization:`Bearer ${token()}` } });
+    const r = await fetch(`${BASE}/api/coach/clients`, { headers:{ Authorization:`Bearer ${storedToken()}` } });
     if(!r.ok) return;
     allClients = await r.json();
     renderClients(allClients);
@@ -356,8 +368,6 @@ document.getElementById('new-client-btn').addEventListener('click', () => {
   document.getElementById('chat-input').focus();
   renderClients(filterClients(''));
 });
-
-loadClients();
 
 // ── Chat ──────────────────────────────────────────────────────
 let history = []; // [{role, content}]
@@ -449,7 +459,7 @@ async function send(){
   try{
     const r = await fetch(`${BASE}/api/coach/chat`, {
       method:'POST',
-      headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token()}` },
+      headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${storedToken()}` },
       body: JSON.stringify({ messages: history }),
     });
     typing.remove();
@@ -480,6 +490,14 @@ inputEl.addEventListener('input', () => {
   inputEl.style.height = 'auto';
   inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
 });
+
+async function main(){
+  const ok = await initAuth();
+  if(!ok) return;
+  initUI();
+  loadClients();
+}
+main();
 
 })();
 </script>
