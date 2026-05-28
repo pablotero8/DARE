@@ -258,9 +258,9 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 <script>
 (function(){
 
-const API = 'https://web-production-df21c.up.railway.app';
-const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-const BASE = isDev ? 'http://localhost:3001' : API;
+const BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3001'
+  : 'https://web-production-df21c.up.railway.app';
 
 // ── Auth ──────────────────────────────────────────────────────
 function storedToken(){ return sessionStorage.getItem('dare_token') }
@@ -271,7 +271,7 @@ document.getElementById('logout-btn').addEventListener('click', logout);
 
 // Pick up token from URL (?t=...) for cross-domain redirects, then clean URL
 const _urlToken = new URLSearchParams(location.search).get('t');
-if(_urlToken){ sessionStorage.setItem('dare_token', _urlToken); history.replaceState(null,'','/coach.html'); }
+if(_urlToken){ sessionStorage.setItem('dare_token', _urlToken); window.history.replaceState(null,'','/coach.html'); }
 
 let me = null; // set after async init
 
@@ -370,7 +370,7 @@ document.getElementById('new-client-btn').addEventListener('click', () => {
 });
 
 // ── Chat ──────────────────────────────────────────────────────
-let history = []; // [{role, content}]
+let chatHistory = [];
 
 const messagesEl = document.getElementById('messages');
 const inputEl    = document.getElementById('chat-input');
@@ -452,7 +452,7 @@ async function send(){
   const fullText = text + contextNote;
 
   appendMsg('user', text);
-  history.push({ role:'user', content: fullText });
+  chatHistory.push({ role:'user', content: fullText });
 
   let typing = null;
   try{
@@ -460,7 +460,7 @@ async function send(){
     const r = await fetch(`${BASE}/api/coach/chat`, {
       method:'POST',
       headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${storedToken()}` },
-      body: JSON.stringify({ messages: history }),
+      body: JSON.stringify({ messages: chatHistory }),
     });
     typing.remove();
 
@@ -469,11 +469,11 @@ async function send(){
     const reply = data.reply || '…';
 
     appendMsg('assistant', reply, data.action);
-    history.push({ role:'assistant', content: reply });
+    chatHistory.push({ role:'assistant', content: reply });
   }catch(err){
     if(typing) typing.remove();
     appendMsg('assistant','No se pudo conectar con el servidor.');
-    history.pop();
+    chatHistory.pop();
   }finally{
     sendEl.disabled = false;
     inputEl.focus();
