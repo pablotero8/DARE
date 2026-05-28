@@ -468,9 +468,10 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 <script>
 (function(){
 
-// Bot API URL — same origin when served from Railway, localhost in dev
-var isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-window.DARE_API_URL = isDev ? 'http://localhost:3001' : window.location.origin;
+// Bot API URL — dev uses localhost, everything else hits Railway directly
+var _host = window.location.hostname;
+var isDev  = _host === 'localhost' || _host === '127.0.0.1' || window.location.protocol === 'file:';
+window.DARE_API_URL = isDev ? 'http://localhost:3001' : 'https://web-production-df21c.up.railway.app';
 /* ═══ DYNAMIC PLAN LOADING ═══
  * Reads ?client=<clientId> from the URL.
  * Tries to fetch the plan from the bot API (window.DARE_API_URL).
