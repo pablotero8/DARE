@@ -19,9 +19,9 @@ export function savePlan(toolName, input) {
     plan.nutritionAt = new Date().toISOString();
   }
 
-  // Merge into client-portal format when both halves are ready
+  // Always build plan.week so partial saves are visible in the client portal
+  plan.week = buildWeek(weekOf, plan.training, plan.nutrition);
   if (plan.trainingReady && plan.nutritionReady) {
-    plan.week = mergeWeek(plan.training, plan.nutrition);
     plan.publishedAt = new Date().toISOString();
   }
 
@@ -89,34 +89,44 @@ export function getPlanByWeek(clientId, weekOf) {
 export function listPlanWeeks(clientId) {
   return db.prepare(
     `SELECT week_of AS weekOf FROM plans
-     WHERE client_id = ? AND training_ready = 1 AND nutrition_ready = 1
+     WHERE client_id = ? AND (training_ready = 1 OR nutrition_ready = 1)
      ORDER BY week_of ASC`
   ).all(clientId);
 }
 
-// ── Merge training + nutrition arrays → client.html format ────
+// ── Build week array from whatever halves are available ───────
 
-function mergeWeek(trainingDays, nutritionDays) {
-  return trainingDays.map((t, i) => {
-    const n = nutritionDays[i];
+const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+function weekdayFull(weekOf, offset) {
+  const d = new Date(weekOf + 'T12:00:00Z');
+  d.setDate(d.getDate() + offset);
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function buildWeek(weekOf, trainingDays, nutritionDays) {
+  const len = (trainingDays || nutritionDays || []).length || 7;
+  return Array.from({ length: len }, (_, i) => {
+    const t = trainingDays?.[i];
+    const n = nutritionDays?.[i];
     return {
-      label:    t.label,
-      fullDate: t.fullDate,
-      type:     t.type,
+      label:    t?.label || n?.label || DAY_LABELS[i],
+      fullDate: t?.fullDate || weekdayFull(weekOf, i),
+      type:     t?.type || 'rest',
       training: {
-        session:    t.session,
-        ...(t.items      ? { items:      t.items      } : {}),
-        ...(t.activities ? { activities: t.activities } : {}),
-        note:     t.note,
-        noteType: t.noteType,
+        session:  t?.session || 'Plan pendiente',
+        ...(t?.items      ? { items:      t.items      } : {}),
+        ...(t?.activities ? { activities: t.activities } : {}),
+        note:     t?.note    || '',
+        noteType: t?.noteType || 'rest',
       },
       nutrition: {
-        kcal:    n.kcal,
-        protein: n.protein,
-        carbs:   n.carbs,
-        fat:     n.fat,
-        meals:   n.meals,
-        note:    n.note,
+        kcal:    n?.kcal    || 0,
+        protein: n?.protein || 0,
+        carbs:   n?.carbs   || 0,
+        fat:     n?.fat     || 0,
+        meals:   n?.meals   || [],
+        note:    n?.note    || '',
       },
     };
   });

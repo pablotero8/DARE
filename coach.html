@@ -388,7 +388,7 @@ function appendMsg(role, content, action){
   av.className = 'msg-avatar';
   av.textContent = role === 'user'
     ? initials
-    : (me.specialty === 'training' ? 'E' : 'D');
+    : (me?.specialty === 'training' ? 'E' : 'D');
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
@@ -431,7 +431,7 @@ function showTyping(){
   const t = document.createElement('div');
   t.className = 'msg assistant';
   t.id = 'typing-indicator';
-  t.innerHTML = `<div class="msg-avatar">${me.specialty==='training'?'E':'D'}</div>
+  t.innerHTML = `<div class="msg-avatar">${me?.specialty==='training'?'E':'D'}</div>
     <div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
   messagesEl.appendChild(t);
   scrollBottom();
@@ -440,7 +440,7 @@ function showTyping(){
 
 async function send(){
   const text = inputEl.value.trim();
-  if(!text) return;
+  if(!text || !me) return;
 
   inputEl.value = '';
   inputEl.style.height = 'auto';
@@ -454,9 +454,9 @@ async function send(){
   appendMsg('user', text);
   history.push({ role:'user', content: fullText });
 
-  const typing = showTyping();
-
+  let typing = null;
   try{
+    typing = showTyping();
     const r = await fetch(`${BASE}/api/coach/chat`, {
       method:'POST',
       headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${storedToken()}` },
@@ -471,7 +471,7 @@ async function send(){
     appendMsg('assistant', reply, data.action);
     history.push({ role:'assistant', content: reply });
   }catch(err){
-    typing.remove();
+    if(typing) typing.remove();
     appendMsg('assistant','No se pudo conectar con el servidor.');
     history.pop();
   }finally{

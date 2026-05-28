@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan, savePlan } from './planner.js';
 import {
   verifyClientPassword, getClientById, getClientByEmail,
-  listClients, createClient, deleteClient, resetClientPassword,
+  listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession } from './auth.js';
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL } from './tools.js';
@@ -156,11 +156,10 @@ INSTRUCCIONES:
 - Para crear un cliente usa create_client. Necesitas: nombre, email, objetivo y semanas totales.
 - Responde en español. Tono profesional y cercano. Respuestas concisas.`;
 
-  const tools = [
-    { type: 'function', function: { name: TRAINING_TOOL.name,    description: TRAINING_TOOL.description,    parameters: TRAINING_TOOL.input_schema    } },
-    { type: 'function', function: { name: NUTRITION_TOOL.name,   description: NUTRITION_TOOL.description,   parameters: NUTRITION_TOOL.input_schema   } },
-    { type: 'function', function: { name: CREATE_CLIENT_TOOL.name, description: CREATE_CLIENT_TOOL.description, parameters: CREATE_CLIENT_TOOL.input_schema } },
-  ];
+  const createClientFn = { type: 'function', function: { name: CREATE_CLIENT_TOOL.name, description: CREATE_CLIENT_TOOL.description, parameters: CREATE_CLIENT_TOOL.input_schema } };
+  const tools = coach.specialty === 'training'
+    ? [{ type: 'function', function: { name: TRAINING_TOOL.name, description: TRAINING_TOOL.description, parameters: TRAINING_TOOL.input_schema } }, createClientFn]
+    : [{ type: 'function', function: { name: NUTRITION_TOOL.name, description: NUTRITION_TOOL.description, parameters: NUTRITION_TOOL.input_schema } }, createClientFn];
 
   try {
     const openaiMessages = [{ role: 'system', content: systemPrompt }, ...messages];
@@ -240,7 +239,14 @@ async function seedCoaches() {
     { name: 'Dani Otero',  email: 'daniotero15@gmail.com', password: process.env.DANI_PASSWORD  || 'dani2026',  specialty: 'nutrition' },
   ];
   for (const c of coaches) {
-    if (getClientByEmail(c.email)) continue;
+    const existing = getClientByEmail(c.email);
+    if (existing) {
+      if (!existing.specialty) {
+        updateClient(existing.id, { specialty: c.specialty });
+        console.log(`[seed] Patched specialty for ${c.email} → ${c.specialty}`);
+      }
+      continue;
+    }
     await createClient({ ...c, goal: 'Coach', totalWeeks: 99, role: 'coach' });
     console.log(`[seed] Coach created — ${c.email}`);
   }

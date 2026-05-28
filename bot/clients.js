@@ -102,7 +102,7 @@ export function deleteClient(id) {
 }
 
 export function updateClient(id, fields) {
-  const allowed = ['name', 'email', 'phone', 'goal', 'current_week', 'total_weeks', 'height_cm', 'weight_kg', 'body_fat_pct', 'lean_mass_kg', 'notes'];
+  const allowed = ['name', 'email', 'phone', 'goal', 'current_week', 'total_weeks', 'height_cm', 'weight_kg', 'body_fat_pct', 'lean_mass_kg', 'notes', 'specialty', 'role'];
   const updates = [];
   const values = [];
   for (const [k, v] of Object.entries(fields)) {
