@@ -14,8 +14,8 @@ mkdirSync(STATE_DIR, { recursive: true });
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // ── Users / roles ─────────────────────────────────────────────
-// Erika  = admin · specialty: training  (creates clients, generates training plans)
-// Daniel = admin · specialty: both      (creates clients, generates training + nutrition plans)
+// Erika = admin · specialty: training   (creates clients, generates training plans)
+// Dani  = admin · specialty: nutrition  (creates clients, generates nutrition plans only)
 
 function getUsers() {
   return {
@@ -23,7 +23,7 @@ function getUsers() {
       ? { [process.env.ERIKA_PHONE]: { name: 'Erika', role: 'admin', specialty: 'training' } }
       : {}),
     ...(process.env.DANIEL_PHONE
-      ? { [process.env.DANIEL_PHONE]: { name: 'Daniel', role: 'admin', specialty: 'both' } }
+      ? { [process.env.DANIEL_PHONE]: { name: 'Dani',  role: 'admin', specialty: 'nutrition' } }
       : {}),
   };
 }
@@ -76,7 +76,7 @@ function buildSystemPrompt(user, planContext = null) {
 
   const teamLine =
     user.name === 'Erika'
-      ? 'Tu compañero es Daniel (nutrición, entrenamiento y co-administrador del sistema).'
+      ? 'Tu compañero es Dani (nutrición y co-administrador del sistema).'
       : 'Tu compañera es Erika (entrenamiento y co-administradora del sistema).';
 
   const common = `
@@ -87,7 +87,7 @@ ${clientList}
 
 EQUIPO DARE:
 - Erika Silva — Performance & Biomechanics Lead (admin)
-- Daniel Otero — Nutrition Science & Culinary Execution
+- Dani Otero — Nutrition Science & Culinary Execution (admin)
 ${teamLine}
 
 ESTILO:
@@ -102,7 +102,7 @@ Cuando el usuario dice "plan para [cliente]":
 2. Haz UNA sola pregunta con todos los datos que necesitas (usar bullets).
 3. Cuando recibas la respuesta, escribe "[LISTO PARA GENERAR]" — el sistema genera automáticamente.
 4. Confirma el resultado o pide ajustes.
-5. Listo. Te avisaré cuando ${user.name === 'Erika' ? 'Daniel' : 'Erika'} suba su parte.
+5. Listo. Te avisaré cuando ${user.name === 'Erika' ? 'Dani' : 'Erika'} suba su parte.
 `.trim();
 
   // ── Role-specific ─────────────────────────────────────────
@@ -116,8 +116,8 @@ GESTIÓN DE CLIENTES (tú y tu compañero(a) podéis hacerlo):
 
   // Erika (admin · specialty: training)
   if (user.role === 'admin' && user.name === 'Erika') {
-    return `Eres Erika, Performance & Biomechanics Lead en DARE Dubai. Co-administras el sistema junto con Daniel.
-Saluda al usuario por su nombre cuando proceda.
+    return `Eres Erika, Performance & Biomechanics Lead en DARE Dubai. Co-administras el sistema junto con Dani.
+Saluda siempre a Erika por su nombre cuando le escribas.
 
 ${common}
 
@@ -138,28 +138,9 @@ ${adminCommands}
 NO preguntes sobre "formato" o "estructura" — tú solo recoge info, el sistema genera.`;
   }
 
-  // Daniel (admin · specialty: both — training + nutrition)
-  const isTraining = planContext === 'training';
-
-  if (isTraining) {
-    return `Eres Daniel Otero, Nutrition Science & Culinary Execution Lead en DARE Dubai. Hoy estás cubriendo el plan de entrenamiento. Co-administras el sistema junto con Erika.
-
-${common}
-
-PASO 2 — Pregunta única para PLAN DE ENTRENAMIENTO:
-"¿Plan de entrenamiento para [cliente] semana ${nextMon}? Dame:
-• Días de descanso (ej: Wed, Sun)
-• Tipo cada día (ej: Mon-Strength, Tue-Cardio, Wed-Rest)
-• Consideraciones especiales (lesiones, viajes, energía)"
-
-GENERACIÓN:
-Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" — el sistema generará 7 días con ejercicios, badges (series/reps), notas por día.
-${adminCommands}
-
-NO preguntes sobre "formato" — recoge info, el sistema genera.`;
-  }
-
-  return `Eres Daniel Otero, Nutrition Science & Culinary Execution Lead en DARE Dubai. Co-administras el sistema junto con Erika.
+  // Dani (admin · specialty: nutrition only)
+  return `Eres Dani Otero, Nutrition Science & Culinary Execution Lead en DARE Dubai. Co-administras el sistema junto con Erika.
+Saluda siempre a Dani por su nombre cuando le escribas.
 
 ${common}
 
@@ -172,7 +153,7 @@ PASO 2 — Pregunta única para PLAN DE NUTRICIÓN:
 • Consideraciones (viajes, digestión, cenas sociales...)"
 
 GENERACIÓN:
-Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" — el sistema generará 7 días × 4-5 comidas con recetas, macros y pasos. Cada día llevará una nota tuya (Daniel) con la lógica nutricional.
+Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" — el sistema generará 7 días × 4-5 comidas con recetas, macros y pasos. Cada día llevará una nota tuya (Dani) con la lógica nutricional.
 
 Si el plan tiene una contraparte de entrenamiento ya guardada, menciónalo: "Erika ya subió la parte de entreno — vamos a cerrar la semana."
 ${adminCommands}
@@ -180,7 +161,7 @@ ${adminCommands}
 NO preguntes sobre "formato" — recoge info, el sistema genera.`;
 }
 
-// ── Admin commands (Erika only) ───────────────────────────────
+// ── Admin commands (Erika + Dani) ────────────────────────────
 
 async function handleAdminCommand(from, body, state) {
   const text = body.trim();
@@ -364,14 +345,14 @@ async function broadcastPublishedPlan(plan, clientId) {
 
   const weekOf = plan.weekOf;
 
-  const msgErika = `✅ Plan semana ${weekOf} de ${client.name} PUBLICADO en el portal. Entreno + nutrición ya están disponibles para el cliente.`;
-  const msgDaniel = `✅ Plan semana ${weekOf} de ${client.name} PUBLICADO. Tu nutrición + el entreno de Erika ya están live en el portal.`;
-  const msgAdmin = `📡 [DARE] Plan ${client.name} (${weekOf}) publicado en el portal — entreno + nutrición completos.`;
-  const msgClient = `Hola ${client.name.split(' ')[0]}, tu plan semanal de DARE para la semana del ${weekOf} ya está disponible en el portal. Erika y Daniel lo han preparado para ti — entra y revísalo cuando quieras.`;
+  const msgErika  = `Erika, el plan de ${client.name} para la semana ${weekOf} está PUBLICADO ✅ Entreno + nutrición disponibles en el portal.`;
+  const msgDani   = `Dani, el plan de ${client.name} para la semana ${weekOf} está PUBLICADO ✅ Tu nutrición + el entreno de Erika ya están live en el portal.`;
+  const msgAdmin  = `📡 [DARE] Plan ${client.name} (${weekOf}) publicado — entreno + nutrición completos.`;
+  const msgClient = `Hola ${client.name.split(' ')[0]}, tu plan semanal de DARE para la semana del ${weekOf} ya está disponible en el portal. Erika y Dani lo han preparado para ti — entra y revísalo cuando quieras.`;
 
   const recipients = [];
-  if (process.env.ERIKA_PHONE) recipients.push({ phone: process.env.ERIKA_PHONE, body: msgErika });
-  if (process.env.DANIEL_PHONE) recipients.push({ phone: process.env.DANIEL_PHONE, body: msgDaniel });
+  if (process.env.ERIKA_PHONE)  recipients.push({ phone: process.env.ERIKA_PHONE,  body: msgErika });
+  if (process.env.DANIEL_PHONE) recipients.push({ phone: process.env.DANIEL_PHONE, body: msgDani   });
   if (process.env.ADMIN_PHONE) recipients.push({ phone: process.env.ADMIN_PHONE, body: msgAdmin });
   if (client.phone) recipients.push({ phone: `whatsapp:${client.phone}`, body: msgClient });
 
@@ -387,7 +368,7 @@ async function broadcastPublishedPlan(plan, clientId) {
 function formatSummary(input, role, savedPlan, user) {
   const days = input.days;
   const weekOf = input.weekOf;
-  const partnerName = user.name === 'Erika' ? 'Daniel' : 'Erika';
+  const partnerName = user.name === 'Erika' ? 'Dani' : 'Erika';
 
   if (role === 'trainer') {
     const lines = days.map(d => {
@@ -467,19 +448,9 @@ export async function handleIncoming(from, body) {
     if (adminReply !== null) return adminReply;
   }
 
-  // Daniel (specialty: both) — detect plan type from message
-  if (user.role === 'admin' && user.specialty === 'both' && !state.planType) {
-    const lower = body.toLowerCase();
-    if (lower.includes('entrenamiento') || lower.includes('entreno') || lower.includes('training')) {
-      state.planType = 'training';
-    } else if (lower.includes('nutrición') || lower.includes('nutricion') || lower.includes('nutrition') || lower.includes('comida') || lower.includes('dieta')) {
-      state.planType = 'nutrition';
-    }
-  }
-
-  // Erika (specialty: training) defaults to training
-  if (user.role === 'admin' && user.specialty === 'training' && !state.planType) {
-    state.planType = 'training';
+  // Erika → training always, Dani → nutrition always
+  if (!state.planType) {
+    state.planType = user.specialty; // 'training' | 'nutrition'
   }
 
   state.messages.push({ role: 'user', content: body });
