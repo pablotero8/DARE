@@ -9,6 +9,7 @@ import {
   createClient,
   deleteClient,
   resetClientPassword,
+  getClientByEmail,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession, isAdmin } from './auth.js';
 
@@ -184,8 +185,38 @@ app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOStri
 
 // ── Start ─────────────────────────────────────────────────────
 
+// ── Auto-seed demo client on first run ────────────────────────
+// Railway has an ephemeral filesystem — SQLite is reset on every deploy.
+// This ensures the demo user always exists when the server starts.
+
+async function seedDemoClient() {
+  try {
+    const existing = getClientByEmail('client@dare.ae');
+    if (existing) {
+      console.log('[seed] Demo client already exists:', existing.email);
+      return;
+    }
+    await createClient({
+      name:         'Alex Hammond',
+      email:        'client@dare.ae',
+      password:     'dare2026',
+      goal:         'Fat-Loss Protocol',
+      currentWeek:  8,
+      totalWeeks:   12,
+      height:       181,
+      weight:       82.8,
+      bodyFat:      18.8,
+      lean:         67.4,
+      notes:        'Entrena en gym privado. Sin restricciones alimentarias.',
+    });
+    console.log('[seed] Demo client created — client@dare.ae / dare2026');
+  } catch (err) {
+    console.error('[seed] Error seeding demo client:', err.message);
+  }
+}
+
 const PORT = process.env.PORT ?? 3001;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`
   ╔══════════════════════════════════════╗
   ║   DARE Bot Server  :${PORT}             ║
@@ -195,4 +226,5 @@ app.listen(PORT, () => {
   ║   Admin:   /api/clients              ║
   ╚══════════════════════════════════════╝
   `);
+  await seedDemoClient();
 });
