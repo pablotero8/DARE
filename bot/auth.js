@@ -58,7 +58,7 @@ export function revokeSession(token) {
 export function getRoleByPhone(phone) {
   if (!phone) return null;
   if (phone === process.env.ERIKA_PHONE) return 'admin'; // Erika = admin
-  if (phone === process.env.DANIEL_PHONE) return 'both'; // Daniel can do both plans
+  if (phone === process.env.DANIEL_PHONE) return 'admin'; // Daniel = also admin
   return null;
 }
 
