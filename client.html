@@ -947,7 +947,16 @@ function showNextWeekBanner(){
   newDismiss.addEventListener('click',hideBanner);
 }
 
-if(getAuthToken() && getAuthClient()) showDash();
+// Auto-login on page load — redirect coaches, show dash for clients
+(function(){
+  const t = getAuthToken(), c = getAuthClient();
+  if(!t || !c) return; // not logged in — show login form
+  if(c.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html'; return; }
+  // Verify token is still valid before showing dash
+  fetch(window.DARE_API_URL + '/api/auth/me', { headers:{ Authorization:'Bearer '+t } })
+    .then(r => r.ok ? showDash() : (sessionStorage.clear(), null))
+    .catch(() => null);
+})();
 
 document.getElementById('login-btn').addEventListener('click', async ()=>{
   const btn = document.getElementById('login-btn');
@@ -965,7 +974,7 @@ document.getElementById('login-btn').addEventListener('click', async ()=>{
   sessionStorage.setItem('dare_token', result.token);
   sessionStorage.setItem('dare_client', JSON.stringify(result.client));
   loginError.classList.remove('visible');
-  if(result.client.role === 'coach'){ window.location.href = '/coach.html'; return; }
+  if(result.client.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html'; return; }
   showDash();
 });
 document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-btn').click(); });
