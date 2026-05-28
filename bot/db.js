@@ -4,7 +4,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dir, 'data');
+const DATA_DIR = process.env.DATA_DIR || join(__dir, 'data');
 mkdirSync(DATA_DIR, { recursive: true });
 
 const DB_PATH = join(DATA_DIR, 'dare.db');
