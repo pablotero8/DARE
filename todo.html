@@ -618,25 +618,24 @@ svg { width: 100%; height: 100%; }
 </head>
 <body>
 
-    <header class="header-main">
-        <div class="logo">DARE</div>
-        <button class="menu-toggle" id="menu-btn">
-            <span class="line"></span>
-            <span class="line"></span>
-        </button>
+        <header class="header-main">
+        <a href="index.html" class="logo">DARE</a>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html" class="header-nav-link">Home</a>
+            <a href="plans.html" class="header-nav-link">Plans</a>
+            <a href="team.html" class="header-nav-link">The Team</a>
+            <a href="faq.html" class="header-nav-link">FAQ</a>
+        </nav>
+        <a href="client.html" class="header-user-btn" aria-label="Client area">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+            </svg>
+        </a>
     </header>
 
-    <div class="full-menu" id="full-menu">
-        <nav class="menu-nav">
-            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
-            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
-            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
-            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
-        </nav>
-        <div class="menu-footer">
-            <p>Elevating your lifestyle through science and prep.</p>
-        </div>
-    </div>
+
+
 
     <main>
         

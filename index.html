@@ -8,31 +8,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="stylesheet" href="style.css">
+    <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('dare-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) { document.documentElement.setAttribute('data-theme','dark'); }
+    })();
+    </script>
 </head>
 <body>
 
-    <header class="header-main">
-        <div class="logo">DARE</div>
-        <div class="header-actions">
-            <a href="client.html" class="header-login-btn">Client Area</a>
-            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
-                <span class="line"></span>
-                <span class="line"></span>
-            </button>
+        <header class="header-main">
+        <a href="index.html" class="logo">DARE</a>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html" class="header-nav-link" aria-current="page">Home</a>
+            <a href="plans.html" class="header-nav-link">Plans</a>
+            <a href="team.html" class="header-nav-link">The Team</a>
+            <a href="faq.html" class="header-nav-link">FAQ</a>
+        </nav>
+        <div class="header-controls">
+        <button class="header-theme-btn" id="theme-toggle" aria-label="Toggle light / dark mode">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.5"/>
+                <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+                <line x1="5.6" y1="5.6" x2="7" y2="7"/><line x1="17" y1="17" x2="18.4" y2="18.4"/>
+                <line x1="18.4" y1="5.6" x2="17" y2="7"/><line x1="7" y1="17" x2="5.6" y2="18.4"/>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+
+        <a href="client.html" class="header-user-btn" aria-label="Client area">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+            </svg>
+        </a>
         </div>
     </header>
 
-    <div class="full-menu" id="full-menu">
-        <nav class="menu-nav">
-            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
-            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
-            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
-            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
-        </nav>
-        <div class="menu-footer">
-            <p>Elevating your lifestyle through science and prep.</p>
-        </div>
-    </div>
+
+
 
     <main>
         
@@ -60,8 +80,8 @@
                         </div>
 
                         <div class="p-hero-fade">
-                            <p class="p-lead">
-                                Training, nutrition and culinary execution — fully managed, quietly embedded inside your day‑to‑day life.
+                            <p class="p-lead p-lead-slogan">
+                                Take your wellness to the next level.
                             </p>
 
                             <div class="p-cta-row">
@@ -77,9 +97,105 @@
         </section>
 
         <section class="p-philosophy" id="philosophy" aria-label="DARE philosophy">
-            <div class="p-philosophy-inner">
-                <p class="p-philosophy-statement">Most programs are built<br>for the average.<br>DARE is built for<br>the exception.</p>
+            <div class="p-philosophy-text">
+                <span class="p-philosophy-outline">Most programs</span>
+                <span class="p-philosophy-outline">are built for</span>
+                <span class="p-philosophy-outline">the average.</span>
+                <span class="p-philosophy-solid">DARE is built</span>
+                <span class="p-philosophy-solid">for the</span>
+                <span class="p-philosophy-solid">exception.</span>
                 <span class="p-philosophy-sub">Dubai · Private · By application only</span>
+                <div class="p-philosophy-divider"></div>
+                <div class="p-philosophy-stats">
+                    <div class="p-philosophy-stat">
+                        <span class="p-stat-val">12–24</span>
+                        <span class="p-stat-key">week<br>programs</span>
+                    </div>
+                    <div class="p-philosophy-stat">
+                        <span class="p-stat-val">100%</span>
+                        <span class="p-stat-key">custom<br>to your body</span>
+                    </div>
+                    <div class="p-philosophy-stat">
+                        <span class="p-stat-val">2</span>
+                        <span class="p-stat-key">coaches<br>one system</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-philosophy-art">
+                <svg id="dare-chart" viewBox="0 0 500 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="areaGold" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="rgba(201,162,74,0.22)"/>
+                            <stop offset="100%" stop-color="rgba(201,162,74,0.0)"/>
+                        </linearGradient>
+                        <clipPath id="chartClip">
+                            <rect x="38" y="0" width="452" height="348"/>
+                        </clipPath>
+                    </defs>
+
+                    <!-- Faint horizontal guides -->
+                    <line x1="38" y1="260" x2="490" y2="260" stroke="rgba(201,162,74,0.055)" stroke-width="1"/>
+                    <line x1="38" y1="185" x2="490" y2="185" stroke="rgba(201,162,74,0.055)" stroke-width="1"/>
+                    <line x1="38" y1="110" x2="490" y2="110" stroke="rgba(201,162,74,0.055)" stroke-width="1"/>
+                    <line x1="38" y1="38"  x2="490" y2="38"  stroke="rgba(201,162,74,0.04)"  stroke-width="1"/>
+
+                    <!-- Axes -->
+                    <line x1="38" y1="18" x2="38" y2="340" stroke="rgba(201,162,74,0.3)" stroke-width="1.3" stroke-linecap="round"/>
+                    <line x1="28" y1="335" x2="492" y2="335" stroke="rgba(201,162,74,0.3)" stroke-width="1.3" stroke-linecap="round"/>
+
+                    <!-- Axis arrows -->
+                    <path d="M33 24 L38 15 L43 24" stroke="rgba(201,162,74,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <path d="M486 330 L494 335 L486 340" stroke="rgba(201,162,74,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+                    <!-- Y axis ticks -->
+                    <line x1="32" y1="260" x2="38" y2="260" stroke="rgba(201,162,74,0.35)" stroke-width="1"/>
+                    <line x1="32" y1="185" x2="38" y2="185" stroke="rgba(201,162,74,0.35)" stroke-width="1"/>
+                    <line x1="32" y1="110" x2="38" y2="110" stroke="rgba(201,162,74,0.35)" stroke-width="1"/>
+
+                    <!-- X axis ticks -->
+                    <line x1="170" y1="335" x2="170" y2="341" stroke="rgba(201,162,74,0.3)" stroke-width="1"/>
+                    <line x1="300" y1="335" x2="300" y2="341" stroke="rgba(201,162,74,0.3)" stroke-width="1"/>
+                    <line x1="430" y1="335" x2="430" y2="341" stroke="rgba(201,162,74,0.3)" stroke-width="1"/>
+
+                    <!-- X labels -->
+                    <text x="55"  y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.32)">START</text>
+                    <text x="160" y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.28)">W4</text>
+                    <text x="290" y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.28)">W8</text>
+                    <text x="420" y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.42)">W12</text>
+
+                    <!-- Area fill (animated opacity via JS) -->
+                    <path id="chart-area"
+                          d="M 55 322 C 130 316 200 298 260 268 C 320 238 365 192 408 142 C 440 103 462 66 482 32 L 482 335 L 55 335 Z"
+                          fill="url(#areaGold)" clip-path="url(#chartClip)" opacity="0"/>
+
+                    <!-- Average comparison line (dashed green) -->
+                    <path id="chart-avg"
+                          d="M 55 322 C 140 314 220 300 285 276 C 350 252 400 222 450 190"
+                          stroke="rgba(166,200,94,0.45)" stroke-width="1.6" stroke-linecap="round"
+                          stroke-dasharray="5 6" fill="none"/>
+
+                    <!-- Main DARE growth curve (gold) -->
+                    <path id="chart-main"
+                          d="M 55 322 C 130 316 200 298 260 268 C 320 238 365 192 408 142 C 440 103 462 66 482 32"
+                          stroke="rgba(201,162,74,0.92)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+
+                    <!-- Data points -->
+                    <circle id="dot-0" cx="55"  cy="322" r="4"   fill="rgba(166,200,94,0.75)"  opacity="0"/>
+                    <circle id="dot-1" cx="170" cy="288" r="4"   fill="rgba(201,162,74,0.65)"  opacity="0"/>
+                    <circle id="dot-2" cx="300" cy="218" r="4.5" fill="rgba(201,162,74,0.80)"  opacity="0"/>
+                    <circle id="dot-3" cx="430" cy="120" r="4"   fill="rgba(201,162,74,0.85)"  opacity="0"/>
+                    <circle id="dot-4" cx="482" cy="32"  r="6"   fill="rgba(201,162,74,1)"     opacity="0"/>
+
+                    <!-- Peak rings (glow) -->
+                    <circle id="ring-1" cx="482" cy="32" r="13" stroke="rgba(201,162,74,0.22)" stroke-width="1" fill="none" opacity="0"/>
+                    <circle id="ring-2" cx="482" cy="32" r="22" stroke="rgba(201,162,74,0.09)" stroke-width="1" fill="none" opacity="0"/>
+
+                    <!-- "DARE" label at peak -->
+                    <text id="peak-label" x="462" y="22" text-anchor="end" font-family="Manrope,sans-serif" font-size="8.5" letter-spacing="2.5" fill="rgba(201,162,74,0.7)" opacity="0">DARE</text>
+
+                    <!-- "AVG" label at avg curve end -->
+                    <text x="455" y="186" font-family="Manrope,sans-serif" font-size="8" letter-spacing="1.5" fill="rgba(166,200,94,0.5)">AVG</text>
+                </svg>
             </div>
         </section>
 
@@ -87,7 +203,23 @@
             <div class="p-shell">
                 <div class="p-section-head">
                     <h2 class="p-title p-split" data-split="lines">OUR METHOD</h2>
-                    <p class="p-sub">Training drives the plan. Nutrition supports the work. Integration makes it sustainable.</p>
+                    <div class="p-method-lines">
+                        <div class="p-method-line">
+                            <span class="p-ml-kw p-ml-kw--training">Training</span>
+                            <span class="p-ml-sep"></span>
+                            <span class="p-ml-desc">drives the plan.</span>
+                        </div>
+                        <div class="p-method-line">
+                            <span class="p-ml-kw p-ml-kw--nutrition">Nutrition</span>
+                            <span class="p-ml-sep"></span>
+                            <span class="p-ml-desc">supports the work.</span>
+                        </div>
+                        <div class="p-method-line">
+                            <span class="p-ml-kw p-ml-kw--integration">Integration</span>
+                            <span class="p-ml-sep"></span>
+                            <span class="p-ml-desc">makes it sustainable.</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="p-method-trio" aria-label="Training, nutrition and integration">
@@ -152,6 +284,42 @@
                             <h3 class="p-process-title">Personal assessment</h3>
                             <p class="p-process-copy">Constraints, patterns, and current baselines — mapped with clarity before we touch execution.</p>
                         </div>
+                        <div class="p-process-art" aria-hidden="true">
+                            <!-- Person with measurement scan lines -->
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="pg01" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#d9d4c8"/>
+                                        <stop offset="50%" stop-color="#c9a24a"/>
+                                        <stop offset="100%" stop-color="#8fb85a"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Head -->
+                                <circle cx="50" cy="15" r="9" stroke="url(#pg01)" stroke-width="1.5"/>
+                                <!-- Neck -->
+                                <line x1="50" y1="24" x2="50" y2="33" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
+                                <!-- Shoulders -->
+                                <line x1="28" y1="40" x2="72" y2="40" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
+                                <!-- Torso -->
+                                <line x1="50" y1="33" x2="50" y2="67" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
+                                <!-- Arms -->
+                                <line x1="28" y1="40" x2="20" y2="60" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="72" y1="40" x2="80" y2="60" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
+                                <!-- Legs -->
+                                <line x1="50" y1="67" x2="37" y2="92" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
+                                <line x1="50" y1="67" x2="63" y2="92" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
+                                <!-- Shoulder scan line -->
+                                <line x1="7"  y1="40" x2="28" y2="40" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
+                                <line x1="72" y1="40" x2="93" y2="40" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
+                                <line x1="7"  y1="37" x2="7"  y2="43" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="93" y1="37" x2="93" y2="43" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
+                                <!-- Hip scan line -->
+                                <line x1="11" y1="67" x2="37" y2="67" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
+                                <line x1="63" y1="67" x2="89" y2="67" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
+                                <line x1="11" y1="64" x2="11" y2="70" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="89" y1="64" x2="89" y2="70" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
                     </div>
 
                     <div class="p-process-item" role="listitem">
@@ -160,6 +328,33 @@
                             <h3 class="p-process-title">System design</h3>
                             <p class="p-process-copy">One integrated plan across training + nutrition + culinary execution. Built to survive your calendar.</p>
                         </div>
+                        <div class="p-process-art" aria-hidden="true">
+                            <!-- 3 outer nodes + center node — integrated system -->
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="pg02" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#d9d4c8"/>
+                                        <stop offset="50%" stop-color="#c9a24a"/>
+                                        <stop offset="100%" stop-color="#8fb85a"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Connecting lines to center -->
+                                <line x1="50" y1="18" x2="50" y2="44" stroke="url(#pg02)" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="21" y1="75" x2="44" y2="56" stroke="url(#pg02)" stroke-width="1.2" stroke-linecap="round"/>
+                                <line x1="79" y1="75" x2="56" y2="56" stroke="url(#pg02)" stroke-width="1.2" stroke-linecap="round"/>
+                                <!-- Outer triangle edges -->
+                                <line x1="27" y1="72" x2="73" y2="72" stroke="url(#pg02)" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 3"/>
+                                <line x1="53" y1="14" x2="76" y2="68" stroke="url(#pg02)" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 3"/>
+                                <line x1="47" y1="14" x2="24" y2="68" stroke="url(#pg02)" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 3"/>
+                                <!-- Outer nodes -->
+                                <circle cx="50" cy="12" r="6" stroke="url(#pg02)" stroke-width="1.5"/>
+                                <circle cx="20" cy="78" r="6" stroke="url(#pg02)" stroke-width="1.5"/>
+                                <circle cx="80" cy="78" r="6" stroke="url(#pg02)" stroke-width="1.5"/>
+                                <!-- Center node -->
+                                <circle cx="50" cy="50" r="7" stroke="url(#pg02)" stroke-width="1.8"/>
+                                <circle cx="50" cy="50" r="3" fill="url(#pg02)"/>
+                            </svg>
+                        </div>
                     </div>
 
                     <div class="p-process-item" role="listitem">
@@ -167,6 +362,44 @@
                         <div class="p-process-body">
                             <h3 class="p-process-title">Execution &amp; monitoring</h3>
                             <p class="p-process-copy">Weekly adjustments, tight feedback loops, and hands‑on control — so outcomes are inevitable.</p>
+                        </div>
+                        <div class="p-process-art" aria-hidden="true">
+                            <!-- Performance gauge dial — execution & monitoring -->
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="pg03" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#d9d4c8"/>
+                                        <stop offset="50%" stop-color="#c9a24a"/>
+                                        <stop offset="100%" stop-color="#8fb85a"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Base gauge arc (full semicircle, dim) -->
+                                <path d="M 16 68 A 34 34 0 0 1 84 68" stroke="url(#pg03)" stroke-width="1.4" stroke-linecap="round" opacity="0.32"/>
+                                <!-- Performance zone arc (right portion — needle target, bright) -->
+                                <path d="M 69.5 40 A 34 34 0 0 1 84 68" stroke="url(#pg03)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+                                <!-- Tick marks — 5 major positions along the arc -->
+                                <!-- 180° left -->
+                                <line x1="16" y1="68" x2="23" y2="68" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+                                <!-- 135° upper-left -->
+                                <line x1="26" y1="44" x2="31.5" y2="49.5" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+                                <!-- 90° top -->
+                                <line x1="50" y1="34" x2="50" y2="41" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+                                <!-- 45° upper-right -->
+                                <line x1="74" y1="44" x2="68.5" y2="49.5" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <!-- 0° right -->
+                                <line x1="84" y1="68" x2="77" y2="68" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <!-- Needle — pointing at ~55° (high-performance zone) -->
+                                <line x1="50" y1="68" x2="69.5" y2="40" stroke="url(#pg03)" stroke-width="1.9" stroke-linecap="round"/>
+                                <!-- Center pivot -->
+                                <circle cx="50" cy="68" r="3.5" fill="url(#pg03)"/>
+                                <!-- Needle tip marker -->
+                                <circle cx="69.5" cy="40" r="1.6" fill="url(#pg03)" opacity="0.75"/>
+                                <!-- Weekly check-in dots (3 done · 1 current) -->
+                                <circle cx="32" cy="84" r="2.2" fill="url(#pg03)" opacity="0.72"/>
+                                <circle cx="42" cy="84" r="2.2" fill="url(#pg03)" opacity="0.72"/>
+                                <circle cx="52" cy="84" r="2.2" fill="url(#pg03)" opacity="0.72"/>
+                                <circle cx="62" cy="84" r="2.2" stroke="url(#pg03)" stroke-width="1.2" opacity="0.42"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -203,57 +436,7 @@
             </div>
         </section>
 
-<section class="p-section p-section-tight" id="onboarding" aria-label="Your first 7 days">
-            <div class="p-shell">
-                <div class="p-section-head">
-                    <h2 class="p-title p-split" data-split="lines">Your first 7 days</h2>
-                    <p class="p-sub">From first contact to full execution — no friction, no ambiguity.</p>
-                </div>
-                <div class="p-timeline">
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 1</span>
-                            <span class="p-timeline-line"></span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Private consultation</h3>
-                            <p class="p-timeline-copy">Direct call with Erika and Daniel. No forms, no intake assistants — just an honest conversation about your goals, constraints, and standard.</p>
-                        </div>
-                    </div>
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 2–3</span>
-                            <span class="p-timeline-line"></span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Full baseline assessment</h3>
-                            <p class="p-timeline-copy">Movement screening, metabolic markers, lifestyle audit and schedule mapping. Every variable accounted for before we design a single session.</p>
-                        </div>
-                    </div>
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 4–5</span>
-                            <span class="p-timeline-line"></span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Program delivered</h3>
-                            <p class="p-timeline-copy">Your integrated training and nutrition protocol — built around your biology, your calendar and your standard. Reviewed together before execution begins.</p>
-                        </div>
-                    </div>
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 7</span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Execution begins</h3>
-                            <p class="p-timeline-copy">First session. First meals. Full system active. No ramp-up period — you are already on protocol.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="p-section p-section-tight" id="data" aria-label="Measured outcomes">
+<section class="p-section p-section-tight" id="data" aria-label="Measured outcomes">
             <div class="p-shell">
                 <div class="p-section-head">
                     <h2 class="p-title p-split" data-split="lines">MEASURED PROGRESS</h2>
@@ -331,6 +514,56 @@
             </div>
         </section>
 
+<section class="p-section p-section-tight" id="onboarding" aria-label="Your first 7 days">
+            <div class="p-shell">
+                <div class="p-section-head">
+                    <h2 class="p-title p-split" data-split="lines">Your first 7 days</h2>
+                    <p class="p-sub">From first contact to full execution — no friction, no ambiguity.</p>
+                </div>
+                <div class="p-timeline">
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 1</span>
+                            <span class="p-timeline-line"></span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Private consultation</h3>
+                            <p class="p-timeline-copy">Direct call with Erika and Daniel. No forms, no intake assistants — just an honest conversation about your goals, constraints, and standard.</p>
+                        </div>
+                    </div>
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 2–3</span>
+                            <span class="p-timeline-line"></span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Full baseline assessment</h3>
+                            <p class="p-timeline-copy">Movement screening, metabolic markers, lifestyle audit and schedule mapping. Every variable accounted for before we design a single session.</p>
+                        </div>
+                    </div>
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 4–5</span>
+                            <span class="p-timeline-line"></span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Program delivered</h3>
+                            <p class="p-timeline-copy">Your integrated training and nutrition protocol — built around your biology, your calendar and your standard. Reviewed together before execution begins.</p>
+                        </div>
+                    </div>
+                    <div class="p-timeline-item">
+                        <div class="p-timeline-marker">
+                            <span class="p-timeline-day">Day 7</span>
+                        </div>
+                        <div class="p-timeline-body">
+                            <h3 class="p-timeline-title">Execution begins</h3>
+                            <p class="p-timeline-copy">First session. First meals. Full system active. No ramp-up period — you are already on protocol.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="p-section p-founders-section" id="founders" aria-label="The founders">
             <div class="p-shell">
                 <blockquote class="p-founders-quote">
@@ -363,8 +596,13 @@
                     <p class="p-founders-unified-bio"><em>A movement architect and a clinical nutritionist — a decade each, at the highest level. Together: one integrated system built around your body, your calendar, and your standard.</em></p>
                     <a href="team.html" class="p-btn p-btn-ghost p-founders-team-btn">Meet the team →</a>
                 </div>
-
-                <p class="p-founders-slogan">Placeholder slogan — edit me.</p>
+                <div class="p-founders-slogan" aria-label="DARE TAKE YOUR HEALTH TO THE NEXT LEVEL">
+                    <div class="p-founders-slogan-track">
+                        <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    </span>
+                        <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -388,6 +626,7 @@
                     <a href="plans.html">Plans</a>
                     <a href="team.html">The Team</a>
                     <a href="#contact">Contact</a>
+                    <a href="faq.html">FAQ</a>
                 </nav>
                 <div class="p-footer-contact-col">
                     <!-- Replace 971501234567 with your actual WhatsApp number -->
@@ -407,5 +646,131 @@
     <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>
+    <script>
+    // ── DARE growth chart – scroll-driven animation ──────────────────────────
+    (function () {
+        const svg      = document.getElementById('dare-chart');
+        if (!svg) return;
+
+        const mainPath = document.getElementById('chart-main');
+        const avgPath  = document.getElementById('chart-avg');
+        const area     = document.getElementById('chart-area');
+        const dots     = [0,1,2,3,4].map(i => document.getElementById('dot-' + i));
+        const rings    = [1,2].map(i => document.getElementById('ring-' + i));
+        const peakLbl  = document.getElementById('peak-label');
+
+        // Measure path lengths after paint
+        requestAnimationFrame(() => {
+            const mLen = mainPath.getTotalLength();
+            const aLen = avgPath.getTotalLength();
+
+            // Set initial state – invisible
+            mainPath.style.strokeDasharray  = mLen;
+            mainPath.style.strokeDashoffset = mLen;
+            avgPath.style.strokeDasharray   = aLen;
+            avgPath.style.strokeDashoffset  = aLen;
+
+            if (window.gsap && window.ScrollTrigger) {
+                gsap.registerPlugin(ScrollTrigger);
+
+                const section = document.getElementById('philosophy');
+
+                // Main curve draws itself on scroll
+                gsap.to(mainPath, {
+                    strokeDashoffset: 0,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 80%',
+                        end:   'top 15%',
+                        scrub: 1.2,
+                    }
+                });
+
+                // Avg curve follows with slight lag
+                gsap.to(avgPath, {
+                    strokeDashoffset: 0,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 75%',
+                        end:   'top 20%',
+                        scrub: 1.8,
+                    }
+                });
+
+                // Area fill fades in
+                gsap.to(area, {
+                    opacity: 1,
+                    ease: 'power1.out',
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 50%',
+                        end:   'top 10%',
+                        scrub: true,
+                    }
+                });
+
+                // Data points appear staggered
+                dots.forEach((dot, i) => {
+                    if (!dot) return;
+                    gsap.to(dot, {
+                        opacity: 1,
+                        duration: 0.4,
+                        ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: section,
+                            start: `top ${68 - i * 11}%`,
+                            toggleActions: 'play none none reverse',
+                        }
+                    });
+                });
+
+                // Peak rings + label appear at end
+                gsap.to([...rings, peakLbl], {
+                    opacity: 1,
+                    duration: 0.6,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 18%',
+                        toggleActions: 'play none none reverse',
+                    }
+                });
+
+            } else {
+                // Fallback: IntersectionObserver if GSAP not ready
+                const io = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting) {
+                        mainPath.style.transition = `stroke-dashoffset 2.4s cubic-bezier(.4,0,.2,1)`;
+                        avgPath.style.transition  = `stroke-dashoffset 2.8s cubic-bezier(.4,0,.2,1) 0.4s`;
+                        mainPath.style.strokeDashoffset = '0';
+                        avgPath.style.strokeDashoffset  = '0';
+                        area.style.transition = 'opacity 1.5s ease 1s';
+                        area.style.opacity = '1';
+                        dots.forEach((d, i) => {
+                            if (d) { d.style.transition = `opacity .4s ease ${0.5 + i*0.2}s`; d.style.opacity = '1'; }
+                        });
+                        io.disconnect();
+                    }
+                }, { threshold: 0.3 });
+                io.observe(svg);
+            }
+        });
+    })();
+    </script>
+    <script>
+    (function(){
+      var btn = document.getElementById('theme-toggle');
+      if (!btn || btn._themeWired) return;
+      btn._themeWired = true;
+      btn.addEventListener('click', function(){
+        var curr = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = curr === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('dare-theme', next); } catch(e){}
+      });
+    })();
+    </script>
 </body>
 </html>

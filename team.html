@@ -1,126 +1,520 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Team | DARE</title>
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tulpen+One&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+
+        @property --ring-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* ── Page bg ─────────────────────────────────────── */
+        body {
+            background:
+                radial-gradient(ellipse 900px 600px at 8% 0%, rgba(201,162,74,.09) 0%, transparent 60%),
+                radial-gradient(ellipse 700px 500px at 92% 10%, rgba(166,200,94,.07) 0%, transparent 60%),
+                var(--bg-color, #050507);
+            background-attachment: fixed, fixed, scroll;
+        }
+
+        /* ── Hero ────────────────────────────────────────── */
+        .tm-hero {
+            min-height: 52vh;
+            display: flex;
+            align-items: flex-end;
+            padding: 9rem 2.5rem 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .tm-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 120%, rgba(201,162,74,.08) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        .tm-hero-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .tm-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: .75rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: .68rem;
+            letter-spacing: .26em;
+            text-transform: uppercase;
+            color: var(--gold, #c9a24a);
+            margin-bottom: 1.6rem;
+        }
+        .tm-eyebrow::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--gold, #c9a24a);
+            opacity: .5;
+        }
+        .tm-hero-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(6rem, 16vw, 13rem);
+            line-height: .85;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--text-color, #f4f1e8);
+            margin: 0 0 2.5rem;
+        }
+        .tm-hero-title em {
+            font-style: normal;
+            -webkit-text-stroke: 1px rgba(244,241,232,.3);
+            color: transparent;
+        }
+        .tm-hero-sub {
+            font-family: 'Manrope', sans-serif;
+            font-size: .9rem;
+            color: var(--muted, rgba(244,241,232,.5));
+            letter-spacing: .05em;
+            max-width: 42ch;
+            line-height: 1.7;
+        }
+
+        /* ── Members list ────────────────────────────────── */
+        .tm-members {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 5rem 2.5rem 9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+        .tm-divider-h {
+            height: 1px;
+            background: linear-gradient(to right,
+                transparent,
+                rgba(201,162,74,.25) 20%,
+                rgba(201,162,74,.25) 80%,
+                transparent
+            );
+            position: relative;
+        }
+        .tm-divider-h::before {
+            content: '×';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Tulpen One', serif;
+            font-size: 1.4rem;
+            color: rgba(201,162,74,.4);
+            background: var(--bg-color, #050507);
+            padding: 0 .8rem;
+            line-height: 1;
+        }
+
+        /* ── Member card ─────────────────────────────────── */
+        .tm-card {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5rem;
+            padding: 3.5rem 4rem;
+            border-radius: 20px;
+            background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+            border: 1px solid rgba(244,241,232,.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            transition: border-color .4s, box-shadow .4s;
+        }
+        .tm-card--flip {
+            flex-direction: row-reverse;
+        }
+        .tm-card::before {
+            content: '';
+            position: absolute;
+            inset: -60%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(201,162,74,.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(166,200,94,.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .tm-card:hover {
+            border-color: rgba(201,162,74,.2);
+            box-shadow: 0 32px 80px rgba(0,0,0,.35), 0 0 0 1px rgba(201,162,74,.08);
+        }
+        .tm-card > * { position: relative; z-index: 1; }
+        .tm-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ── Photo ring ──────────────────────────────────── */
+        .tm-photo-wrap {
+            --ring-angle: 0deg;
+            animation: ring-spin 5s linear infinite;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            background: conic-gradient(from var(--ring-angle),
+                transparent 0%,
+                rgba(201,162,74,.15) 10%,
+                #c9a24a 30%,
+                #a6c85e 55%,
+                rgba(166,200,94,.15) 70%,
+                transparent 80%,
+                transparent 100%
+            );
+            padding: 4px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        @keyframes ring-spin {
+            to { --ring-angle: 360deg; }
+        }
+        .tm-photo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #0a0a0c;
+        }
+        .tm-photo-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+            filter: contrast(1.04) brightness(.94);
+            transition: filter .6s, transform .7s;
+        }
+        .tm-card:hover .tm-photo-inner img {
+            filter: contrast(1.07) brightness(1.02);
+            transform: scale(1.04);
+        }
+
+        /* ── Card content ─────────────────────────────────*/
+        .tm-role {
+            display: inline-block;
+            font-family: 'Manrope', sans-serif;
+            font-size: .62rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--gold, #c9a24a);
+            margin-bottom: 1rem;
+            padding: .28rem .85rem;
+            border: 1px solid rgba(201,162,74,.22);
+            border-radius: 999px;
+        }
+        .tm-name {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3.5rem, 6vw, 5.5rem);
+            line-height: .88;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--text-color, #f4f1e8);
+            margin: 0 0 .6rem;
+        }
+        .tm-name-rule {
+            width: 32px;
+            height: 1px;
+            background: var(--gold, #c9a24a);
+            margin: 1.2rem 0 1.8rem;
+            opacity: .6;
+        }
+        .tm-bio {
+            font-family: 'Manrope', sans-serif;
+            font-size: .85rem;
+            line-height: 1.85;
+            color: var(--muted, rgba(244,241,232,.5));
+            max-width: 52ch;
+            margin: 0 0 2.4rem;
+        }
+
+        /* ── Stats ───────────────────────────────────────── */
+        .tm-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .75rem;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .tm-stat {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(244,241,232,.07);
+            border-radius: 10px;
+            padding: 1rem .5rem .9rem;
+            transition: border-color .3s, background .3s;
+        }
+        .tm-stat:hover {
+            background: rgba(201,162,74,.07);
+            border-color: rgba(201,162,74,.2);
+        }
+        .tm-stat-val {
+            display: block;
+            font-family: 'Tulpen One', serif;
+            font-size: 2rem;
+            line-height: 1;
+            letter-spacing: .04em;
+            color: var(--text-color, #f4f1e8);
+        }
+        .tm-stat-label {
+            display: block;
+            font-family: 'Manrope', sans-serif;
+            font-size: .56rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: rgba(244,241,232,.38);
+            margin-top: .4rem;
+            line-height: 1.4;
+        }
+
+        /* ── Tags ────────────────────────────────────────── */
+        .tm-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: .4rem;
+            margin-bottom: 2.2rem;
+        }
+        .tm-tag {
+            font-family: 'Manrope', sans-serif;
+            font-size: .58rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: rgba(244,241,232,.55);
+            border: 1px solid rgba(244,241,232,.1);
+            padding: .28rem .65rem;
+            border-radius: 3px;
+            transition: color .25s, border-color .25s;
+        }
+        .tm-tag:hover {
+            color: var(--gold, #c9a24a);
+            border-color: rgba(201,162,74,.3);
+        }
+
+        /* ── LinkedIn ─────────────────────────────────────── */
+        .tm-linkedin {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: .66rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--text-color, #f4f1e8);
+            text-decoration: none;
+            padding: .65rem 1.4rem;
+            border: 1px solid rgba(244,241,232,.15);
+            border-radius: 999px;
+            transition: color .25s, border-color .25s, background .25s;
+        }
+        .tm-linkedin:hover {
+            color: var(--gold, #c9a24a);
+            border-color: rgba(201,162,74,.4);
+            background: rgba(201,162,74,.07);
+        }
+        .tm-linkedin svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 900px) {
+            .tm-members {
+                padding: 3rem 1.5rem 6rem;
+                gap: 2rem;
+            }
+            .tm-card,
+            .tm-card--flip {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 2.8rem 1.5rem 2.5rem;
+                gap: 2.5rem;
+            }
+            .tm-card-body { text-align: center; }
+            .tm-name-rule { margin: 1.2rem auto 1.8rem; }
+            .tm-tags { justify-content: center; }
+            .tm-photo-wrap {
+                width: 220px;
+                height: 220px;
+            }
+        }
+    </style>
+    <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('dare-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) { document.documentElement.setAttribute('data-theme','dark'); }
+    })();
+    </script>
 </head>
-<body class="is-internal-page"> 
-    
-    <header class="header-main">
+<body class="is-internal-page">
+
+        <header class="header-main">
         <a href="index.html" class="logo">DARE</a>
-        <div class="header-actions">
-            <a href="client.html" class="header-login-btn">Log in</a>
-            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
-                <span class="line"></span>
-                <span class="line"></span>
-            </button>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html" class="header-nav-link">Home</a>
+            <a href="plans.html" class="header-nav-link">Plans</a>
+            <a href="team.html" class="header-nav-link" aria-current="page">The Team</a>
+            <a href="faq.html" class="header-nav-link">FAQ</a>
+        </nav>
+        <div class="header-controls">
+        <button class="header-theme-btn" id="theme-toggle" aria-label="Toggle light / dark mode">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.5"/>
+                <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+                <line x1="5.6" y1="5.6" x2="7" y2="7"/><line x1="17" y1="17" x2="18.4" y2="18.4"/>
+                <line x1="18.4" y1="5.6" x2="17" y2="7"/><line x1="7" y1="17" x2="5.6" y2="18.4"/>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+
+        <a href="client.html" class="header-user-btn" aria-label="Client area">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+            </svg>
+        </a>
         </div>
     </header>
 
-    <div class="full-menu" id="full-menu">
-        <nav class="menu-nav">
-            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
-            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
-            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
-            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
-        </nav>
-        <div class="menu-footer">Elevating your lifestyle since 2026</div>
-    </div>
-     
-    <main class="page-container">
-        
-        <section class="team-section-spheres" id="team">
-            <div class="team-header">
-                <h2 class="section-title">THE <span class="highlight">TEAM</span></h2>
-            </div>
 
-            <div class="synergy-field-container">
-                
-                <div class="expert-row left-sphere">
-                    <div class="sphere-container">
-                        <div class="rotating-ring"></div>
-                        <div class="sphere-image">
-                            <img src="./images/erikateam.jpg" alt="Erika Silva">
-                        </div>
-                    </div>
-                    
-                    <div class="sphere-details text-content-right">
-                        <span class="meta-role">BIOMECHANICS &amp; PERFORMANCE LEAD</span>
-                        <h3>Erika Silva</h3>
-                        <p class="meta-bio">
-                            A movement architect and functional hypertrophy specialist with over a decade working alongside elite athletes and ultra-high-net-worth individuals across London, Geneva and Dubai.
-                            <br><br>
-                            Erika's methodology integrates advanced physiotherapy principles with precision strength programming — eliminating injury risk while maximising structural adaptation. She has served as the exclusive performance advisor to principals and family offices across the GCC, where discretion and outcomes are equally non-negotiable.
-                        </p>
-                        <div class="skills-mini">
-                            <span>Biomechanics</span> • <span>Strength &amp; Conditioning</span> • <span>Hypertrophy</span>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="vertical-connector-section">
-                    <div class="v-line"></div>
-                    <div class="connector-icon">×</div>
-                    <div class="v-line"></div>
-                </div>
 
-                <div class="expert-row right-sphere">
-                     <div class="sphere-details text-content-left">
-                        <span class="meta-role">NUTRITION SCIENCE &amp; CULINARY EXECUTION</span>
-                        <h3>Daniel Otero</h3>
-                        <p class="meta-bio">
-                            A clinical nutritionist and metabolic optimisation specialist who bridges biochemistry and culinary excellence. Trained in nutritional science and high gastronomy, Daniel has designed private nutrition protocols for executives, athletes and sovereign clients in the UAE and Europe.
-                            <br><br>
-                            His protocols are built on hormonal response data, ensuring every meal serves a structural purpose in the client's physical transformation — without sacrificing the gastronomic experience.
-                        </p>
-                        <div class="skills-mini">
-                            <span>Clinical Nutrition</span> • <span>Metabolic Optimisation</span> • <span>Culinary Science</span>
-                        </div>
-                    </div>
+    <main>
 
-                    <div class="sphere-container">
-                        <div class="rotating-ring"></div>
-                        <div class="sphere-image">
-                            <img src="./images/daniteam.jpg" alt="Daniel Otero">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            
-            <div class="bg-particles"></div>
-        </section>
-
-        <section class="contact-section">
-            <div class="contact-inner">
-                <div class="contact-copy">
-                    <h2>DISCREET ENQUIRIES</h2>
-                    <p>All contact is handled directly by the founding team. No assistants. No mailing lists.</p>
-                </div>
-                <form class="contact-form">
-                    <div class="contact-grid">
-                        <div class="field">
-                            <label for="name-team">Name</label>
-                            <input type="text" id="name-team" name="name" placeholder="Optional" />
-                        </div>
-                        <div class="field">
-                            <label for="email-team">Email</label>
-                            <input type="email" id="email-team" name="email" placeholder="Private contact email" />
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label for="message-team">How can we help?</label>
-                        <textarea id="message-team" name="message" rows="4" placeholder="Share context, constraints or questions. No details are shared outside DARE."></textarea>
-                    </div>
-                    <button type="submit" class="contact-submit">SEND ENQUIRY</button>
-                </form>
+        <!-- Hero -->
+        <section class="tm-hero">
+            <div class="tm-hero-inner">
+                <span class="tm-eyebrow">Dubai, UAE &nbsp;·&nbsp; Est. 2026</span>
+                <h1 class="tm-hero-title">The<br><em>Team.</em></h1>
+                <p class="tm-hero-sub">Two disciplines. One operating system. Zero compromise.</p>
             </div>
         </section>
+
+        <!-- Members -->
+        <section class="tm-members">
+
+            <!-- Erika Silva -->
+            <article class="tm-card" id="erika">
+                <div class="tm-photo-wrap">
+                    <div class="tm-photo-inner">
+                        <img src="./images/erikamug.png" alt="Erika Silva — Biomechanics &amp; Performance Lead">
+                    </div>
+                </div>
+                <div class="tm-card-body">
+                    <span class="tm-role">Biomechanics &amp; Performance Lead</span>
+                    <h2 class="tm-name">Erika<br>Silva</h2>
+                    <div class="tm-name-rule"></div>
+                    <p class="tm-bio">
+                        A movement architect and functional hypertrophy specialist with over a decade working alongside elite athletes and ultra-high-net-worth individuals across London, Geneva and Dubai.
+                        <br><br>
+                        Erika's methodology integrates advanced physiotherapy principles with precision strength programming — eliminating injury risk while maximising structural adaptation. She has served as the exclusive performance advisor to principals and family offices across the GCC, where discretion and outcomes are equally non-negotiable.
+                    </p>
+                    <div class="tm-stats">
+                        <div class="tm-stat">
+                            <span class="tm-stat-val">10+</span>
+                            <span class="tm-stat-label">Years elite coaching</span>
+                        </div>
+                        <div class="tm-stat">
+                            <span class="tm-stat-val">3</span>
+                            <span class="tm-stat-label">Markets · LDN GVA DXB</span>
+                        </div>
+                        <div class="tm-stat">
+                            <span class="tm-stat-val">GCC</span>
+                            <span class="tm-stat-label">Private advisory</span>
+                        </div>
+                    </div>
+                    <div class="tm-tags">
+                        <span class="tm-tag">Biomechanics</span>
+                        <span class="tm-tag">Strength &amp; Conditioning</span>
+                        <span class="tm-tag">Functional Hypertrophy</span>
+                        <span class="tm-tag">Physiotherapy</span>
+                    </div>
+                    <a href="https://www.linkedin.com/in/erika-silva-2b2484114/" target="_blank" rel="noopener" class="tm-linkedin">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        View LinkedIn
+                    </a>
+                </div>
+            </article>
+
+            <!-- Divider -->
+            <div class="tm-divider-h" aria-hidden="true"></div>
+
+            <!-- Daniel Otero -->
+            <article class="tm-card tm-card--flip" id="daniel">
+                <div class="tm-photo-wrap">
+                    <div class="tm-photo-inner">
+                        <img src="./images/daniteam.jpg" alt="Daniel Otero — Nutrition Science &amp; Culinary Execution">
+                    </div>
+                </div>
+                <div class="tm-card-body">
+                    <span class="tm-role">Nutrition Science &amp; Culinary Execution</span>
+                    <h2 class="tm-name">Daniel<br>Otero</h2>
+                    <div class="tm-name-rule"></div>
+                    <p class="tm-bio">
+                        A clinical nutritionist and metabolic optimisation specialist who bridges biochemistry and culinary excellence. Trained in nutritional science and high gastronomy, Daniel has designed private nutrition protocols for executives, athletes and sovereign clients in the UAE and Europe.
+                        <br><br>
+                        His protocols are built on hormonal response data, ensuring every meal serves a structural purpose in the client's physical transformation — without sacrificing the gastronomic experience.
+                    </p>
+                    <div class="tm-stats">
+                        <div class="tm-stat">
+                            <span class="tm-stat-val">UAE</span>
+                            <span class="tm-stat-label">+ Europe operations</span>
+                        </div>
+                        <div class="tm-stat">
+                            <span class="tm-stat-val">Dual</span>
+                            <span class="tm-stat-label">Nutrition &amp; culinary</span>
+                        </div>
+                        <div class="tm-stat">
+                            <span class="tm-stat-val">HNW</span>
+                            <span class="tm-stat-label">Private protocols</span>
+                        </div>
+                    </div>
+                    <div class="tm-tags">
+                        <span class="tm-tag">Clinical Nutrition</span>
+                        <span class="tm-tag">Metabolic Optimisation</span>
+                        <span class="tm-tag">Culinary Science</span>
+                        <span class="tm-tag">Hormonal Response</span>
+                    </div>
+                    <a href="https://www.linkedin.com/in/daniel-otero-89324b334/" target="_blank" rel="noopener" class="tm-linkedin">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        View LinkedIn
+                    </a>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- Marquee slogan -->
+        <div class="p-founders-slogan" aria-label="DARE TAKE YOUR HEALTH TO THE NEXT LEVEL">
+            <div class="p-founders-slogan-track">
+                <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            </div>
+        </div>
 
     </main>
 
@@ -135,9 +529,10 @@
                     <a href="index.html">Home</a>
                     <a href="plans.html">Plans</a>
                     <a href="index.html#contact">Contact</a>
+                    <a href="faq.html">FAQ</a>
                 </nav>
                 <div class="p-footer-contact-col">
-                    <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                    <a href="https://wa.me/34666076489?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
                 </div>
             </div>
             <div class="p-footer-bottom">
@@ -150,5 +545,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
+    <script>
+    (function(){
+      var btn = document.getElementById('theme-toggle');
+      if (!btn || btn._themeWired) return;
+      btn._themeWired = true;
+      btn.addEventListener('click', function(){
+        var curr = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = curr === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('dare-theme', next); } catch(e){}
+      });
+    })();
+    </script>
 </body>
 </html>

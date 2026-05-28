@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ | DARE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tulpen+One&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+        /* ── Page bg ─────────────────────────────────────── */
+        body {
+            background:
+                radial-gradient(ellipse 900px 600px at 8% 0%, rgba(201,162,74,.09) 0%, transparent 60%),
+                radial-gradient(ellipse 700px 500px at 92% 10%, rgba(166,200,94,.07) 0%, transparent 60%),
+                var(--bg-color, #050507);
+            background-attachment: fixed, fixed, scroll;
+        }
+
+        /* ── Hero ─────────────────────────────────────────── */
+        .fq-hero {
+            min-height: 48vh;
+            display: flex;
+            align-items: flex-end;
+            padding: 9rem 2.5rem 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .fq-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 120%, rgba(201,162,74,.08) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        .fq-hero-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .fq-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: .75rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: .68rem;
+            letter-spacing: .26em;
+            text-transform: uppercase;
+            color: var(--gold, #c9a24a);
+            margin-bottom: 1.6rem;
+        }
+        .fq-eyebrow::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--gold, #c9a24a);
+            opacity: .5;
+        }
+        .fq-hero-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(6rem, 16vw, 13rem);
+            line-height: .85;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--text-color, #f4f1e8);
+            margin: 0 0 1.8rem;
+        }
+        .fq-hero-sub {
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(.85rem, 1.2vw, 1rem);
+            color: rgba(244,241,232,.45);
+            letter-spacing: .06em;
+            max-width: 480px;
+        }
+
+        /* ── Body wrapper ────────────────────────────────── */
+        .fq-body {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 4rem 2.5rem 8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5rem;
+        }
+
+        /* ── Section ──────────────────────────────────────── */
+        .fq-section {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2rem 5rem;
+            align-items: start;
+        }
+        .fq-section-header {
+            position: sticky;
+            top: 5rem;
+        }
+        .fq-section-num {
+            display: block;
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(5rem, 10vw, 8rem);
+            line-height: .8;
+            letter-spacing: .04em;
+            -webkit-text-stroke: 1px rgba(201,162,74,.22);
+            color: transparent;
+            margin-bottom: .8rem;
+        }
+        .fq-section-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            line-height: 1;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--text-color, #f4f1e8);
+            margin: 0;
+        }
+        .fq-section-rule {
+            display: block;
+            width: 36px;
+            height: 1px;
+            background: rgba(201,162,74,.35);
+            margin-top: 1.2rem;
+        }
+
+        /* ── Accordion items ──────────────────────────────── */
+        .fq-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .fq-item {
+            border-top: 1px solid rgba(244,241,232,.07);
+            list-style: none;
+        }
+        .fq-item:last-child {
+            border-bottom: 1px solid rgba(244,241,232,.07);
+        }
+        .fq-item summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            padding: 1.6rem 0;
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(.9rem, 1.3vw, 1.05rem);
+            font-weight: 600;
+            letter-spacing: .02em;
+            color: rgba(244,241,232,.82);
+            transition: color .25s;
+            user-select: none;
+        }
+        .fq-item summary::-webkit-details-marker { display: none; }
+        .fq-item summary::after {
+            content: '+';
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: rgba(201,162,74,.7);
+            flex-shrink: 0;
+            transition: transform .3s ease, color .25s;
+            line-height: 1;
+        }
+        .fq-item[open] summary::after {
+            transform: rotate(45deg);
+            color: rgba(201,162,74,1);
+        }
+        .fq-item[open] summary {
+            color: var(--text-color, #f4f1e8);
+        }
+        .fq-item summary:hover {
+            color: var(--text-color, #f4f1e8);
+        }
+        .fq-answer {
+            padding: 0 0 2rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: .88rem;
+            line-height: 1.85;
+            color: rgba(244,241,232,.48);
+            max-width: 680px;
+        }
+        .fq-answer p { margin: 0 0 1em; }
+        .fq-answer p:last-child { margin: 0; }
+        .fq-answer strong {
+            color: rgba(244,241,232,.75);
+            font-weight: 600;
+        }
+        .fq-answer a {
+            color: rgba(201,162,74,.85);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(201,162,74,.25);
+            transition: border-color .2s, color .2s;
+        }
+        .fq-answer a:hover {
+            color: rgba(201,162,74,1);
+            border-color: rgba(201,162,74,.6);
+        }
+
+        /* ── Bottom CTA strip ─────────────────────────────── */
+        .fq-cta-strip {
+            border-top: 1px solid rgba(244,241,232,.07);
+            margin: 0 2.5rem;
+            padding: 5rem 0 7rem;
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        .fq-cta-text {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: .95;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--text-color, #f4f1e8);
+        }
+        .fq-cta-text em {
+            font-style: normal;
+            -webkit-text-stroke: 1px rgba(244,241,232,.35);
+            color: transparent;
+        }
+        .fq-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            font-family: 'Manrope', sans-serif;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #070707;
+            background: linear-gradient(135deg, #c9a24a, #a6c85e);
+            padding: .85rem 2rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            transition: transform .2s, box-shadow .2s;
+            box-shadow: 0 4px 20px rgba(201,162,74,.25);
+            flex-shrink: 0;
+        }
+        .fq-cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201,162,74,.35);
+        }
+
+        /* ── Responsive ───────────────────────────────────── */
+        @media (max-width: 860px) {
+            .fq-section {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .fq-section-header {
+                position: static;
+                display: flex;
+                align-items: baseline;
+                gap: 1.2rem;
+            }
+            .fq-section-num {
+                font-size: 4rem;
+                margin-bottom: 0;
+            }
+            .fq-section-rule { display: none; }
+            .fq-body { padding: 3rem 1.5rem 6rem; gap: 3.5rem; }
+            .fq-hero { padding: 8rem 1.5rem 3.5rem; }
+        }
+
+    </style>
+    <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('dare-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) { document.documentElement.setAttribute('data-theme','dark'); }
+    })();
+    </script>
+</head>
+<body class="is-internal-page">
+
+    <header class="header-main">
+        <a href="index.html" class="logo">DARE</a>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html" class="header-nav-link">Home</a>
+            <a href="plans.html" class="header-nav-link">Plans</a>
+            <a href="team.html" class="header-nav-link">The Team</a>
+            <a href="faq.html" class="header-nav-link" aria-current="page">FAQ</a>
+        </nav>
+        <div class="header-controls">
+        <button class="header-theme-btn" id="theme-toggle" aria-label="Toggle light / dark mode">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.5"/>
+                <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+                <line x1="5.6" y1="5.6" x2="7" y2="7"/><line x1="17" y1="17" x2="18.4" y2="18.4"/>
+                <line x1="18.4" y1="5.6" x2="17" y2="7"/><line x1="7" y1="17" x2="5.6" y2="18.4"/>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+
+        <a href="client.html" class="header-user-btn" aria-label="Client area">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+            </svg>
+        </a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ── Hero ── -->
+        <section class="fq-hero" aria-label="FAQ">
+            <div class="fq-hero-inner">
+                <span class="fq-eyebrow">Dubai · Private · By application only</span>
+                <h1 class="fq-hero-title">FAQ</h1>
+                <p class="fq-hero-sub">Everything you need to know before we begin.</p>
+            </div>
+        </section>
+
+        <!-- ── FAQ Sections ── -->
+        <div class="fq-body">
+
+            <!-- 01 · About DARE -->
+            <div class="fq-section">
+                <div class="fq-section-header">
+                    <span class="fq-section-num">01</span>
+                    <h2 class="fq-section-title">About<br>DARE</h2>
+                    <span class="fq-section-rule"></span>
+                </div>
+                <div class="fq-items" role="list">
+
+                    <details class="fq-item">
+                        <summary>What is DARE?</summary>
+                        <div class="fq-answer">
+                            <p>DARE is a private health operating system based in Dubai. We combine elite-level training, personalised nutrition, and culinary execution into a single, fully integrated programme — designed around you.</p>
+                            <p>We work with a maximum of three active clients at any time. This isn't a coaching platform. It is a private service.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Who is DARE for?</summary>
+                        <div class="fq-answer">
+                            <p>DARE is for people who want exceptional results and understand that exceptional results require an exceptional process. Our clients are typically high-performing professionals, executives, or individuals in Dubai who value privacy, precision, and outcomes over visibility.</p>
+                            <p>If you are looking for a group class or a generic plan, DARE is not the right fit.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Why Dubai?</summary>
+                        <div class="fq-answer">
+                            <p>Dubai is where we operate. Our team is based here, our network is here, and our protocols are built around the lifestyle, climate, and context of the city — from training environments to ingredient sourcing.</p>
+                            <p>For clients who travel frequently, we adapt the programme to their calendar and location without disruption.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>How is DARE different from a personal trainer or nutritionist?</summary>
+                        <div class="fq-answer">
+                            <p>Most personal trainers and nutritionists work independently. DARE integrates both disciplines under one system. Your training and nutrition are designed together, adjusted together, and reviewed together — by two specialists who communicate daily.</p>
+                            <p>You don't coordinate between providers. We handle that. You only execute.</p>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+            <!-- 02 · The Programmes -->
+            <div class="fq-section">
+                <div class="fq-section-header">
+                    <span class="fq-section-num">02</span>
+                    <h2 class="fq-section-title">The<br>Programmes</h2>
+                    <span class="fq-section-rule"></span>
+                </div>
+                <div class="fq-items" role="list">
+
+                    <details class="fq-item">
+                        <summary>How long is a DARE programme?</summary>
+                        <div class="fq-answer">
+                            <p>Programmes run between <strong>12 and 24 weeks</strong>, depending on your goals and starting point. The initial assessment determines the right duration. Shorter programmes exist for focused goals; longer engagements are for deeper structural change.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>What is the difference between the Online Protocol and the In-Home Presence?</summary>
+                        <div class="fq-answer">
+                            <p><strong>Online Protocol</strong> — Fully remote. Your training and nutrition plan is designed weekly and delivered to your private dashboard every day. No physical visits, no appointments. You access everything on your device, wherever you are — Dubai, travelling, or abroad. You follow the plan and self-prepare meals with precise instructions.</p>
+                            <p><strong>In-Home Presence</strong> — Erika and Daniel are physically present at your residence or private facility every day. Training is delivered in person, meals are prepared by Daniel on site. Nothing is delegated to you — not even cooking. This is our highest-touch engagement, limited to three clients worldwide.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Do I need to be in Dubai to follow the Online Protocol?</summary>
+                        <div class="fq-answer">
+                            <p>No. The Online Protocol is fully location-independent. Clients follow it from Dubai, from other cities, and during extended travel. Your training sessions are adapted to the facilities you actually have access to that day — whether that is a private gym in Dubai or a hotel fitness room in Geneva.</p>
+                            <p>Timezone, jet lag, and travel schedules are factored into the weekly design. The plan follows you — not the other way around.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Can I switch between programmes mid-engagement?</summary>
+                        <div class="fq-answer">
+                            <p>Yes. If your circumstances change — travel, schedule, or preferences — we adapt. The programme is not fixed to a format; it follows you. We review the structure at each weekly check-in and adjust accordingly.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Do you offer short-term or one-off sessions?</summary>
+                        <div class="fq-answer">
+                            <p>No. DARE is a structured engagement, not a drop-in service. Our results depend on continuity — biological adaptation takes time, and our system is designed to compound over weeks, not days. We do not offer single sessions or month-to-month arrangements without a full assessment.</p>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+            <!-- 03 · Training -->
+            <div class="fq-section">
+                <div class="fq-section-header">
+                    <span class="fq-section-num">03</span>
+                    <h2 class="fq-section-title">Training</h2>
+                    <span class="fq-section-rule"></span>
+                </div>
+                <div class="fq-items" role="list">
+
+                    <details class="fq-item">
+                        <summary>How are my training sessions designed?</summary>
+                        <div class="fq-answer">
+                            <p>Every programme begins with a personal assessment — your constraints, patterns, baselines, and goals are mapped in detail. From there, Erika designs a weekly training structure that balances strength, conditioning, and recovery based on your specific biology, schedule, and targets.</p>
+                            <p>No two programmes are the same. Your plan is yours.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>What equipment or facilities do I need?</summary>
+                        <div class="fq-answer">
+                            <p>This depends on your chosen engagement. The Online Protocol is designed around the facilities you have access to — whether that is a private gym, a hotel gym, or your own equipment. We ask about this in the initial assessment and build accordingly.</p>
+                            <p>In-Home Presence includes on-site training at your residence or a private facility of your choice. Equipment requirements are established during onboarding.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>What if I have an injury or physical limitation?</summary>
+                        <div class="fq-answer">
+                            <p>Injuries and limitations are assessed at the start and factored into your programme from day one. We do not train around injuries with generic modifications — we design specifically for your current capacity and adjust as your body responds.</p>
+                            <p>If your condition requires medical clearance, we will tell you directly before we begin.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>How often will I train?</summary>
+                        <div class="fq-answer">
+                            <p>Training frequency is built around your schedule, goals, and recovery capacity. Most programmes include between three and five sessions per week, with structured rest and active recovery days. We do not push volume for its own sake — recovery is built into the programme intentionally.</p>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+            <!-- 04 · Nutrition -->
+            <div class="fq-section">
+                <div class="fq-section-header">
+                    <span class="fq-section-num">04</span>
+                    <h2 class="fq-section-title">Nutrition</h2>
+                    <span class="fq-section-rule"></span>
+                </div>
+                <div class="fq-items" role="list">
+
+                    <details class="fq-item">
+                        <summary>What does the nutrition plan include?</summary>
+                        <div class="fq-answer">
+                            <p>Daniel designs a daily nutrition protocol aligned with your training load and goals. In the Online Protocol, this includes chef-designed recipes, precise ingredient quantities, and clear preparation instructions delivered each day. In-Home Presence includes full culinary execution — Daniel manages sourcing, preparation, and delivery entirely.</p>
+                            <p>Macros, meal timing, and food quality are all structured. You are never guessing.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Do you accommodate dietary restrictions or preferences?</summary>
+                        <div class="fq-answer">
+                            <p>Yes. Dietary restrictions, allergies, intolerances, cultural preferences, and food dislikes are captured in the initial assessment and built into your plan from the start. We do not offer a standard menu with substitutions — your nutrition is designed around what works for your body and your life.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Will I need to cook my own meals?</summary>
+                        <div class="fq-answer">
+                            <p>In the <strong>Online Protocol</strong>, ingredients arrive pre-measured with clear step-by-step instructions. Preparation is minimal and designed to fit around a full schedule.</p>
+                            <p>In the <strong>In-Home Presence</strong>, Daniel handles all culinary execution. You do not cook.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Can I eat out at restaurants?</summary>
+                        <div class="fq-answer">
+                            <p>Yes. Social eating is part of life, and we design your plan to accommodate it. We provide guidelines for dining out that align with your protocol without requiring you to avoid restaurants or social situations. Flexibility is built in — not bolted on as an exception.</p>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+            <!-- 05 · Getting Started -->
+            <div class="fq-section">
+                <div class="fq-section-header">
+                    <span class="fq-section-num">05</span>
+                    <h2 class="fq-section-title">Getting<br>Started</h2>
+                    <span class="fq-section-rule"></span>
+                </div>
+                <div class="fq-items" role="list">
+
+                    <details class="fq-item">
+                        <summary>How do I apply?</summary>
+                        <div class="fq-answer">
+                            <p>Send us a WhatsApp enquiry or use the contact form on the website. We will arrange a short, private consultation — typically 20 minutes — to understand your goals and assess whether DARE is the right fit. There is no obligation at this stage.</p>
+                            <p>For the <strong>Online Protocol</strong>, the consultation is conducted remotely — no need to be in Dubai. For the <strong>In-Home Presence</strong>, we typically meet in person at a time and location of your choosing.</p>
+                            <p>If we proceed, a detailed onboarding assessment follows before any programme is designed.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>How long does it take to get started?</summary>
+                        <div class="fq-answer">
+                            <p>From initial enquiry to programme start, the process typically takes <strong>5 to 10 days</strong>. This includes the consultation, the full assessment, and the design of your integrated plan. We do not rush the assessment — the quality of the output depends on it.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>What happens during the onboarding assessment?</summary>
+                        <div class="fq-answer">
+                            <p>The assessment covers your training history, current fitness baseline, body composition, lifestyle, schedule, food preferences, restrictions, goals, and any relevant health information. Both Erika and Daniel participate — training and nutrition are assessed together so the programme can be designed as a single, integrated system from day one.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Is there a waitlist?</summary>
+                        <div class="fq-answer">
+                            <p>Occasionally, yes. We limit active engagements to maintain the quality and attention each client deserves. If capacity is currently full, we will be transparent about timing during the initial consultation and can place you on a private waitlist if you choose to proceed.</p>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+            <!-- 06 · Privacy -->
+            <div class="fq-section">
+                <div class="fq-section-header">
+                    <span class="fq-section-num">06</span>
+                    <h2 class="fq-section-title">Privacy &amp;<br>Discretion</h2>
+                    <span class="fq-section-rule"></span>
+                </div>
+                <div class="fq-items" role="list">
+
+                    <details class="fq-item">
+                        <summary>How private is the service?</summary>
+                        <div class="fq-answer">
+                            <p>Completely. We do not discuss clients, share names, post before-and-after content, or include anyone in marketing without explicit and written consent. Your engagement with DARE is confidential by default.</p>
+                            <p>We operate with no public client roster, no social proof based on identifiable clients, and no external communications involving your information.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Do you share client data with third parties?</summary>
+                        <div class="fq-answer">
+                            <p>No. Client data — health information, biometrics, dietary details, and personal communications — is held internally and never shared with third parties. Ingredient sourcing is managed directly by Daniel without disclosure of client identity to suppliers.</p>
+                        </div>
+                    </details>
+
+                    <details class="fq-item">
+                        <summary>Can I use DARE discreetly alongside my existing team?</summary>
+                        <div class="fq-answer">
+                            <p>Yes. Many of our clients have existing relationships — a GP, a physio, a specialist. We work alongside these professionals where relevant, and we are accustomed to operating quietly within a broader support structure. We do not require exclusivity and we do not interfere with existing medical care.</p>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ── Bottom CTA ── -->
+        <div class="fq-cta-strip">
+            <p class="fq-cta-text">Still have<br><em>questions?</em></p>
+            <a href="https://wa.me/34666076489?text=Hello%20DARE.%20I%20have%20a%20question%20about%20your%20private%20health%20service%20in%20Dubai." class="fq-cta-btn" target="_blank" rel="noopener">
+                Ask us directly →
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="p-footer">
+        <div class="p-shell">
+            <div class="p-footer-grid">
+                <div class="p-footer-brand">
+                    <span class="p-footer-logo">DARE</span>
+                    <p class="p-footer-tagline">Private Health OS — Dubai, UAE</p>
+                </div>
+                <nav class="p-footer-nav" aria-label="Footer navigation">
+                    <a href="plans.html">Plans</a>
+                    <a href="team.html">The Team</a>
+                    <a href="faq.html">FAQ</a>
+                </nav>
+                <div class="p-footer-contact-col">
+                    <a href="https://wa.me/34666076489?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                </div>
+            </div>
+            <div class="p-footer-bottom">
+                <span>© 2026 DARE. Private &amp; Confidential.</span>
+                <span>Training · Nutrition · Culinary Execution</span>
+            </div>
+        </div>
+    </footer>
+    <script>
+    (function(){
+      var btn = document.getElementById('theme-toggle');
+      if (!btn || btn._themeWired) return;
+      btn._themeWired = true;
+      btn.addEventListener('click', function(){
+        var curr = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = curr === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('dare-theme', next); } catch(e){}
+      });
+    })();
+    </script>
+</body>
+</html>

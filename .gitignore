@@ -4,6 +4,10 @@ node_modules/
 .env.*.local
 bot/plans/
 bot/state/
+bot/data/
+bot/data/*.db
+bot/data/*.db-shm
+bot/data/*.db-wal
 .DS_Store
 *.log
 dist/

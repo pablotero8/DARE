@@ -666,3 +666,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (chartScript) chartScript.addEventListener("load", initDareCharts);
   }
 });
+/* ── Theme toggle ─────────────────────────────────────────── */
+(function () {
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  // handler already registered by inline script on non-gsap pages;
+  // for index / plan pages loaded with this file, wire it up here too.
+  if (!btn._themeWired) {
+    btn._themeWired = true;
+    btn.addEventListener('click', function () {
+      var curr = document.documentElement.getAttribute('data-theme') || 'dark';
+      var next = curr === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('dare-theme', next); } catch (e) {}
+    });
+  }
+})();
