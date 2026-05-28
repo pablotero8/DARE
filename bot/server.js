@@ -1,7 +1,7 @@
 import './env.js'; // Load .env FIRST
 import express from 'express';
 import { handleIncoming } from './conversations.js';
-import { getLatestPlan, getPlanByWeek, seedPlan } from './planner.js';
+import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan } from './planner.js';
 import {
   verifyClientPassword,
   getClientById,
@@ -148,6 +148,14 @@ app.get('/api/plans/:clientId/week/:weekOf', requireClient, (req, res) => {
   res.json(plan);
 });
 
+// List all published weeks for a client (used by the week-selector dropdown)
+app.get('/api/plans/:clientId/weeks', requireClient, (req, res) => {
+  if (req.client.id !== req.params.clientId) {
+    return res.status(403).json({ error: 'No puedes ver los planes de otro cliente' });
+  }
+  res.json(listPlanWeeks(req.params.clientId));
+});
+
 // ── Admin API (managed via HTTP for tooling, also via WhatsApp) ─
 
 app.get('/api/clients', requireAdmin, (req, res) => {
@@ -216,6 +224,13 @@ async function seedDemoClient() {
 }
 
 // ── Demo plan seed ────────────────────────────────────────────
+
+function currentMondayStr() {
+  const d = new Date();
+  const day = d.getDay();
+  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  return d.toISOString().split('T')[0];
+}
 
 function nextMondayStr() {
   const d = new Date();
@@ -409,17 +424,22 @@ function buildDemoWeek(weekOf) {
 
 async function seedDemoPlan() {
   const clientId = 'alex-hammond';
-  const weekOf   = nextMondayStr();
-  try {
-    const week   = buildDemoWeek(weekOf);
-    const seeded = seedPlan(clientId, weekOf, week);
-    if (seeded) {
-      console.log(`[seed] Demo plan ready — week of ${weekOf}`);
-    } else {
-      console.log(`[seed] Demo plan already exists — week of ${weekOf}`);
+
+  const weeksToSeed = [
+    { weekOf: currentMondayStr(), label: 'current week' },
+    { weekOf: nextMondayStr(),    label: 'next week'    },
+  ];
+
+  for (const { weekOf, label } of weeksToSeed) {
+    try {
+      const week   = buildDemoWeek(weekOf);
+      const seeded = seedPlan(clientId, weekOf, week);
+      console.log(seeded
+        ? `[seed] Demo plan seeded — ${label} (${weekOf})`
+        : `[seed] Demo plan already exists — ${label} (${weekOf})`);
+    } catch (err) {
+      console.error(`[seed] Error seeding demo plan for ${label}:`, err.message);
     }
-  } catch (err) {
-    console.error('[seed] Error seeding demo plan:', err.message);
   }
 }
 

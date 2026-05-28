@@ -86,6 +86,14 @@ export function getPlanByWeek(clientId, weekOf) {
   return row ? JSON.parse(row.plan_json) : null;
 }
 
+export function listPlanWeeks(clientId) {
+  return db.prepare(
+    `SELECT week_of AS weekOf FROM plans
+     WHERE client_id = ? AND training_ready = 1 AND nutrition_ready = 1
+     ORDER BY week_of ASC`
+  ).all(clientId);
+}
+
 // ── Merge training + nutrition arrays → client.html format ────
 
 function mergeWeek(trainingDays, nutritionDays) {

@@ -318,6 +318,22 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .nwb-dismiss:hover{color:var(--text)}
 @keyframes nwb-in{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}
 @keyframes nwb-pulse{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+
+/* ─── WEEK SELECTOR ─── */
+.week-selector{display:flex;gap:.45rem;flex-wrap:wrap;margin:.55rem 0 .25rem;align-items:center}
+.week-pill{
+  display:inline-flex;align-items:center;gap:.55rem;
+  padding:.3rem 1rem;border-radius:999px;
+  border:1px solid rgba(244,241,232,.16);background:transparent;
+  color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s,background .2s;
+  font-family:'Manrope',sans-serif;font-size:.64rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+}
+.week-pill:hover:not(.wp-active){border-color:rgba(244,241,232,.32);color:var(--text)}
+.week-pill.wp-active{border-color:rgba(201,162,74,.55);background:rgba(201,162,74,.1);color:var(--gold)}
+.week-pill.wp-future:not(.wp-active){border-color:rgba(166,200,94,.28)}
+.week-pill.wp-future:hover:not(.wp-active){border-color:rgba(166,200,94,.5);color:var(--green)}
+.week-pill.wp-future.wp-active{border-color:rgba(166,200,94,.55);background:rgba(166,200,94,.1);color:var(--green)}
+.wp-date{font-size:.6rem;font-weight:400;letter-spacing:.04em;text-transform:none;opacity:.65}
 </style>
 </head>
 <body>
@@ -372,6 +388,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
     <div class="cs-inner">
       <div class="cs-name" id="cs-client-name">Alex Hammond</div>
       <div class="cs-prog" id="cs-client-prog">Fat-Loss Protocol &nbsp;&middot;&nbsp; Week 8 of 12</div>
+      <div id="week-selector" class="week-selector"></div>
       <div class="cs-plan-label" id="cs-plan-label">My plan for today</div>
     </div>
   </div>
@@ -705,9 +722,113 @@ const WEEK = [
 ];
 
 /* ═══ STATE ═══ */
-let ACTIVE_WEEK = WEEK;           // may be replaced with live data
-let currentDay  = DEMO_TODAY;
-let chartsInit  = false;
+let ACTIVE_WEEK     = WEEK;   // 7-day array currently rendered
+let currentDay      = DEMO_TODAY;
+let chartsInit      = false;
+let WEEK_LIST       = [];     // [{weekOf:'YYYY-MM-DD'}, …] from API
+let CURRENT_WEEK_OF = null;   // weekOf of the week being displayed
+
+/* ═══ DATE HELPERS ═══ */
+function currentMondayISO(){
+  var d=new Date(), day=d.getDay();
+  d.setDate(d.getDate()+(day===0?-6:1-day));
+  return d.toISOString().split('T')[0];
+}
+function nextMondayISO(){
+  var d=new Date(currentMondayISO()+'T12:00:00');
+  d.setDate(d.getDate()+7);
+  return d.toISOString().split('T')[0];
+}
+function weekNumberFor(weekOf){
+  var client=getAuthClient();
+  var base=(client&&client.currentWeek)||1;
+  var diffMs=new Date(weekOf+'T12:00:00')-new Date(currentMondayISO()+'T12:00:00');
+  return base+Math.round(diffMs/(7*24*60*60*1000));
+}
+
+/* ═══ WEEK LIST API ═══ */
+async function fetchWeekList(){
+  var apiUrl=window.DARE_API_URL, token=getAuthToken(), client=getAuthClient();
+  if(!apiUrl||!token||!client) return [];
+  try{
+    var r=await fetch(apiUrl+'/api/plans/'+client.id+'/weeks',{headers:{'Authorization':'Bearer '+token}});
+    if(!r.ok) return [];
+    return await r.json();
+  }catch{ return []; }
+}
+
+async function fetchPlanByWeek(weekOf){
+  var apiUrl=window.DARE_API_URL, token=getAuthToken(), client=getAuthClient();
+  if(!apiUrl||!token||!client) return null;
+  try{
+    var r=await fetch(apiUrl+'/api/plans/'+client.id+'/week/'+weekOf,{headers:{'Authorization':'Bearer '+token}});
+    if(!r.ok) return null;
+    var data=await r.json();
+    return (data.week&&Array.isArray(data.week))?data:null;
+  }catch{ return null; }
+}
+
+/* ═══ WEEK SELECTOR ═══ */
+function buildWeekSelector(weekList, activeWeekOf){
+  var container=document.getElementById('week-selector');
+  if(!container) return;
+  container.innerHTML='';
+  if(!weekList||!weekList.length) return;
+
+  var thisWeekOf=currentMondayISO();
+  weekList.forEach(function(entry){
+    var weekNum=weekNumberFor(entry.weekOf);
+    var isFuture=entry.weekOf>thisWeekOf;
+    var isActive=entry.weekOf===activeWeekOf;
+    var d=new Date(entry.weekOf+'T12:00:00');
+    var dateStr=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    var pill=document.createElement('button');
+    pill.className='week-pill'+(isActive?' wp-active':'')+(isFuture?' wp-future':'');
+    pill.innerHTML='Week '+weekNum+'<span class="wp-date">'+dateStr+'</span>';
+    pill.addEventListener('click',function(){ switchToWeek(entry.weekOf); });
+    container.appendChild(pill);
+  });
+}
+
+async function switchToWeek(weekOf){
+  if(weekOf===CURRENT_WEEK_OF) return;
+  var plan=await fetchPlanByWeek(weekOf);
+  if(!plan||!plan.week||plan.week.length!==7) return;
+
+  ACTIVE_WEEK=plan.week;
+  CURRENT_WEEK_OF=weekOf;
+  currentDay=todayIndex(plan.week);
+
+  buildWeekSelector(WEEK_LIST,weekOf);
+  buildWeekStrip();
+
+  var plans=document.getElementById('day-plans');
+  plans.style.transition='opacity .18s ease';
+  plans.style.opacity='0';
+  setTimeout(function(){
+    renderDay(currentDay);
+    plans.style.opacity='1';
+  },180);
+
+  // Banner: show when on current/past week and future plan exists
+  updateBannerVisibility(weekOf);
+}
+
+function updateBannerVisibility(viewingWeekOf){
+  var banner=document.getElementById('next-week-banner');
+  if(!banner) return;
+  var nextWeekOf=nextMondayISO();
+  var hasFuture=WEEK_LIST.some(function(w){ return w.weekOf>=nextWeekOf; });
+  var viewingPast=(!viewingWeekOf)||viewingWeekOf<nextWeekOf;
+  if(hasFuture&&viewingPast&&banner.style.display==='none'){
+    banner.style.display='block';
+    banner.style.animation='none';
+    banner.offsetHeight;
+    banner.style.animation='nwb-in .55s cubic-bezier(.4,0,.2,1) both';
+  } else if(!hasFuture||!viewingPast){
+    banner.style.display='none';
+  }
+}
 
 /* ═══ AUTH ═══ */
 const loginScreen = document.getElementById('login-screen');
@@ -737,58 +858,82 @@ async function showDash(){
   const client = getAuthClient();
   applyClientToUI(client);
 
-  const livePlan = await fetchLivePlan();
-  if(livePlan && livePlan.week && livePlan.week.length===7){
-    ACTIVE_WEEK = livePlan.week;
-    currentDay  = todayIndex(livePlan.week);
-    checkNextWeekNotification(livePlan);
+  // 1. Fetch week list from API
+  WEEK_LIST = await fetchWeekList();
+
+  // 2. Pick the default week: this week's Monday, or nearest past, or first available
+  let defaultWeekOf = null;
+  if(WEEK_LIST.length){
+    const thisWeekOf = currentMondayISO();
+    const exact = WEEK_LIST.find(w=>w.weekOf===thisWeekOf);
+    if(exact){
+      defaultWeekOf = thisWeekOf;
+    } else {
+      const past = WEEK_LIST.filter(w=>w.weekOf<thisWeekOf);
+      defaultWeekOf = past.length ? past[past.length-1].weekOf : WEEK_LIST[0].weekOf;
+    }
   }
 
+  // 3. Load that week's plan (fallback: demo data)
+  if(defaultWeekOf){
+    const plan = await fetchPlanByWeek(defaultWeekOf);
+    if(plan && plan.week && plan.week.length===7){
+      ACTIVE_WEEK = plan.week;
+      CURRENT_WEEK_OF = defaultWeekOf;
+      currentDay = todayIndex(plan.week);
+    }
+  }
+
+  // 4. Build week selector, render, check notification
+  buildWeekSelector(WEEK_LIST, CURRENT_WEEK_OF);
   renderDay(currentDay);
   buildWeekStrip();
+
+  // 5. Show banner if a future plan exists and we're viewing current/past
+  const nextWeekOf = nextMondayISO();
+  const hasFuture = WEEK_LIST.some(w=>w.weekOf>=nextWeekOf);
+  if(hasFuture && (!CURRENT_WEEK_OF || CURRENT_WEEK_OF<nextWeekOf)){
+    showNextWeekBanner();
+  }
 }
 
 function showLogin(){ app.classList.remove('visible'); loginScreen.classList.remove('hidden'); }
 
 /* ═══ NEXT-WEEK PLAN NOTIFICATION ═══ */
 
-function checkNextWeekNotification(plan){
-  if(!plan || !plan.weekOf) return;
-  // weekOf is YYYY-MM-DD (the Monday of the plan week)
-  var weekOfDate = new Date(plan.weekOf + 'T00:00:00');
-  var now = new Date();
-  var todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if(weekOfDate > todayMidnight){
-    showNextWeekBanner();
-  }
-}
-
 function showNextWeekBanner(){
-  var banner = document.getElementById('next-week-banner');
-  if(!banner || banner._attached) return;
-  banner._attached = true;
-  banner.style.display = 'block';
+  var banner=document.getElementById('next-week-banner');
+  if(!banner) return;
+  banner.style.display='block';
+
+  // Clone buttons to clear any previous listeners
+  var oldSee=document.getElementById('nwb-see-btn');
+  var oldDismiss=document.getElementById('nwb-dismiss-btn');
+  var newSee=oldSee.cloneNode(true);
+  var newDismiss=oldDismiss.cloneNode(true);
+  oldSee.parentNode.replaceChild(newSee,oldSee);
+  oldDismiss.parentNode.replaceChild(newDismiss,oldDismiss);
 
   function hideBanner(){
-    banner.style.transition = 'opacity .3s ease, transform .35s ease';
-    banner.style.opacity = '0';
-    banner.style.transform = 'translateY(-100%)';
+    banner.style.transition='opacity .3s ease,transform .35s ease';
+    banner.style.opacity='0'; banner.style.transform='translateY(-100%)';
     setTimeout(function(){
-      banner.style.display = 'none';
-      banner.style.opacity = '';
-      banner.style.transform = '';
-      banner.style.transition = '';
-    }, 340);
+      banner.style.display='none';
+      banner.style.opacity=''; banner.style.transform=''; banner.style.transition='';
+    },340);
   }
 
-  document.getElementById('nwb-see-btn').addEventListener('click', function(){
+  newSee.addEventListener('click',function(){
     hideBanner();
-    // Smooth-scroll to the plan cards
-    var plans = document.getElementById('day-plans');
-    if(plans) plans.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Switch to the first future week and scroll to plans
+    var nextWeekOf=nextMondayISO();
+    var futureEntry=WEEK_LIST.find(function(w){ return w.weekOf>=nextWeekOf; });
+    if(futureEntry) switchToWeek(futureEntry.weekOf);
+    var plans=document.getElementById('day-plans');
+    if(plans) setTimeout(function(){ plans.scrollIntoView({behavior:'smooth',block:'start'}); },220);
   });
 
-  document.getElementById('nwb-dismiss-btn').addEventListener('click', hideBanner);
+  newDismiss.addEventListener('click',hideBanner);
 }
 
 if(getAuthToken() && getAuthClient()) showDash();
