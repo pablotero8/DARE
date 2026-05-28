@@ -111,6 +111,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .dot-rest{background:var(--lav-text)}
 
 /* ─── DAY PLANS GRID ─── */
+#training-content,#nutrition-content{flex:1;display:flex;flex-direction:column;}
 #day-plans{
   flex:1;padding:1.8rem 2rem 4rem;
   display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;align-items:stretch;
@@ -119,10 +120,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 }
 
 /* ─── PLAN CARD ─── */
-.plan-card{
-  padding:1.8rem 1.6rem;
-  display:flex;flex-direction:column;
-}
+.plan-card{padding:1.8rem 1.6rem;display:flex;flex-direction:column;}
 .expert-badge{display:flex;align-items:center;gap:.8rem;margin-bottom:1.4rem}
 .eb-img{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(201,162,74,.38)}
 .eb-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(20%)}
@@ -135,6 +133,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .pill-cardio{background:rgba(201,162,74,.13);border:1px solid rgba(201,162,74,.32);color:var(--gold)}
 .pill-rest{background:rgba(170,130,220,.12);border:1px solid rgba(170,130,220,.28);color:var(--lav-text)}
 .pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.pill-spacer{display:block;height:calc(.62rem + .56rem + 2px);margin-bottom:1.2rem}
 
 /* EXERCISES */
 .ex-list,.act-list{display:flex;flex-direction:column;gap:.55rem;flex:1}
@@ -150,7 +149,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .act-detail{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.45}
 
 /* EXPERT NOTE */
-.expert-note{margin-top:auto;padding-top:1rem}
+.expert-note{padding-top:.8rem;margin-top:auto}
 .note-inner{padding:.8rem .95rem;border-radius:10px;font-size:.73rem;color:var(--muted);line-height:1.65}
 .note-strength{background:rgba(166,200,94,.065);border:1px solid rgba(166,200,94,.18)}
 .note-strength strong{color:var(--green);font-weight:600}
@@ -162,7 +161,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .note-nutrition strong{color:var(--gold);font-weight:600}
 
 /* ─── NUTRITION ─── */
-.kcal-row{display:flex;align-items:baseline;gap:.4rem;margin-bottom:1.1rem}
+.kcal-row{display:flex;align-items:flex-start;gap:.4rem;margin-bottom:1.1rem;height:68px}
 .kcal-num{font-family:'Tulpen One',serif;font-size:3rem;line-height:1;letter-spacing:.04em;background:linear-gradient(135deg,#d9d4c8,#c9a24a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .kcal-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 .macro-bars{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem}
@@ -252,6 +251,25 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .donut-legend-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
 .donut-pct{font-weight:700;color:var(--text);margin-left:auto;font-size:.72rem}
 
+/* ─── TRAINING METRICS ─── */
+.train-metric-row{display:flex;align-items:flex-start;gap:.4rem;margin-bottom:1.1rem;height:68px}
+.train-metric-num{font-family:'Tulpen One',serif;font-size:3rem;line-height:1;letter-spacing:.04em}
+.train-metric-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.train-bars{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem}
+.train-bar-row{display:flex;align-items:center;gap:.75rem}
+.train-bar-name{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);width:68px;flex-shrink:0}
+.train-bar-track{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+.train-bar-fill{height:100%;border-radius:999px}
+.train-bar-val{font-size:.7rem;font-weight:700;color:var(--text);width:52px;text-align:right;flex-shrink:0}
+
+/* ─── CLIENT STRIP ─── */
+#client-strip{padding:1.4rem 2rem 1rem;border-bottom:1px solid var(--border)}
+.cs-inner{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;max-width:1400px;margin:0 auto}
+.cs-avatar{display:none}
+.cs-name{font-family:'Tulpen One',serif;font-size:clamp(2.8rem,5.5vw,4.2rem);line-height:1;letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
+.cs-prog{font-family:'Tulpen One',serif;font-size:clamp(1.2rem,2vw,1.7rem);line-height:1.1;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.cs-plan-label{font-family:'Tulpen One',serif;font-size:clamp(1.5rem,2.8vw,2.2rem);line-height:1.1;letter-spacing:.06em;text-transform:uppercase;color:rgba(201,162,74,.75);font-weight:400;margin-top:.3rem}
+
 /* ─── RESPONSIVE ─── */
 @media(max-width:960px){
   #day-plans{grid-template-columns:1fr;padding:1.2rem 1rem 3rem;align-items:start}
@@ -265,6 +283,41 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   .pp-body{padding:1.5rem 1rem 3rem}
   .pp-metrics{grid-template-columns:1fr 1fr}
 }
+
+/* ─── NEXT WEEK PLAN BANNER ─── */
+#next-week-banner{
+  position:relative;z-index:100;overflow:hidden;
+  background:linear-gradient(90deg,rgba(201,162,74,.14) 0%,rgba(166,200,94,.10) 55%,rgba(201,162,74,.09) 100%);
+  border-bottom:1px solid rgba(201,162,74,.28);
+  animation:nwb-in .55s cubic-bezier(.4,0,.2,1) both;
+}
+.nwb-inner{
+  display:flex;align-items:center;gap:1rem;
+  max-width:1400px;margin:0 auto;padding:.7rem 2rem;
+}
+.nwb-icon{
+  font-size:1.1rem;color:var(--gold);flex-shrink:0;
+  animation:nwb-pulse 2.8s ease-in-out infinite;
+}
+.nwb-text{flex:1}
+.nwb-title{font-size:.83rem;font-weight:700;color:var(--text);letter-spacing:.02em}
+.nwb-sub{font-size:.68rem;color:var(--muted);margin-top:2px}
+.nwb-see{
+  flex-shrink:0;padding:.42rem 1.5rem;border:none;border-radius:999px;
+  background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;
+  font-family:'Manrope',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
+  box-shadow:0 3px 14px rgba(201,162,74,.32);
+}
+.nwb-see:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(201,162,74,.44)}
+.nwb-dismiss{
+  flex-shrink:0;background:none;border:none;color:var(--muted2);
+  cursor:pointer;font-size:1rem;padding:.25rem .5rem;line-height:1;
+  transition:color .2s;
+}
+.nwb-dismiss:hover{color:var(--text)}
+@keyframes nwb-in{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}
+@keyframes nwb-pulse{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
 </style>
 </head>
 <body>
@@ -278,7 +331,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
     <div class="lf"><label for="pw">Password</label><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
     <div class="login-error" id="login-error">Incorrect credentials. Please try again.</div>
     <button class="login-btn" id="login-btn">Enter Portal</button>
-    <p class="login-hint">Demo access<br><strong>client@dare.ae</strong> &nbsp;/&nbsp; <strong>dare2026</strong></p>
+    <p class="login-hint">Access by invitation only.<br>If you haven't received credentials, contact <strong>Erika</strong> or <strong>Daniel</strong>.</p>
   </div>
 </div>
 
@@ -301,6 +354,27 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   </header>
 
   <div class="week-strip" id="week-strip"></div>
+
+  <!-- ═══ NEXT WEEK PLAN BANNER ═══ -->
+  <div id="next-week-banner" style="display:none">
+    <div class="nwb-inner">
+      <span class="nwb-icon">✦</span>
+      <div class="nwb-text">
+        <div class="nwb-title">Your plan for next week is ready!</div>
+        <div class="nwb-sub">Training &amp; nutrition &mdash; prepared by Erika &amp; Daniel</div>
+      </div>
+      <button class="nwb-see" id="nwb-see-btn">See</button>
+      <button class="nwb-dismiss" id="nwb-dismiss-btn">&times;</button>
+    </div>
+  </div>
+
+  <div id="client-strip">
+    <div class="cs-inner">
+      <div class="cs-name" id="cs-client-name">Alex Hammond</div>
+      <div class="cs-prog" id="cs-client-prog">Fat-Loss Protocol &nbsp;&middot;&nbsp; Week 8 of 12</div>
+      <div class="cs-plan-label" id="cs-plan-label">My plan for today</div>
+    </div>
+  </div>
 
   <div id="day-plans">
     <div class="plan-card glass" id="training-card">
@@ -377,10 +451,8 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 <script>
 (function(){
 
-// Configura la URL del servidor del bot
-// En producción: usa tu URL de Railway
-// En local: usa localhost:3001 para testing
-const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+// Bot API URL — dev: localhost, prod: Railway
+var isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 window.DARE_API_URL = isDev ? 'http://localhost:3001' : 'https://web-production-df21c.up.railway.app';
 /* ═══ DYNAMIC PLAN LOADING ═══
  * Reads ?client=<clientId> from the URL.
@@ -388,29 +460,51 @@ window.DARE_API_URL = isDev ? 'http://localhost:3001' : 'https://web-production-
  * Falls back to the hardcoded DEMO_WEEK if API is unavailable.
  * ═══════════════════════════════════════════════════════════ */
 
-function getClientIdFromUrl(){
-  return new URLSearchParams(location.search).get('client') || 'alex-hammond';
+function getAuthToken(){ return sessionStorage.getItem('dare_token') || null; }
+function getAuthClient(){
+  try{ return JSON.parse(sessionStorage.getItem('dare_client') || 'null'); }
+  catch{ return null; }
 }
 
 function todayIndex(week){
   const todayStr = new Date().toLocaleDateString('en-GB',{weekday:'short'});
-  // weekday short: Mon Tue Wed Thu Fri Sat Sun
   const abbr = todayStr.slice(0,3);
   const idx = week.findIndex(d=>d.label===abbr);
   return idx>=0 ? idx : 0;
 }
 
-async function fetchLivePlan(clientId){
+async function fetchLivePlan(){
   const apiUrl = window.DARE_API_URL;
-  if(!apiUrl) return null;
+  const token  = getAuthToken();
+  const client = getAuthClient();
+  if(!apiUrl || !token || !client) return null;
   try{
-    const r = await fetch(`${apiUrl}/api/plans/${clientId}`);
+    const r = await fetch(`${apiUrl}/api/plans/${client.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     if(!r.ok) return null;
     const data = await r.json();
-    // Only use merged week when both training + nutrition are ready
-    if(data.week && Array.isArray(data.week)) return data.week;
+    // Return full plan object so callers can inspect weekOf, publishedAt, etc.
+    if(data.week && Array.isArray(data.week)) return data;
     return null;
   }catch{ return null; }
+}
+
+async function apiLogin(email, password){
+  const apiUrl = window.DARE_API_URL;
+  if(!apiUrl) return { error: 'API no disponible' };
+  try{
+    const r = await fetch(`${apiUrl}/api/auth/login`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password })
+    });
+    const data = await r.json();
+    if(!r.ok) return { error: data.error || 'Credenciales incorrectas' };
+    return data;
+  }catch(err){
+    return { error: 'No se pudo conectar al servidor' };
+  }
 }
 
 /* ═══ DEMO DATA (fallback) ═══ */
@@ -431,6 +525,7 @@ const WEEK = [
     ],
     note:"Prioritise form on the bench — we're building shoulder stability. Log weights on every set. If the last 2 reps of set 4 feel easy, we add 2.5 kg next Monday.",
     noteType:'strength',
+    metrics:{main:65,mainLabel:'min · session',bars:[{name:'Volume',value:18,max:25,label:'18 sets'},{name:'Intensity',value:78,max:100,label:'78%'},{name:'Duration',value:65,max:90,label:'65 min'}]},
   },
   nutrition:{
     kcal:2200, protein:185, carbs:195, fat:55,
@@ -458,6 +553,7 @@ const WEEK = [
     ],
     note:"Push hard in the 40-second windows — RPE 9. Full recovery in the 20 seconds. No training tomorrow so leave it all here. Log your peak HR.",
     noteType:'cardio',
+    metrics:{main:50,mainLabel:'min · session',bars:[{name:'Duration',value:50,max:90,label:'50 min'},{name:'Intensity',value:85,max:100,label:'85%'},{name:'Effort',value:90,max:100,label:'RPE 9'}]},
   },
   nutrition:{
     kcal:1980, protein:175, carbs:165, fat:52,
@@ -484,6 +580,7 @@ const WEEK = [
     ],
     note:"Rest day is where adaptation happens. Movement keeps circulation moving to trained muscles. Don't skip the foam rolling — Thursday's squat session depends on it.",
     noteType:'rest',
+    metrics:{main:75,mainLabel:'min · recovery',bars:[{name:'Duration',value:75,max:90,label:'75 min'},{name:'Recovery Focus',value:85,max:100,label:'Mobility'},{name:'Sleep Priority',value:82,max:100,label:'8h target'}]},
   },
   nutrition:{
     kcal:1860, protein:165, carbs:142, fat:60,
@@ -510,6 +607,7 @@ const WEEK = [
     ],
     note:"Heaviest squat session this week. Take warm-up sets seriously — they're not optional. Track RPE on every working set. If the last 2 reps feel easy, we're adding 2.5 kg next Thursday.",
     noteType:'strength',
+    metrics:{main:70,mainLabel:'min · session',bars:[{name:'Volume',value:17,max:25,label:'17 sets'},{name:'Intensity',value:80,max:100,label:'80%'},{name:'Duration',value:70,max:90,label:'70 min'}]},
   },
   nutrition:{
     kcal:2280, protein:182, carbs:210, fat:50,
@@ -537,6 +635,7 @@ const WEEK = [
     ],
     note:"Easy aerobic day before Saturday's peak session. Keep cycling in zone 2 — you should be able to hold a full conversation. Leave the gym feeling fresh, not fatigued.",
     noteType:'cardio',
+    metrics:{main:60,mainLabel:'min · session',bars:[{name:'Duration',value:60,max:90,label:'60 min'},{name:'Intensity',value:68,max:100,label:'Z2 Zone'},{name:'Effort',value:65,max:100,label:'RPE 6'}]},
   },
   nutrition:{
     kcal:2020, protein:172, carbs:175, fat:55,
@@ -563,6 +662,7 @@ const WEEK = [
     ],
     note:"Weekly peak session. Deadlift is the priority — everything else follows. If energy is high, chase a small PR. Record all weights. This is your weekly evidence of progress.",
     noteType:'strength',
+    metrics:{main:80,mainLabel:'min · session',bars:[{name:'Volume',value:17,max:25,label:'17 sets'},{name:'Intensity',value:83,max:100,label:'83%'},{name:'Duration',value:80,max:90,label:'80 min'}]},
   },
   nutrition:{
     kcal:2320, protein:188, carbs:220, fat:52,
@@ -589,6 +689,7 @@ const WEEK = [
     ],
     note:"End of the week. You trained hard — now let the body build. The walk and swim keep circulation moving, nothing more. Monday starts a new block. Arrive rested.",
     noteType:'rest',
+    metrics:{main:70,mainLabel:'min · recovery',bars:[{name:'Duration',value:70,max:90,label:'70 min'},{name:'Recovery Focus',value:95,max:100,label:'Complete'},{name:'Sleep Priority',value:88,max:100,label:'9h target'}]},
   },
   nutrition:{
     kcal:1820, protein:158, carbs:130, fat:65,
@@ -613,16 +714,34 @@ const loginScreen = document.getElementById('login-screen');
 const app         = document.getElementById('app');
 const loginError  = document.getElementById('login-error');
 
+function applyClientToUI(client){
+  if(!client) return;
+  // Strip above training/nutrition cards
+  const nameEl = document.getElementById('cs-client-name');
+  const progEl = document.getElementById('cs-client-prog');
+  const initEl = document.getElementById('cs-avatar-initials');
+  if(nameEl) nameEl.textContent = client.name;
+  if(progEl) progEl.textContent = `${client.goal}  ·  Week ${client.currentWeek} of ${client.totalWeeks}`;
+  if(initEl) initEl.textContent = client.initials || (client.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  // Profile panel header
+  const ppName = document.querySelector('.pp-name');
+  const ppRole = document.querySelector('.pp-role');
+  if(ppName) ppName.textContent = client.name;
+  if(ppRole) ppRole.textContent = client.goal;
+}
+
 async function showDash(){
   loginScreen.classList.add('hidden');
   app.classList.add('visible');
 
-  // Try to load a live plan from the bot API
-  const clientId = getClientIdFromUrl();
-  const live = await fetchLivePlan(clientId);
-  if(live && live.length===7){
-    ACTIVE_WEEK = live;
-    currentDay  = todayIndex(live);
+  const client = getAuthClient();
+  applyClientToUI(client);
+
+  const livePlan = await fetchLivePlan();
+  if(livePlan && livePlan.week && livePlan.week.length===7){
+    ACTIVE_WEEK = livePlan.week;
+    currentDay  = todayIndex(livePlan.week);
+    checkNextWeekNotification(livePlan);
   }
 
   renderDay(currentDay);
@@ -631,16 +750,74 @@ async function showDash(){
 
 function showLogin(){ app.classList.remove('visible'); loginScreen.classList.remove('hidden'); }
 
-if(sessionStorage.getItem('dare_auth')==='1') showDash();
+/* ═══ NEXT-WEEK PLAN NOTIFICATION ═══ */
 
-document.getElementById('login-btn').addEventListener('click',()=>{
+function checkNextWeekNotification(plan){
+  if(!plan || !plan.weekOf) return;
+  // weekOf is YYYY-MM-DD (the Monday of the plan week)
+  var weekOfDate = new Date(plan.weekOf + 'T00:00:00');
+  var now = new Date();
+  var todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if(weekOfDate > todayMidnight){
+    showNextWeekBanner();
+  }
+}
+
+function showNextWeekBanner(){
+  var banner = document.getElementById('next-week-banner');
+  if(!banner || banner._attached) return;
+  banner._attached = true;
+  banner.style.display = 'block';
+
+  function hideBanner(){
+    banner.style.transition = 'opacity .3s ease, transform .35s ease';
+    banner.style.opacity = '0';
+    banner.style.transform = 'translateY(-100%)';
+    setTimeout(function(){
+      banner.style.display = 'none';
+      banner.style.opacity = '';
+      banner.style.transform = '';
+      banner.style.transition = '';
+    }, 340);
+  }
+
+  document.getElementById('nwb-see-btn').addEventListener('click', function(){
+    hideBanner();
+    // Smooth-scroll to the plan cards
+    var plans = document.getElementById('day-plans');
+    if(plans) plans.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('nwb-dismiss-btn').addEventListener('click', hideBanner);
+}
+
+if(getAuthToken() && getAuthClient()) showDash();
+
+document.getElementById('login-btn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('login-btn');
   const e = document.getElementById('email').value.trim().toLowerCase();
   const p = document.getElementById('pw').value;
-  if(e==='client@dare.ae'&&p==='dare2026'){ sessionStorage.setItem('dare_auth','1'); loginError.classList.remove('visible'); showDash(); }
-  else { loginError.classList.add('visible'); }
+  if(!e || !p){ loginError.textContent='Introduce email y contraseña.'; loginError.classList.add('visible'); return; }
+  btn.disabled = true; const oldText = btn.textContent; btn.textContent = 'Entering…';
+  const result = await apiLogin(e, p);
+  btn.disabled = false; btn.textContent = oldText;
+  if(result.error){
+    loginError.textContent = result.error;
+    loginError.classList.add('visible');
+    return;
+  }
+  sessionStorage.setItem('dare_token', result.token);
+  sessionStorage.setItem('dare_client', JSON.stringify(result.client));
+  loginError.classList.remove('visible');
+  showDash();
 });
 document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-btn').click(); });
-document.getElementById('logout-btn').addEventListener('click',()=>{ sessionStorage.removeItem('dare_auth'); showLogin(); document.getElementById('profile-panel').classList.remove('open'); });
+document.getElementById('logout-btn').addEventListener('click',()=>{
+  sessionStorage.removeItem('dare_token');
+  sessionStorage.removeItem('dare_client');
+  showLogin();
+  document.getElementById('profile-panel').classList.remove('open');
+});
 
 /* ═══ WEEK STRIP ═══ */
 function buildWeekStrip(){
@@ -685,6 +862,33 @@ function renderDay(idx){
   badge.textContent=d.type==='strength'?'STRENGTH · '+d.training.session:d.type==='cardio'?'CARDIO · '+d.training.session:'ACTIVE REST';
   badge.className='day-type-badge badge-'+d.type;
   document.getElementById('day-name').textContent=d.fullDate+(d.today?' · TODAY':'');
+  // Update plan label — compare day against real system date
+  const planLabel=document.getElementById('cs-plan-label');
+  if(planLabel){
+    const now=new Date();
+    const todayStr=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    // Build a comparable date string from d.fullDate (e.g. "Tuesday, 26 May")
+    const dayName=d.fullDate.split(',')[0].trim();
+    const datePart=d.fullDate.split(',')[1]?.trim()||'';
+    // Reconstruct full label date: "Tuesday, 26 May"
+    const todayNormalized=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    const tomorrowDate=new Date(now); tomorrowDate.setDate(now.getDate()+1);
+    const tomorrowNormalized=tomorrowDate.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    const yesterdayDate=new Date(now); yesterdayDate.setDate(now.getDate()-1);
+    const yesterdayNormalized=yesterdayDate.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    // d.fullDate format: "Tuesday, 26 May" — normalize for comparison
+    const dFull=d.fullDate.replace(',','').split(' ');
+    const dNorm=[dFull[0],dFull[1]+' '+dFull[2]].join(' ');
+    const tNorm=todayNormalized.replace(',','');
+    const tmNorm=tomorrowNormalized.replace(',','');
+    const yNorm=yesterdayNormalized.replace(',','');
+    let when='';
+    if(dNorm===tNorm) when='today';
+    else if(dNorm===tmNorm) when='tomorrow';
+    else if(dNorm===yNorm) when='yesterday';
+    const prefix=when?`My plan for ${when}, `:'My plan for ';
+    planLabel.textContent=prefix+d.fullDate;
+  }
   document.getElementById('training-content').innerHTML=renderTraining(d.training,d.type);
   document.getElementById('nutrition-content').innerHTML=renderNutrition(d.nutrition);
   setupAccordions();
@@ -693,6 +897,14 @@ function renderDay(idx){
 function renderTraining(t,type){
   const pc='pill-'+type;
   let h=`<div class="session-pill ${pc}"><span class="pill-dot"></span>${t.session}</div>`;
+  if(t.metrics){
+    const m=t.metrics;
+    const numGrad=type==='strength'?'linear-gradient(135deg,#d9d4c8,#a6c85e)':type==='cardio'?'linear-gradient(135deg,#d9d4c8,#c9a24a)':'linear-gradient(135deg,#d9d4c8,#c0a8e8)';
+    const barFill=type==='strength'?'linear-gradient(90deg,#a6c85e,#8fb85a)':type==='cardio'?'linear-gradient(90deg,#c9a24a,#b8922a)':'linear-gradient(90deg,#c0a8e8,#9a82d0)';
+    h+=`<div class="train-metric-row"><span class="train-metric-num" style="background:${numGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${m.main}</span><span class="train-metric-label">${m.mainLabel}</span></div><div class="train-bars">`;
+    m.bars.forEach(b=>{const pct=Math.round(b.value/b.max*100);h+=`<div class="train-bar-row"><span class="train-bar-name">${b.name}</span><div class="train-bar-track"><div class="train-bar-fill" style="width:${pct}%;background:${barFill}"></div></div><span class="train-bar-val">${b.label}</span></div>`;});
+    h+=`</div><hr class="divider">`;
+  }
   if(type==='rest'){
     h+='<div class="act-list">';
     t.activities.forEach(a=>{
@@ -716,7 +928,7 @@ function renderNutrition(n){
   const pP=Math.round(n.protein*4/n.kcal*100);
   const cP=Math.round(n.carbs*4/n.kcal*100);
   const fP=Math.round(n.fat*9/n.kcal*100);
-  let h=`<div class="kcal-row"><span class="kcal-num">${n.kcal.toLocaleString()}</span><span class="kcal-label">kcal target</span></div>
+  let h=`<span class="pill-spacer"></span><div class="kcal-row"><span class="kcal-num">${n.kcal.toLocaleString()}</span><span class="kcal-label">kcal target</span></div>
     <div class="macro-bars">
       <div class="macro-row"><span class="macro-name">Protein</span><div class="macro-track"><div class="macro-fill" style="width:${pP}%;background:linear-gradient(90deg,#a6c85e,#8fb85a)"></div></div><span class="macro-g">${n.protein}g</span></div>
       <div class="macro-row"><span class="macro-name">Carbs</span><div class="macro-track"><div class="macro-fill" style="width:${cP}%;background:linear-gradient(90deg,#c9a24a,#b8922a)"></div></div><span class="macro-g">${n.carbs}g</span></div>
