@@ -132,6 +132,18 @@ export const NUTRITION_TOOL = {
   },
 };
 
+export const RESET_PASSWORD_TOOL = {
+  name: 'reset_client_password',
+  description: 'Resetea la contraseña de un cliente y devuelve la nueva contraseña temporal. Úsalo cuando un cliente haya olvidado su contraseña.',
+  input_schema: {
+    type: 'object',
+    required: ['clientId'],
+    properties: {
+      clientId: { type: 'string', description: 'ID del cliente (ej: diego-tero). Búscalo en la lista de clientes activos.' },
+    },
+  },
+};
+
 export const CREATE_CLIENT_TOOL = {
   name: 'create_client',
   description: 'Da de alta un nuevo cliente en el sistema DARE. Úsalo cuando el coach quiera crear una cuenta para un nuevo cliente.',

@@ -406,6 +406,17 @@ function appendMsg(role, content, action){
     bubble.appendChild(card);
   }
 
+  if(action?.type === 'password_reset'){
+    const card = document.createElement('div');
+    card.className = 'action-card gold';
+    card.innerHTML = `
+      <div class="ac-head"><span class="ac-icon">🔑</span><span class="ac-title">Contraseña reseteada</span></div>
+      <div class="ac-row"><strong>Cliente:</strong> ${action.clientName}</div>
+      <div class="ac-row">Nueva contraseña temporal:</div>
+      <div class="ac-pwd">${action.password}</div>`;
+    bubble.appendChild(card);
+  }
+
   if(action?.type === 'client_created'){
     const c = action.client;
     const card = document.createElement('div');

@@ -9,7 +9,7 @@ import {
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession } from './auth.js';
-import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL } from './tools.js';
+import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL } from './tools.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT  = join(__dir, '..');
@@ -156,10 +156,11 @@ INSTRUCCIONES:
 - Para crear un cliente usa create_client. Necesitas: nombre, email, objetivo y semanas totales.
 - Responde en español. Tono profesional y cercano. Respuestas concisas.`;
 
-  const createClientFn = { type: 'function', function: { name: CREATE_CLIENT_TOOL.name, description: CREATE_CLIENT_TOOL.description, parameters: CREATE_CLIENT_TOOL.input_schema } };
+  const createClientFn  = { type: 'function', function: { name: CREATE_CLIENT_TOOL.name,    description: CREATE_CLIENT_TOOL.description,    parameters: CREATE_CLIENT_TOOL.input_schema    } };
+  const resetPwdFn      = { type: 'function', function: { name: RESET_PASSWORD_TOOL.name,   description: RESET_PASSWORD_TOOL.description,   parameters: RESET_PASSWORD_TOOL.input_schema   } };
   const tools = coach.specialty === 'training'
-    ? [{ type: 'function', function: { name: TRAINING_TOOL.name, description: TRAINING_TOOL.description, parameters: TRAINING_TOOL.input_schema } }, createClientFn]
-    : [{ type: 'function', function: { name: NUTRITION_TOOL.name, description: NUTRITION_TOOL.description, parameters: NUTRITION_TOOL.input_schema } }, createClientFn];
+    ? [{ type: 'function', function: { name: TRAINING_TOOL.name, description: TRAINING_TOOL.description, parameters: TRAINING_TOOL.input_schema } }, createClientFn, resetPwdFn]
+    : [{ type: 'function', function: { name: NUTRITION_TOOL.name, description: NUTRITION_TOOL.description, parameters: NUTRITION_TOOL.input_schema } }, createClientFn, resetPwdFn];
 
   try {
     const openaiMessages = [{ role: 'system', content: systemPrompt }, ...messages];
@@ -192,6 +193,16 @@ INSTRUCCIONES:
       const { client, generatedPassword } = await createClient(toolInput);
       action = { type: 'client_created', client, password: generatedPassword };
       toolResultContent = JSON.stringify({ success: true, name: client.name, email: client.email, password: generatedPassword });
+    } else if (toolName === 'reset_client_password') {
+      const newPwd = await resetClientPassword(toolInput.clientId);
+      if (!newPwd) {
+        toolResultContent = JSON.stringify({ success: false, error: 'Cliente no encontrado' });
+        action = null;
+      } else {
+        const c = getClientById(toolInput.clientId);
+        action = { type: 'password_reset', clientId: toolInput.clientId, clientName: c?.name || toolInput.clientId, password: newPwd };
+        toolResultContent = JSON.stringify({ success: true, clientId: toolInput.clientId, newPassword: newPwd });
+      }
     } else {
       return res.json({ reply: 'Herramienta desconocida.', action: null });
     }
