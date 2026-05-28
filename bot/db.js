@@ -47,6 +47,20 @@ db.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS idx_sessions_client ON sessions(client_id);
+
+  CREATE TABLE IF NOT EXISTS plans (
+    client_id       TEXT NOT NULL,
+    week_of         TEXT NOT NULL,
+    plan_json       TEXT NOT NULL,
+    training_ready  INTEGER DEFAULT 0,
+    nutrition_ready INTEGER DEFAULT 0,
+    created_at      TEXT DEFAULT (datetime('now')),
+    published_at    TEXT,
+    PRIMARY KEY (client_id, week_of),
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_plans_client ON plans(client_id);
 `);
 
 export default db;
