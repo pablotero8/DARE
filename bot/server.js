@@ -1,6 +1,11 @@
 import './env.js'; // Load .env FIRST
 import express from 'express';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { handleIncoming } from './conversations.js';
+
+const __dir = dirname(fileURLToPath(import.meta.url)); // bot/
+const ROOT  = join(__dir, '..'); // project root — contains all HTML/CSS/JS
 import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan } from './planner.js';
 import {
   verifyClientPassword,
@@ -25,6 +30,11 @@ app.use((req, res, next) => {
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
+
+// ── Static files (project root: HTML, CSS, JS, images) ────────
+// Block the bot/ subdirectory so internals aren't exposed
+app.use('/bot', (req, res) => res.status(404).end());
+app.use(express.static(ROOT, { index: 'index.html', dotfiles: 'ignore' }));
 
 // ── Auth middleware ───────────────────────────────────────────
 
