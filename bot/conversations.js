@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { CLIENTS } from './clients.js';
+import { formatClientsForPrompt, listClientsShort, createClient, deleteClient, findClient, resetClientPassword } from './clients.js';
 import { TRAINING_TOOL, NUTRITION_TOOL } from './tools.js';
 import { sendMessage } from './whatsapp.js';
 import { savePlan } from './planner.js';
@@ -13,12 +13,14 @@ mkdirSync(STATE_DIR, { recursive: true });
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Registered team members — loaded from env
-// Daniel can do BOTH training and nutrition plans
+// ── Users / roles ─────────────────────────────────────────────
+// Erika  = admin + trainer (can create clients, generate training plans)
+// Daniel = both (training + nutrition)
+
 function getUsers() {
   return {
     ...(process.env.ERIKA_PHONE
-      ? { [process.env.ERIKA_PHONE]: { name: 'Erika', role: 'trainer' } }
+      ? { [process.env.ERIKA_PHONE]: { name: 'Erika', role: 'admin' } }
       : {}),
     ...(process.env.DANIEL_PHONE
       ? { [process.env.DANIEL_PHONE]: { name: 'Daniel', role: 'both' } }
@@ -51,7 +53,7 @@ function clearState(phone) {
   if (existsSync(p)) unlinkSync(p);
 }
 
-// ── System prompts ────────────────────────────────────────────
+// ── Date helpers ──────────────────────────────────────────────
 
 function nextMonday() {
   const d = new Date();
@@ -60,7 +62,9 @@ function nextMonday() {
   return d.toISOString().split('T')[0];
 }
 
-function buildSystemPrompt(user) {
+// ── System prompts ────────────────────────────────────────────
+
+function buildSystemPrompt(user, planContext = null) {
   const today = new Date().toLocaleDateString('es-ES', {
     weekday: 'long',
     year: 'numeric',
@@ -68,10 +72,12 @@ function buildSystemPrompt(user) {
     day: 'numeric',
   });
   const nextMon = nextMonday();
-  const clientList = CLIENTS.map(
-    (c, i) =>
-      `${i + 1}. ${c.name} (id: ${c.id}) — ${c.goal}, Semana ${c.currentWeek}/${c.totalWeeks}, ${c.weight}kg, ${c.bodyFat}% grasa corporal`
-  ).join('\n');
+  const clientList = formatClientsForPrompt();
+
+  const teamLine =
+    user.name === 'Erika'
+      ? 'Tu compañero es Daniel (nutrición y, ocasionalmente, también entreno).'
+      : 'Tu compañera es Erika (entrenamiento y administración).';
 
   const common = `
 Hoy es ${today}. La próxima semana empieza el lunes ${nextMon}.
@@ -79,84 +85,219 @@ Hoy es ${today}. La próxima semana empieza el lunes ${nextMon}.
 CLIENTES ACTIVOS:
 ${clientList}
 
+EQUIPO DARE:
+- Erika Silva — Performance & Biomechanics Lead (admin)
+- Daniel Otero — Nutrition Science & Culinary Execution
+${teamLine}
+
 ESTILO:
-- Respuestas muy cortas y directas (WhatsApp)
-- En español
-- Profesional
+- Habla siempre en primera persona como ${user.name}.
+- Refiérete a tu compañero(a) por su nombre (Erika / Daniel) cuando aparezca en la conversación.
+- Respuestas muy cortas y directas (WhatsApp).
+- En español. Profesional pero cálido.
 
 FLUJO GENERAL:
 Cuando el usuario dice "plan para [cliente]":
-1. Confirma el cliente y la semana
-2. Haz UNA sola pregunta con todos los datos que necesitas (usar bullets)
-3. Cuando recibas la respuesta, escribe "[LISTO PARA GENERAR]" — el sistema genera automáticamente
-4. Confirma el resultado o pide ajustes
-5. Listo.
+1. Confirma cliente y semana ("Perfecto — plan para [cliente] semana ${nextMon}.")
+2. Haz UNA sola pregunta con todos los datos que necesitas (usar bullets).
+3. Cuando recibas la respuesta, escribe "[LISTO PARA GENERAR]" — el sistema genera automáticamente.
+4. Confirma el resultado o pide ajustes.
+5. Listo. Te avisaré cuando ${user.name === 'Erika' ? 'Daniel' : 'Erika'} suba su parte.
 `.trim();
 
-  if (user.role === 'trainer') {
-    return `Eres Erika, Head of Performance en DARE. Preparas planes de entrenamiento semanal.
+  // ── Role-specific ─────────────────────────────────────────
+  // Erika (admin) — defaults to TRAINING but understands client management commands
+  if (user.role === 'admin') {
+    return `Eres Erika, Performance & Biomechanics Lead en DARE Dubai. También administras el sistema (puedes dar de alta clientes).
+Saluda al usuario por su nombre cuando proceda.
 
 ${common}
 
-PASO 2 - Pregunta única (todas las opciones en un mensaje):
-"¿Cuál es tu plan para [cliente] semana ${nextMon}? Dame:
+PASO 2 — Pregunta única para PLAN DE ENTRENAMIENTO:
+"¿Cuál es el plan para [cliente] semana ${nextMon}? Dime:
 • Días de descanso (ej: Wed, Sun)
 • Tipo cada día (ej: Mon-Strength, Tue-Cardio, Wed-Rest)
-• Cualquier consideración especial
-Puedes escribir libremente, no necesita formato específico."
+• Consideraciones especiales (lesiones, viajes, energía)
+Escribe libremente, no hace falta formato específico."
 
 GENERACIÓN:
 Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" y el sistema creará:
-- 7 días con ejercicios específicos, series, descansos
-- Notas técnicas tuyas para cada sesión
+- 7 días con ejercicios, series, descansos
+- Una nota tuya (Erika) para cada sesión, con tu voz: técnica, intención, motivación
 - Todo en JSON, listo para el portal
+
+GESTIÓN DE CLIENTES (solo tú puedes hacerlo):
+- "/nuevo-cliente" → activa el flujo guiado para crear cliente nuevo
+- "/listar" → ver todos los clientes
+- "/eliminar [id]" → eliminar cliente
+- "/password [id]" → resetear contraseña de un cliente
 
 NO preguntes sobre "formato" o "estructura" — tú solo recoge info, el sistema genera.`;
   }
 
-  return `Eres Daniel, Head of Nutrition en DARE. Preparas planes de nutrición semanal.
+  // Daniel — can do BOTH plans; planContext tells us which one we're building
+  const isTraining = planContext === 'training';
+
+  if (isTraining) {
+    return `Eres Daniel, pero hoy estás cubriendo el plan de entrenamiento (Erika delegó esta semana). Saluda como Daniel.
 
 ${common}
 
-PASO 2 - Pregunta única (todas las opciones en un mensaje):
-"¿Cuál es tu plan para [cliente] semana ${nextMon}? Dame:
-• Calorías objetivo (ej: 2200)
-• Proteína mínima (ej: 180g)
-• Restricciones/preferencias (ej: sin lácteos, sin gluten)
-• Alimentos destacados a incluir
-• Consideraciones especiales (viajes, digestión, etc.)
-Puedes escribir libremente."
+PASO 2 — Pregunta única para PLAN DE ENTRENAMIENTO:
+"¿Plan de entrenamiento para [cliente] semana ${nextMon}? Dame:
+• Días de descanso (ej: Wed, Sun)
+• Tipo cada día (ej: Mon-Strength, Tue-Cardio, Wed-Rest)
+• Consideraciones especiales (lesiones, viajes, energía)"
 
 GENERACIÓN:
-Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" y el sistema creará:
-- 7 días × 4-5 comidas con recetas detalladas
-- Macros calibrados al entrenamiento del día
-- Pasos de preparación paso a paso
-- Todo en JSON, listo para el portal
+Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" — el sistema generará 7 días con ejercicios, badges (series/reps), notas por día.
+
+NO preguntes sobre "formato" — recoge info, el sistema genera.`;
+  }
+
+  return `Eres Daniel Otero, Nutrition Science & Culinary Execution Lead en DARE Dubai. Saluda como Daniel.
+
+${common}
+
+PASO 2 — Pregunta única para PLAN DE NUTRICIÓN:
+"¿Plan nutricional para [cliente] semana ${nextMon}? Dame:
+• Calorías objetivo (ej: 2200)
+• Proteína mínima (ej: 180g)
+• Restricciones / preferencias (sin lácteos, sin gluten, etc.)
+• Alimentos destacados a incluir
+• Consideraciones (viajes, digestión, cenas sociales...)"
+
+GENERACIÓN:
+Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" — el sistema generará 7 días × 4-5 comidas con recetas, macros y pasos. Cada día llevará una nota tuya (Daniel) con la lógica nutricional.
+
+Si el plan tiene una contraparte de entrenamiento ya guardada, menciónalo: "Erika ya subió la parte de entreno — vamos a cerrar la semana."
 
 NO preguntes sobre "formato" — recoge info, el sistema genera.`;
 }
 
-// ── Generation logic ──────────────────────────────────────────
+// ── Admin commands (Erika only) ───────────────────────────────
 
-async function generatePlanAsync(phone, state, user) {
-  // If Daniel is doing training, act as Erika
-  let effectiveRole = user.role;
-  if (user.role === 'nutritionist' && state.planType === 'training') {
-    effectiveRole = 'trainer';
+async function handleAdminCommand(from, body, state) {
+  const text = body.trim();
+  const lower = text.toLowerCase();
+
+  // Flujo de creación de cliente
+  if (state.creatingClient) {
+    return continueClientCreation(from, text, state);
   }
 
-  const tool = effectiveRole === 'trainer' ? TRAINING_TOOL : NUTRITION_TOOL;
-  const baseSystemPrompt = effectiveRole === 'trainer'
-    ? buildSystemPrompt({ role: 'trainer' })
-    : buildSystemPrompt({ role: 'nutritionist' });
+  if (lower === '/nuevo-cliente' || lower === '/nuevo cliente' || lower === '/new-client') {
+    state.creatingClient = { step: 'name', data: {} };
+    saveState(from, state);
+    return '🆕 Vamos a crear un cliente nuevo.\n\n1/5 — ¿Nombre completo del cliente?';
+  }
+
+  if (lower === '/listar' || lower === '/list' || lower === '/clientes') {
+    return '📋 Clientes registrados:\n\n' + listClientsShort();
+  }
+
+  if (lower.startsWith('/eliminar ') || lower.startsWith('/delete ')) {
+    const id = text.split(/\s+/)[1];
+    const ok = deleteClient(id);
+    return ok ? `✅ Cliente "${id}" eliminado.` : `❌ No encontré ningún cliente con id "${id}".`;
+  }
+
+  if (lower.startsWith('/password ') || lower.startsWith('/reset-password ')) {
+    const id = text.split(/\s+/)[1];
+    const newPwd = await resetClientPassword(id);
+    return newPwd
+      ? `🔑 Nueva contraseña para "${id}":\n\n*${newPwd}*\n\nCompártela con el cliente por canal seguro.`
+      : `❌ No encontré "${id}".`;
+  }
+
+  return null;
+}
+
+async function continueClientCreation(from, text, state) {
+  const c = state.creatingClient;
+  const lower = text.toLowerCase();
+
+  if (lower === '/cancelar' || lower === 'cancel') {
+    state.creatingClient = null;
+    saveState(from, state);
+    return '🚫 Creación de cliente cancelada.';
+  }
+
+  switch (c.step) {
+    case 'name':
+      c.data.name = text;
+      c.step = 'email';
+      saveState(from, state);
+      return `2/5 — Email del cliente (será su usuario para entrar al portal):`;
+
+    case 'email':
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(text)) {
+        return '❌ Email inválido. Intenta de nuevo, o escribe /cancelar.';
+      }
+      c.data.email = text;
+      c.step = 'goal';
+      saveState(from, state);
+      return `3/5 — Protocolo / objetivo (ej: Fat-Loss Protocol, Muscle Gain, Recomp):`;
+
+    case 'goal':
+      c.data.goal = text;
+      c.step = 'weeks';
+      saveState(from, state);
+      return `4/5 — Duración del protocolo (semanas totales, ej: 12):`;
+
+    case 'weeks':
+      const w = parseInt(text, 10);
+      if (!w || w < 1 || w > 52) {
+        return '❌ Número inválido. Dame solo el número de semanas (1-52), o /cancelar.';
+      }
+      c.data.totalWeeks = w;
+      c.data.currentWeek = 1;
+      c.step = 'notes';
+      saveState(from, state);
+      return `5/5 — Notas iniciales (gym, restricciones, lesiones, lo que sea relevante). Si no hay nada, escribe "ninguna".`;
+
+    case 'notes':
+      c.data.notes = lower === 'ninguna' || lower === 'none' ? null : text;
+
+      // Create the client
+      try {
+        const { client, generatedPassword } = await createClient(c.data);
+        state.creatingClient = null;
+        saveState(from, state);
+
+        return (
+          `✅ Cliente creado:\n\n` +
+          `*${client.name}*\n` +
+          `Email: ${client.email}\n` +
+          `Protocolo: ${client.goal} (${client.totalWeeks} semanas)\n` +
+          `ID: ${client.id}\n\n` +
+          `🔑 Contraseña inicial: *${generatedPassword}*\n\n` +
+          `Compártesela con el cliente por canal seguro. Puede cambiarla desde el portal.\n\n` +
+          `Ya puedes generar planes para ${client.name.split(' ')[0]}.`
+        );
+      } catch (err) {
+        state.creatingClient = null;
+        saveState(from, state);
+        return `❌ Error al crear cliente: ${err.message}`;
+      }
+  }
+}
+
+// ── Plan generation ───────────────────────────────────────────
+
+async function generatePlanAsync(phone, state, user) {
+  const isTraining = state.planType === 'training';
+  const tool = isTraining ? TRAINING_TOOL : NUTRITION_TOOL;
+
+  const baseSystemPrompt = buildSystemPrompt(user, state.planType);
 
   const genSystemPrompt = baseSystemPrompt + `
 
-INSTRUCCIÓN CRÍTICA: Tienes toda la información necesaria. DEBES llamar la función ${tool.name} AHORA con el plan completo de 7 días. No preguntes nada más. Genera el plan directamente.`;
+INSTRUCCIÓN CRÍTICA: Tienes toda la información necesaria. DEBES llamar la función ${tool.name} AHORA con el plan completo de 7 días. No preguntes nada más. Genera el plan directamente.
+
+Recuerda firmar las notas con tu voz (${user.name === 'Erika' ? 'Erika' : 'Daniel'}).`;
 
   try {
-    // Convert tools to OpenAI format
     const toolDef = {
       type: 'function',
       function: {
@@ -166,10 +307,9 @@ INSTRUCCIÓN CRÍTICA: Tienes toda la información necesaria. DEBES llamar la fu
       },
     };
 
-    // Build messages with system prompt at the start
     const messagesWithSystem = [
       { role: 'system', content: genSystemPrompt },
-      ...state.messages,
+      ...trimMessages(state.messages),
     ];
 
     const response = await openai.chat.completions.create({
@@ -180,38 +320,69 @@ INSTRUCCIÓN CRÍTICA: Tienes toda la información necesaria. DEBES llamar la fu
       tool_choice: { type: 'function', function: { name: tool.name } },
     });
 
-    // Find tool call in response
     const toolCall = response.choices[0].message.tool_calls?.[0];
     if (!toolCall) throw new Error('OpenAI no llamó la función de guardado');
 
     const input = JSON.parse(toolCall.function.arguments);
     const plan = savePlan(toolCall.function.name, input);
-    const summary = formatSummary(input, effectiveRole, plan);
+    const summary = formatSummary(input, isTraining ? 'trainer' : 'nutritionist', plan, user);
 
-    // Add exchange to history so user can still adjust
-    const assistantText = response.choices[0].message.content || '';
-    state.messages.push({
-      role: 'assistant',
-      content: assistantText ? `${assistantText}\n\n${summary}` : summary,
-    });
+    state.messages.push({ role: 'assistant', content: summary });
     state.generating = false;
+    state.planType = null;
     saveState(phone, state);
 
     await sendMessage(phone, summary);
+
+    // ── Multi-party notifications when plan is fully published ──
+    if (plan.trainingReady && plan.nutritionReady && plan.publishedAt) {
+      await broadcastPublishedPlan(plan, input.clientId);
+      // Plan completo — limpiar conversación para el siguiente cliente
+      clearState(phone);
+    }
   } catch (err) {
     console.error('[generator] error:', err);
     state.generating = false;
     saveState(phone, state);
     await sendMessage(
       phone,
-      '❌ Error generando el plan. Por favor escribe más detalles o escribe /reset para reiniciar.'
+      '❌ Error generando el plan. Por favor escribe más detalles o /reset para reiniciar.'
     );
   }
 }
 
-function formatSummary(input, role, savedPlan) {
+async function broadcastPublishedPlan(plan, clientId) {
+  // Import lazily to avoid circular deps
+  const { getClientById } = await import('./clients.js');
+  const client = getClientById(clientId);
+  if (!client) return;
+
+  const weekOf = plan.weekOf;
+
+  const msgErika = `✅ Plan semana ${weekOf} de ${client.name} PUBLICADO en el portal. Entreno + nutrición ya están disponibles para el cliente.`;
+  const msgDaniel = `✅ Plan semana ${weekOf} de ${client.name} PUBLICADO. Tu nutrición + el entreno de Erika ya están live en el portal.`;
+  const msgAdmin = `📡 [DARE] Plan ${client.name} (${weekOf}) publicado en el portal — entreno + nutrición completos.`;
+  const msgClient = `Hola ${client.name.split(' ')[0]}, tu plan semanal de DARE para la semana del ${weekOf} ya está disponible en el portal. Erika y Daniel lo han preparado para ti — entra y revísalo cuando quieras.`;
+
+  const recipients = [];
+  if (process.env.ERIKA_PHONE) recipients.push({ phone: process.env.ERIKA_PHONE, body: msgErika });
+  if (process.env.DANIEL_PHONE) recipients.push({ phone: process.env.DANIEL_PHONE, body: msgDaniel });
+  if (process.env.ADMIN_PHONE) recipients.push({ phone: process.env.ADMIN_PHONE, body: msgAdmin });
+  if (client.phone) recipients.push({ phone: `whatsapp:${client.phone}`, body: msgClient });
+
+  for (const r of recipients) {
+    try {
+      await sendMessage(r.phone, r.body);
+    } catch (err) {
+      console.error('[notify] failed to', r.phone, err.message);
+    }
+  }
+}
+
+function formatSummary(input, role, savedPlan, user) {
   const days = input.days;
   const weekOf = input.weekOf;
+  const partnerName = user.name === 'Erika' ? 'Daniel' : 'Erika';
 
   if (role === 'trainer') {
     const lines = days.map(d => {
@@ -219,10 +390,10 @@ function formatSummary(input, role, savedPlan) {
       return `${e} ${d.label}: ${d.session}`;
     });
     const status = savedPlan?.nutritionReady
-      ? '✅ Plan COMPLETO publicado en el portal.'
-      : '⏳ Esperando plan de nutrición de Daniel.';
+      ? '✅ Plan COMPLETO — entreno + nutrición publicados en el portal.'
+      : `⏳ Esperando la parte de nutrición de ${partnerName}.`;
     return (
-      `✅ Plan de entrenamiento guardado · Semana ${weekOf}\n\n` +
+      `✅ ${user.name === 'Erika' ? 'Erika' : 'Plan de entrenamiento'} guardado · Semana ${weekOf}\n\n` +
       lines.join('\n') +
       `\n\n${status}\n\n¿Algo que ajustar? Dime el cambio o responde "ok" para confirmar.`
     );
@@ -232,14 +403,27 @@ function formatSummary(input, role, savedPlan) {
   const avgProt = Math.round(days.reduce((s, d) => s + d.protein, 0) / 7);
   const lines = days.map(d => `• ${d.label}: ${d.kcal} kcal · P${d.protein}g · C${d.carbs}g · G${d.fat}g`);
   const status = savedPlan?.trainingReady
-    ? '✅ Plan COMPLETO publicado en el portal del cliente.'
-    : '⏳ Esperando plan de entrenamiento de Erika.';
+    ? '✅ Plan COMPLETO — entreno + nutrición publicados en el portal.'
+    : `⏳ Esperando la parte de entrenamiento de ${partnerName}.`;
   return (
     `✅ Plan de nutrición guardado · Semana ${weekOf}\n\n` +
     `Media: ${avgKcal} kcal · ${avgProt}g proteína\n\n` +
     lines.join('\n') +
     `\n\n${status}\n\n¿Algo que ajustar? Dime el cambio o responde "ok" para confirmar.`
   );
+}
+
+// ── Sliding window — keeps last 40 messages for OpenAI context ─
+
+const CONTEXT_WINDOW = 40;
+
+function trimMessages(messages) {
+  if (messages.length <= CONTEXT_WINDOW) return messages;
+  // Always keep pairs (user+assistant) to avoid orphaned roles
+  const trimmed = messages.slice(-CONTEXT_WINDOW);
+  // Ensure first message is from user
+  if (trimmed[0]?.role === 'assistant') return trimmed.slice(1);
+  return trimmed;
 }
 
 // ── Main handler ──────────────────────────────────────────────
@@ -249,14 +433,14 @@ export async function handleIncoming(from, body) {
   const user = USERS[from];
 
   if (!user) {
-    return 'Este número no está registrado en el sistema DARE. Contacta al administrador.';
+    return 'Este número no está registrado en el sistema DARE. Contacta con Erika o Daniel.';
   }
 
   // System commands
   const cmd = body.toLowerCase().trim();
   if (cmd === '/reset' || cmd === 'reset') {
     clearState(from);
-    return `🔄 Conversación reiniciada. ¡Hola ${user.name}! ¿Para qué cliente quieres preparar el plan?`;
+    return `🔄 Conversación reiniciada. Hola ${user.name} 👋 ¿En qué te ayudo?`;
   }
 
   let state = loadState(from) ?? {
@@ -264,37 +448,40 @@ export async function handleIncoming(from, body) {
     role: user.role,
     messages: [],
     generating: false,
-    planType: null, // 'training' or 'nutrition' — Daniel decides both
+    planType: null,
+    creatingClient: null,
   };
 
   if (state.generating) {
-    return '⏳ Todavía generando el plan. Por favor espera unos segundos...';
+    return '⏳ Todavía estoy generando el plan. Dame unos segundos más...';
   }
 
-  // Detectar si Daniel menciona qué tipo de plan
-  if (user.role === 'nutritionist' && !state.planType) {
-    if (body.toLowerCase().includes('entrenamiento') || body.toLowerCase().includes('training')) {
+  // ── Admin commands (only Erika) ─────────────────────────
+  if (user.role === 'admin') {
+    const adminReply = await handleAdminCommand(from, body, state);
+    if (adminReply !== null) return adminReply;
+  }
+
+  // Daniel: detect plan type if mentioned
+  if (user.role === 'both' && !state.planType) {
+    if (body.toLowerCase().includes('entrenamiento') || body.toLowerCase().includes('entreno') || body.toLowerCase().includes('training')) {
       state.planType = 'training';
-    } else if (body.toLowerCase().includes('nutrición') || body.toLowerCase().includes('nutrition')) {
+    } else if (body.toLowerCase().includes('nutrición') || body.toLowerCase().includes('nutricion') || body.toLowerCase().includes('nutrition') || body.toLowerCase().includes('comida') || body.toLowerCase().includes('dieta')) {
       state.planType = 'nutrition';
     }
   }
 
-  state.messages.push({ role: 'user', content: body });
-
-  // Quick chat turn with GPT-4 (fast, no tool use)
-  // Build messages with system prompt at the start
-  // If Daniel is doing training, use Erika's system prompt
-  let systemPrompt = buildSystemPrompt(user);
-  if (user.role === 'nutritionist' && state.planType === 'training') {
-    systemPrompt = buildSystemPrompt({ role: 'trainer' });
-  } else if (user.role === 'nutritionist' && state.planType === 'nutrition') {
-    systemPrompt = buildSystemPrompt({ role: 'nutritionist' });
+  // Erika defaults to training
+  if (user.role === 'admin' && !state.planType) {
+    state.planType = 'training';
   }
 
+  state.messages.push({ role: 'user', content: body });
+
+  const systemPrompt = buildSystemPrompt(user, state.planType);
   const messagesWithSystem = [
     { role: 'system', content: systemPrompt },
-    ...state.messages,
+    ...trimMessages(state.messages),
   ];
 
   const chatResponse = await openai.chat.completions.create({
@@ -306,7 +493,6 @@ export async function handleIncoming(from, body) {
   const text = chatResponse.choices[0].message.content ?? '';
   state.messages.push({ role: 'assistant', content: text });
 
-  // If Claude signals it has all info, trigger async generation
   if (text.includes('[LISTO PARA GENERAR]')) {
     state.generating = true;
     saveState(from, state);
@@ -315,7 +501,7 @@ export async function handleIncoming(from, body) {
     const displayText = text.replace('[LISTO PARA GENERAR]', '').trim();
     return (
       (displayText ? displayText + '\n\n' : '') +
-      '⏳ Generando el plan completo con IA... Tarda ~30 segundos. Te aviso cuando esté listo.'
+      '⏳ Generando el plan completo... ~30s. Te aviso cuando esté listo.'
     );
   }
 

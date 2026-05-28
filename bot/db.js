@@ -1,0 +1,52 @@
+import Database from 'better-sqlite3';
+import { mkdirSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dir = dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = join(__dir, 'data');
+mkdirSync(DATA_DIR, { recursive: true });
+
+const DB_PATH = join(DATA_DIR, 'dare.db');
+const db = new Database(DB_PATH);
+
+db.pragma('journal_mode = WAL');
+db.pragma('foreign_keys = ON');
+
+// ── Schema ─────────────────────────────────────────────────────
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS clients (
+    id              TEXT PRIMARY KEY,
+    name            TEXT NOT NULL,
+    initials        TEXT NOT NULL,
+    email           TEXT UNIQUE NOT NULL,
+    password_hash   TEXT NOT NULL,
+    phone           TEXT,
+    goal            TEXT NOT NULL,
+    current_week    INTEGER DEFAULT 1,
+    total_weeks     INTEGER DEFAULT 12,
+    height_cm       REAL,
+    weight_kg       REAL,
+    body_fat_pct    REAL,
+    lean_mass_kg    REAL,
+    notes           TEXT,
+    created_at      TEXT DEFAULT (datetime('now')),
+    last_login_at   TEXT
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_clients_email ON clients(email);
+  CREATE INDEX IF NOT EXISTS idx_clients_phone ON clients(phone);
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    token       TEXT PRIMARY KEY,
+    client_id   TEXT NOT NULL,
+    created_at  TEXT DEFAULT (datetime('now')),
+    expires_at  TEXT NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_sessions_client ON sessions(client_id);
+`);
+
+export default db;
