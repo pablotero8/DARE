@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-import { mkdirSync, existsSync } from 'fs';
+import { mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -31,6 +31,8 @@ db.exec(`
     body_fat_pct    REAL,
     lean_mass_kg    REAL,
     notes           TEXT,
+    role            TEXT NOT NULL DEFAULT 'client',
+    specialty       TEXT,
     created_at      TEXT DEFAULT (datetime('now')),
     last_login_at   TEXT
   );
@@ -62,5 +64,13 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_plans_client ON plans(client_id);
 `);
+
+// ── Safe migrations for existing DBs ──────────────────────────
+for (const sql of [
+  `ALTER TABLE clients ADD COLUMN role TEXT NOT NULL DEFAULT 'client'`,
+  `ALTER TABLE clients ADD COLUMN specialty TEXT`,
+]) {
+  try { db.exec(sql); } catch {} // column already exists — fine
+}
 
 export default db;

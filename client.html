@@ -965,6 +965,7 @@ document.getElementById('login-btn').addEventListener('click', async ()=>{
   sessionStorage.setItem('dare_token', result.token);
   sessionStorage.setItem('dare_client', JSON.stringify(result.client));
   loginError.classList.remove('visible');
+  if(result.client.role === 'coach'){ window.location.href = '/coach.html'; return; }
   showDash();
 });
 document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-btn').click(); });

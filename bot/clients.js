@@ -19,6 +19,8 @@ function toClient(row) {
     bodyFat: row.body_fat_pct,
     lean: row.lean_mass_kg,
     notes: row.notes,
+    role: row.role ?? 'client',
+    specialty: row.specialty ?? null,
     createdAt: row.created_at,
     lastLoginAt: row.last_login_at,
   };
@@ -44,7 +46,7 @@ function initialsFromName(name) {
 
 // ── CRUD ──────────────────────────────────────────────────────
 
-export async function createClient({ name, email, goal, phone, currentWeek = 1, totalWeeks = 12, weight, height, bodyFat, lean, notes, password }) {
+export async function createClient({ name, email, goal, phone, currentWeek = 1, totalWeeks = 12, weight, height, bodyFat, lean, notes, password, role = 'client', specialty = null }) {
   const id = slugify(name);
   const initials = initialsFromName(name);
   const pwd = password || generatePassword();
@@ -52,9 +54,9 @@ export async function createClient({ name, email, goal, phone, currentWeek = 1, 
 
   try {
     db.prepare(`
-      INSERT INTO clients (id, name, initials, email, password_hash, phone, goal, current_week, total_weeks, height_cm, weight_kg, body_fat_pct, lean_mass_kg, notes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(id, name, initials, email.toLowerCase(), passwordHash, phone || null, goal, currentWeek, totalWeeks, height ?? null, weight ?? null, bodyFat ?? null, lean ?? null, notes || null);
+      INSERT INTO clients (id, name, initials, email, password_hash, phone, goal, current_week, total_weeks, height_cm, weight_kg, body_fat_pct, lean_mass_kg, notes, role, specialty)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(id, name, initials, email.toLowerCase(), passwordHash, phone || null, goal, currentWeek, totalWeeks, height ?? null, weight ?? null, bodyFat ?? null, lean ?? null, notes || null, role, specialty);
   } catch (err) {
     if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
       throw new Error('Ya existe un cliente con ese email o id.');

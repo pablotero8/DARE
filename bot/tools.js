@@ -131,3 +131,20 @@ export const NUTRITION_TOOL = {
     },
   },
 };
+
+export const CREATE_CLIENT_TOOL = {
+  name: 'create_client',
+  description: 'Da de alta un nuevo cliente en el sistema DARE. Úsalo cuando el coach quiera crear una cuenta para un nuevo cliente.',
+  input_schema: {
+    type: 'object',
+    required: ['name', 'email', 'goal', 'totalWeeks'],
+    properties: {
+      name:        { type: 'string',  description: 'Nombre completo del cliente' },
+      email:       { type: 'string',  description: 'Email del cliente (será su usuario de acceso al portal)' },
+      goal:        { type: 'string',  description: 'Protocolo u objetivo. Ej: Fat-Loss Protocol, Muscle Gain, Recomposición' },
+      totalWeeks:  { type: 'integer', description: 'Duración del protocolo en semanas' },
+      currentWeek: { type: 'integer', description: 'Semana en la que empieza (por defecto 1)' },
+      notes:       { type: 'string',  description: 'Notas iniciales: gym, restricciones alimentarias, lesiones, etc.' },
+    },
+  },
+};
