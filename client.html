@@ -858,40 +858,50 @@ async function showDash(){
   const client = getAuthClient();
   applyClientToUI(client);
 
-  // 1. Fetch week list from API
-  WEEK_LIST = await fetchWeekList();
+  // ── Step 1: fetch available weeks ────────────────────────────
+  WEEK_LIST = await fetchWeekList();   // [{weekOf:'YYYY-MM-DD'}, …]
+  let planLoaded = false;
 
-  // 2. Pick the default week: this week's Monday, or nearest past, or first available
-  let defaultWeekOf = null;
+  // ── Step 2a: if week list works, default to current week ─────
   if(WEEK_LIST.length){
     const thisWeekOf = currentMondayISO();
-    const exact = WEEK_LIST.find(w=>w.weekOf===thisWeekOf);
-    if(exact){
-      defaultWeekOf = thisWeekOf;
-    } else {
-      const past = WEEK_LIST.filter(w=>w.weekOf<thisWeekOf);
-      defaultWeekOf = past.length ? past[past.length-1].weekOf : WEEK_LIST[0].weekOf;
-    }
-  }
+    const exact  = WEEK_LIST.find(w=>w.weekOf===thisWeekOf);
+    const past   = WEEK_LIST.filter(w=>w.weekOf<thisWeekOf);
+    const defaultWeekOf = exact
+      ? thisWeekOf
+      : (past.length ? past[past.length-1].weekOf : WEEK_LIST[0].weekOf);
 
-  // 3. Load that week's plan (fallback: demo data)
-  if(defaultWeekOf){
     const plan = await fetchPlanByWeek(defaultWeekOf);
     if(plan && plan.week && plan.week.length===7){
-      ACTIVE_WEEK = plan.week;
+      ACTIVE_WEEK     = plan.week;
       CURRENT_WEEK_OF = defaultWeekOf;
-      currentDay = todayIndex(plan.week);
+      currentDay      = todayIndex(plan.week);
+      planLoaded      = true;
     }
   }
 
-  // 4. Build week selector, render, check notification
+  // ── Step 2b: fallback — load latest plan (old behaviour) ─────
+  if(!planLoaded){
+    const livePlan = await fetchLivePlan();
+    if(livePlan && livePlan.week && livePlan.week.length===7){
+      ACTIVE_WEEK     = livePlan.week;
+      CURRENT_WEEK_OF = livePlan.weekOf || null;
+      currentDay      = todayIndex(livePlan.week);
+      // Build a minimal week list so the selector can show something
+      if(CURRENT_WEEK_OF && !WEEK_LIST.some(w=>w.weekOf===CURRENT_WEEK_OF)){
+        WEEK_LIST = [{ weekOf: CURRENT_WEEK_OF }];
+      }
+    }
+  }
+
+  // ── Step 3: render ───────────────────────────────────────────
   buildWeekSelector(WEEK_LIST, CURRENT_WEEK_OF);
   renderDay(currentDay);
   buildWeekStrip();
 
-  // 5. Show banner if a future plan exists and we're viewing current/past
+  // ── Step 4: notification — only when viewing past/current ────
   const nextWeekOf = nextMondayISO();
-  const hasFuture = WEEK_LIST.some(w=>w.weekOf>=nextWeekOf);
+  const hasFuture  = WEEK_LIST.some(w=>w.weekOf>=nextWeekOf);
   if(hasFuture && (!CURRENT_WEEK_OF || CURRENT_WEEK_OF<nextWeekOf)){
     showNextWeekBanner();
   }
