@@ -6,79 +6,930 @@
     <title>Nutrition | DARE</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('dare-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) { document.documentElement.setAttribute('data-theme','dark'); }
+    })();
+    </script>
+    <style>
+    /* ===== NUTRITION METHOD PAGE ===== */
+
+    .mpn-hero {
+        position: relative;
+        min-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+    }
+
+    .mpn-hero-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('./images/foodslide.jpg');
+        background-size: cover;
+        background-position: center 40%;
+        filter: saturate(0.88) brightness(0.65);
+        z-index: 0;
+        transform: scale(1.04);
+    }
+
+    .mpn-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(5,5,7,0.12) 0%,
+            rgba(5,5,7,0.32) 35%,
+            rgba(5,5,7,0.82) 65%,
+            rgba(5,5,7,1) 100%
+        );
+        z-index: 1;
+    }
+
+    /* Hexagonal molecular decoration */
+    .mpn-deco-hex {
+        position: absolute;
+        right: 3%;
+        top: 12%;
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0.1;
+        width: min(380px, 38vw);
+    }
+
+    /* Macro rings decoration in hero */
+    .mpn-deco-rings {
+        position: absolute;
+        right: 8%;
+        bottom: 22%;
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0.15;
+        width: min(220px, 22vw);
+        height: min(220px, 22vw);
+    }
+
+    .mpn-hero-content {
+        position: relative;
+        z-index: 3;
+        padding-bottom: 4rem;
+        padding-top: 120px;
+    }
+
+    .mpn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2.8rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .mpn-back:hover { color: rgba(244,241,232,0.82); }
+
+    .mpn-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.74rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(201,162,74,0.92);
+        margin-bottom: 0.75rem;
+    }
+
+    .mpn-kicker-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(201,162,74,0.9);
+        box-shadow: 0 0 0 4px rgba(201,162,74,0.12);
+    }
+
+    .mpn-title {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(5rem, 14vw, 11rem);
+        line-height: 0.82;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-color);
+        margin-bottom: 1.1rem;
+    }
+
+    .mpn-lead {
+        font-family: 'Manrope', sans-serif;
+        font-size: clamp(0.95rem, 1.7vw, 1.15rem);
+        line-height: 1.65;
+        color: rgba(244,241,232,0.72);
+        max-width: 54ch;
+        margin-bottom: 2.5rem;
+    }
+
+    .mpn-stats-bar {
+        display: inline-flex;
+        align-items: stretch;
+        border: 1px solid rgba(244,241,232,0.12);
+        border-radius: 18px;
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        overflow: hidden;
+    }
+
+    .mpn-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.22rem;
+        padding: 1.05rem 1.7rem;
+    }
+
+    .mpn-stat-num {
+        font-family: 'Tulpen One', serif;
+        font-size: 1.9rem;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        background: linear-gradient(135deg, rgba(201,162,74,1), rgba(166,200,94,0.85));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .mpn-stat-lbl {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.66rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+    }
+
+    .mpn-stat-sep {
+        width: 1px;
+        background: rgba(244,241,232,0.1);
+        align-self: stretch;
+        flex-shrink: 0;
+    }
+
+    /* === SHARED SECTION STYLES === */
+    .mpn-section { padding: 8vh 0; position: relative; }
+
+    .mpn-section-kicker {
+        display: block;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(201,162,74,0.85);
+        margin-bottom: 0.65rem;
+    }
+
+    .mpn-section-title {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+        line-height: 0.88;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.7rem;
+    }
+
+    .mpn-section-sub {
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.65;
+        max-width: 60ch;
+    }
+
+    /* === PHILOSOPHY SPLIT === */
+    .mpn-philosophy {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .mpn-philosophy-text h2 {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(2.6rem, 5vw, 4.2rem);
+        line-height: 0.88;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 1.2rem;
+    }
+
+    .mpn-philosophy-text p {
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.72;
+        max-width: 54ch;
+    }
+
+    .mpn-philosophy-text p + p { margin-top: 1.1rem; }
+
+    /* Macro rings visual */
+    .mpn-rings-visual {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .mpn-rings-chart {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        flex-shrink: 0;
+    }
+
+    .mpn-rings-chart::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(
+            rgba(166,200,94,0.92) 0deg,
+            rgba(166,200,94,0.92) 180deg,
+            rgba(201,162,74,0.92) 180deg,
+            rgba(201,162,74,0.92) 274deg,
+            rgba(255,255,255,0.18) 274deg,
+            rgba(255,255,255,0.18) 360deg
+        );
+    }
+
+    .mpn-rings-chart::after {
+        content: '';
+        position: absolute;
+        inset: 28px;
+        border-radius: 50%;
+        background: var(--bg-color);
+        z-index: 1;
+    }
+
+    .mpn-rings-center {
+        position: absolute;
+        inset: 28px;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .mpn-rings-center-label {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+    }
+
+    .mpn-macro-legend {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.85rem;
+        width: 100%;
+    }
+
+    .mpn-macro-item {
+        text-align: center;
+        padding: 0.85rem 0.6rem;
+        border-radius: 14px;
+        border: 1px solid rgba(244,241,232,0.09);
+        background: rgba(0,0,0,0.2);
+    }
+
+    .mpn-macro-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin: 0 auto 0.5rem;
+    }
+
+    .mpn-macro-pct {
+        display: block;
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.2rem;
+    }
+
+    .mpn-macro-name {
+        display: block;
+        font-size: 0.64rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+    }
+
+    /* === PROTOCOL CARDS === */
+    .mpn-protocol {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .mpn-protocol-card {
+        border-radius: 24px;
+        padding: 2rem 1.8rem;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.03);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.28s ease, border-color 0.28s ease;
+    }
+
+    .mpn-protocol-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 15%; right: 15%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(201,162,74,0.7), transparent);
+    }
+
+    .mpn-protocol-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(201,162,74,0.28);
+    }
+
+    .mpn-protocol-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: rgba(201,162,74,0.08);
+        border: 1px solid rgba(201,162,74,0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.4rem;
+    }
+
+    .mpn-protocol-icon svg {
+        width: 22px;
+        height: 22px;
+        stroke: rgba(201,162,74,0.88);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mpn-protocol-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--text-color);
+        margin-bottom: 0.8rem;
+    }
+
+    .mpn-protocol-copy {
+        font-size: 0.94rem;
+        color: var(--muted);
+        line-height: 1.62;
+    }
+
+    /* === EXECUTION FLOW === */
+    .mpn-flow {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: center;
+        gap: 0;
+        margin-top: 0.5rem;
+    }
+
+    .mpn-flow-step {
+        text-align: center;
+        padding: 1.6rem 1rem;
+        border-radius: 20px;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.03);
+        position: relative;
+        transition: transform 0.25s, border-color 0.25s;
+    }
+
+    .mpn-flow-step:hover {
+        transform: translateY(-4px);
+        border-color: rgba(201,162,74,0.28);
+    }
+
+    .mpn-flow-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(201,162,74,0.5);
+        flex-shrink: 0;
+    }
+
+    .mpn-flow-arrow svg {
+        width: 20px;
+        height: 20px;
+        stroke: rgba(201,162,74,0.5);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mpn-flow-num {
+        display: block;
+        font-family: 'Tulpen One', serif;
+        font-size: 2.2rem;
+        line-height: 1;
+        background: linear-gradient(135deg, rgba(201,162,74,0.35), rgba(166,200,94,0.2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.6rem;
+    }
+
+    .mpn-flow-title {
+        display: block;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: rgba(201,162,74,0.92);
+        margin-bottom: 0.45rem;
+        letter-spacing: -0.01em;
+    }
+
+    .mpn-flow-copy {
+        font-size: 0.78rem;
+        color: var(--muted-2);
+        line-height: 1.5;
+    }
+
+    /* === LIFE FACTORS GRID === */
+    .mpn-life-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.85rem;
+    }
+
+    .mpn-life-item {
+        border-radius: 18px;
+        padding: 1.3rem 1.2rem;
+        border: 1px solid rgba(244,241,232,0.08);
+        background: rgba(0,0,0,0.18);
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: transform 0.22s, border-color 0.22s;
+    }
+
+    .mpn-life-item:hover {
+        transform: translateY(-3px);
+        border-color: rgba(201,162,74,0.22);
+    }
+
+    .mpn-life-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(201,162,74,0.8);
+        flex-shrink: 0;
+        margin-top: 5px;
+    }
+
+    .mpn-life-content h4 {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 0.3rem;
+        letter-spacing: -0.01em;
+    }
+
+    .mpn-life-content p {
+        font-size: 0.82rem;
+        color: var(--muted-2);
+        line-height: 1.45;
+    }
+
+    /* === CTA === */
+    .mpn-cta {
+        margin: 2vh 0 8vh;
+        border-radius: 28px;
+        border: 1px solid rgba(201,162,74,0.18);
+        background: linear-gradient(135deg,
+            rgba(201,162,74,0.05) 0%,
+            rgba(166,200,94,0.05) 100%
+        );
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mpn-cta::before {
+        content: '';
+        position: absolute;
+        inset: -60%;
+        background:
+            radial-gradient(circle at 25% 40%, rgba(201,162,74,0.14) 0%, transparent 52%),
+            radial-gradient(circle at 78% 62%, rgba(166,200,94,0.10) 0%, transparent 52%);
+        filter: blur(24px);
+        pointer-events: none;
+    }
+
+    .mpn-cta-inner {
+        padding: 4rem 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+    }
+
+    .mpn-cta h2 {
+        font-family: 'Tulpen One', serif;
+        font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+        line-height: 0.88;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.65rem;
+    }
+
+    .mpn-cta p {
+        font-size: 0.98rem;
+        color: var(--muted);
+        max-width: 44ch;
+        line-height: 1.6;
+    }
+
+    .mpn-cta-actions {
+        display: flex;
+        gap: 0.85rem;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    /* Fade-in — starts visible, animates on scroll when JS is available */
+    .mpn-fade { transition: opacity 0.65s ease, transform 0.65s ease; }
+    .mpn-fade.will-reveal { opacity: 0; transform: translateY(20px); }
+    .mpn-fade.will-reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .mpn-fade.will-reveal.is-visible.mpn-fade-delay-1 { transition-delay: 0.1s; }
+    .mpn-fade.will-reveal.is-visible.mpn-fade-delay-2 { transition-delay: 0.2s; }
+    .mpn-fade.will-reveal.is-visible.mpn-fade-delay-3 { transition-delay: 0.3s; }
+
+    /* Separator */
+    .mpn-separator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 0 0 4vh;
+        opacity: 0.85;
+    }
+    .mpn-sep-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(201,162,74,0.35), transparent);
+    }
+    .mpn-sep-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(201,162,74,1), rgba(166,200,94,0.9));
+        box-shadow: 0 0 0 6px rgba(201,162,74,0.10);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .mpn-philosophy { grid-template-columns: 1fr; }
+        .mpn-protocol { grid-template-columns: 1fr; }
+        .mpn-flow { grid-template-columns: 1fr; }
+        .mpn-flow-arrow { transform: rotate(90deg); }
+        .mpn-life-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+        .mpn-stats-bar { flex-direction: column; border-radius: 14px; width: 100%; }
+        .mpn-stat-sep { width: auto; height: 1px; margin: 0 1.7rem; }
+        .mpn-life-grid { grid-template-columns: 1fr; }
+        .mpn-cta-inner { flex-direction: column; padding: 2.5rem 1.8rem; }
+        .mpn-macro-legend { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    </style>
 </head>
 <body class="is-internal-page">
 
     <header class="header-main">
         <a href="index.html" class="logo">DARE</a>
-        <div class="header-actions">
-            <a href="client.html" class="header-login-btn">Log in</a>
-            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
-                <span class="line"></span>
-                <span class="line"></span>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html" class="header-nav-link">Home</a>
+            <a href="plans.html" class="header-nav-link">Plans</a>
+            <a href="team.html" class="header-nav-link">The Team</a>
+            <a href="faq.html" class="header-nav-link">FAQ</a>
+        </nav>
+        <div class="header-controls">
+            <button class="header-theme-btn" id="theme-toggle" aria-label="Toggle light / dark mode">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4.5"/>
+                    <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+                    <line x1="5.6" y1="5.6" x2="7" y2="7"/><line x1="17" y1="17" x2="18.4" y2="18.4"/>
+                    <line x1="18.4" y1="5.6" x2="17" y2="7"/><line x1="7" y1="17" x2="5.6" y2="18.4"/>
+                </svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
             </button>
+            <a href="client.html" class="header-user-btn" aria-label="Client area">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+                </svg>
+            </a>
         </div>
     </header>
 
-    <div class="full-menu" id="full-menu">
-        <nav class="menu-nav">
-            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
-            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
-            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
-            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
-        </nav>
-        <div class="menu-footer">Elevating your lifestyle since 2026</div>
-    </div>
+    <main>
 
-    <main class="page-container">
-        <section class="p-method-page p-method-page--nutrition">
+        <!-- ─── HERO ─────────────────────────────────────────────── -->
+        <section class="mpn-hero">
+            <div class="mpn-hero-bg" aria-hidden="true"></div>
+            <div class="mpn-hero-overlay" aria-hidden="true"></div>
+
+            <!-- Hexagonal molecular decoration -->
+            <div class="mpn-deco-hex" aria-hidden="true">
+                <svg viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <!-- Hexagon grid - molecular pattern -->
+                    <!-- Row 1 -->
+                    <polygon points="75,10 105,27 105,62 75,79 45,62 45,27" stroke="rgba(201,162,74,0.5)" stroke-width="1.2" fill="rgba(201,162,74,0.03)"/>
+                    <polygon points="165,10 195,27 195,62 165,79 135,62 135,27" stroke="rgba(201,162,74,0.4)" stroke-width="1.2" fill="none"/>
+                    <polygon points="255,10 285,27 285,62 255,79 225,62 225,27" stroke="rgba(201,162,74,0.3)" stroke-width="1" fill="none"/>
+                    <!-- Row 2 (offset) -->
+                    <polygon points="30,79 60,96 60,131 30,148 0,131 0,96" stroke="rgba(201,162,74,0.3)" stroke-width="1" fill="none"/>
+                    <polygon points="120,79 150,96 150,131 120,148 90,131 90,96" stroke="rgba(201,162,74,0.45)" stroke-width="1.2" fill="rgba(201,162,74,0.02)"/>
+                    <polygon points="210,79 240,96 240,131 210,148 180,131 180,96" stroke="rgba(166,200,94,0.35)" stroke-width="1" fill="none"/>
+                    <polygon points="300,79 330,96 330,131 300,148 270,131 270,96" stroke="rgba(201,162,74,0.25)" stroke-width="1" fill="none"/>
+                    <!-- Row 3 -->
+                    <polygon points="75,148 105,165 105,200 75,217 45,200 45,165" stroke="rgba(166,200,94,0.4)" stroke-width="1.2" fill="rgba(166,200,94,0.02)"/>
+                    <polygon points="165,148 195,165 195,200 165,217 135,200 135,165" stroke="rgba(201,162,74,0.5)" stroke-width="1.5" fill="rgba(201,162,74,0.04)"/>
+                    <polygon points="255,148 285,165 285,200 255,217 225,200 225,165" stroke="rgba(201,162,74,0.3)" stroke-width="1" fill="none"/>
+                    <!-- Row 4 (offset) -->
+                    <polygon points="30,217 60,234 60,269 30,286 0,269 0,234" stroke="rgba(201,162,74,0.2)" stroke-width="1" fill="none"/>
+                    <polygon points="120,217 150,234 150,269 120,286 90,269 90,234" stroke="rgba(166,200,94,0.35)" stroke-width="1.2" fill="none"/>
+                    <polygon points="210,217 240,234 240,269 210,286 180,269 180,234" stroke="rgba(201,162,74,0.4)" stroke-width="1.2" fill="rgba(201,162,74,0.03)"/>
+                    <!-- Connection atoms (nodes) -->
+                    <circle cx="75" cy="10" r="3" fill="rgba(201,162,74,0.5)"/>
+                    <circle cx="165" cy="79" r="3.5" fill="rgba(166,200,94,0.6)"/>
+                    <circle cx="120" cy="148" r="2.5" fill="rgba(201,162,74,0.4)"/>
+                    <circle cx="165" cy="217" r="3" fill="rgba(201,162,74,0.5)"/>
+                    <circle cx="255" cy="148" r="2" fill="rgba(166,200,94,0.4)"/>
+                </svg>
+            </div>
+
+            <!-- Macro rings decoration -->
+            <div class="mpn-deco-rings" aria-hidden="true">
+                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <circle cx="100" cy="100" r="90" stroke="rgba(201,162,74,0.25)" stroke-width="1" stroke-dasharray="4 6"/>
+                    <circle cx="100" cy="100" r="70" stroke="rgba(166,200,94,0.2)" stroke-width="1" stroke-dasharray="3 8"/>
+                    <circle cx="100" cy="100" r="50" stroke="rgba(201,162,74,0.18)" stroke-width="1" stroke-dasharray="2 10"/>
+                    <path d="M100 10 A90 90 0 0 1 190 100" stroke="rgba(201,162,74,0.7)" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M190 100 A90 90 0 0 1 38 172" stroke="rgba(166,200,94,0.7)" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="100" cy="10" r="5" fill="rgba(201,162,74,0.8)"/>
+                    <circle cx="190" cy="100" r="5" fill="rgba(166,200,94,0.8)"/>
+                    <circle cx="38" cy="172" r="4" fill="rgba(244,241,232,0.4)"/>
+                </svg>
+            </div>
+
+            <div class="p-shell mpn-hero-content">
+                <a href="index.html#our-method" class="mpn-back">← Our Method</a>
+                <div class="mpn-kicker">
+                    <span class="mpn-kicker-dot"></span>
+                    Our Method · 02
+                </div>
+                <h1 class="mpn-title">Nutrition</h1>
+                <p class="mpn-lead">Not a separate diet. The answer to the training stimulus — engineered to the session, the day and the life you actually live.</p>
+                <div class="mpn-stats-bar">
+                    <div class="mpn-stat">
+                        <span class="mpn-stat-num">Weekly</span>
+                        <span class="mpn-stat-lbl">Macro Review</span>
+                    </div>
+                    <div class="mpn-stat-sep"></div>
+                    <div class="mpn-stat">
+                        <span class="mpn-stat-num">Timed</span>
+                        <span class="mpn-stat-lbl">Meal Windows</span>
+                    </div>
+                    <div class="mpn-stat-sep"></div>
+                    <div class="mpn-stat">
+                        <span class="mpn-stat-num">Chef</span>
+                        <span class="mpn-stat-lbl">Ready Recipes</span>
+                    </div>
+                    <div class="mpn-stat-sep"></div>
+                    <div class="mpn-stat">
+                        <span class="mpn-stat-num">Full</span>
+                        <span class="mpn-stat-lbl">Integration</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── PHILOSOPHY + MACRO VISUAL ──────────────────────────── -->
+        <section class="mpn-section">
             <div class="p-shell">
-                <a href="index.html#our-method" class="p-method-page-back">← Back to Our Method</a>
-
-                <div class="p-method-page-hero">
-                    <div class="p-method-page-hero-inner">
-                        <span class="p-method-page-kicker">Our Method</span>
-                        <h1 class="p-method-page-title">Nutrition</h1>
-                        <p class="p-method-page-lead">Placeholder copy — edit this page with your nutrition protocol, culinary execution and how it ties to training load.</p>
+                <div class="mpn-separator"><div class="mpn-sep-line"></div><div class="mpn-sep-dot"></div><div class="mpn-sep-line"></div></div>
+                <div class="mpn-philosophy mpn-fade">
+                    <div class="mpn-philosophy-text">
+                        <span class="mpn-section-kicker">The Philosophy</span>
+                        <h2>Not a Diet.<br>A Response.</h2>
+                        <p>Nutrition at DARE is not a standalone plan. It is the direct answer to the training stimulus — matching energy supply to demand, at every meal, every day.</p>
+                        <p>Protein targets shift with training load. Carbohydrate timing follows session intensity. Micronutrient density is tracked per week, not estimated. When you travel or your schedule changes, the nutrition model updates in step with your training plan — not separately, not later.</p>
+                    </div>
+                    <div class="mpn-rings-visual mpn-fade mpn-fade-delay-2">
+                        <div class="mpn-rings-chart">
+                            <div class="mpn-rings-center">
+                                <span class="mpn-rings-center-label">Macros</span>
+                            </div>
+                        </div>
+                        <div class="mpn-macro-legend">
+                            <div class="mpn-macro-item">
+                                <div class="mpn-macro-dot" style="background:rgba(166,200,94,0.85)"></div>
+                                <span class="mpn-macro-pct" style="color:rgba(166,200,94,0.95)">50%</span>
+                                <span class="mpn-macro-name">Protein</span>
+                            </div>
+                            <div class="mpn-macro-item">
+                                <div class="mpn-macro-dot" style="background:rgba(201,162,74,0.85)"></div>
+                                <span class="mpn-macro-pct" style="color:rgba(201,162,74,0.95)">26%</span>
+                                <span class="mpn-macro-name">Carbs</span>
+                            </div>
+                            <div class="mpn-macro-item">
+                                <div class="mpn-macro-dot" style="background:rgba(244,241,232,0.3)"></div>
+                                <span class="mpn-macro-pct" style="color:rgba(244,241,232,0.6)">24%</span>
+                                <span class="mpn-macro-name">Fat</span>
+                            </div>
+                        </div>
+                        <p style="font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(244,241,232,0.3);text-align:center;">Sample — adjusted to your protocol</p>
                     </div>
                 </div>
-
-                <div class="p-method-page-body">
-                    <p>Nutrition at DARE is not a standalone diet. It is engineered to support the training stimulus: energy availability, protein distribution, micronutrient density and meal timing that fit how you actually eat in Dubai.</p>
-                    <h3>What this includes</h3>
-                    <p>Macro and micro targets, chef-designed recipes, measured ingredients and execution guidance — whether you cook, delegate to staff, or use our in-home culinary team. Preferences, allergies, travel and social dining are mapped into the system, not fought against it.</p>
-                    <p>This section is temporary placeholder text. Replace it with your final nutrition narrative, case studies or protocol breakdown.</p>
-                </div>
-
-                <p class="p-method-page-note">Content draft — replace with your definitive nutrition page copy.</p>
             </div>
         </section>
 
-        <section class="contact-section">
-            <div class="contact-inner">
-                <div class="contact-copy">
-                    <h2>DISCREET ENQUIRIES</h2>
-                    <p>All contact is handled directly by the founding team. No assistants. No mailing lists.</p>
+        <!-- ─── PROTOCOL CARDS ─────────────────────────────────────── -->
+        <section class="mpn-section" style="padding-top: 0;">
+            <div class="p-shell">
+                <div class="mpn-section-head mpn-fade">
+                    <span class="mpn-section-kicker">The Protocol</span>
+                    <h2 class="mpn-section-title">Four Layers.<br>One System.</h2>
+                    <p class="mpn-section-sub">Each component is engineered to work with the others — never in isolation.</p>
                 </div>
-                <form class="contact-form">
-                    <div class="contact-grid">
-                        <div class="field">
-                            <label for="name-nutrition">Name</label>
-                            <input type="text" id="name-nutrition" name="name" placeholder="Optional" />
+                <div class="mpn-protocol">
+                    <div class="mpn-protocol-card mpn-fade mpn-fade-delay-1">
+                        <div class="mpn-protocol-icon">
+                            <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                         </div>
-                        <div class="field">
-                            <label for="email-nutrition">Email</label>
-                            <input type="email" id="email-nutrition" name="email" placeholder="Private contact email" />
+                        <h3 class="mpn-protocol-title">Macro Architecture</h3>
+                        <p class="mpn-protocol-copy">Precise targets calibrated to your body composition goal, current training volume and metabolic rate. Adjusted weekly as composition and performance data come in — not locked to an initial estimate that becomes stale.</p>
+                    </div>
+                    <div class="mpn-protocol-card mpn-fade mpn-fade-delay-2">
+                        <div class="mpn-protocol-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         </div>
+                        <h3 class="mpn-protocol-title">Meal Timing</h3>
+                        <p class="mpn-protocol-copy">Pre and post-training windows are optimised for performance and recovery. Carbohydrate distribution follows your session schedule. Fasted states, social events and late dinners are mapped in, not treated as exceptions.</p>
                     </div>
-                    <div class="field">
-                        <label for="message-nutrition">How can we help?</label>
-                        <textarea id="message-nutrition" name="message" rows="4" placeholder="Share context, constraints or questions."></textarea>
+                    <div class="mpn-protocol-card mpn-fade mpn-fade-delay-1">
+                        <div class="mpn-protocol-icon">
+                            <svg viewBox="0 0 24 24"><path d="m3 11 19-9-9 19-2-8-8-2z"/></svg>
+                        </div>
+                        <h3 class="mpn-protocol-title">Chef-Grade Execution</h3>
+                        <p class="mpn-protocol-copy">Recipes designed for home cooks, household staff or our in-home culinary team. Measured ingredients, prep guides and plating standards so the food on the plate matches the plan on the screen — every time.</p>
                     </div>
-                    <button type="submit" class="contact-submit">SEND ENQUIRY</button>
-                </form>
+                    <div class="mpn-protocol-card mpn-fade mpn-fade-delay-2">
+                        <div class="mpn-protocol-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        </div>
+                        <h3 class="mpn-protocol-title">Real-Life Integration</h3>
+                        <p class="mpn-protocol-copy">Travel menus, restaurant ordering guides, social dining frameworks and hotel room protocols. Nutrition doesn't pause when you leave Dubai — it adapts to wherever you are.</p>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <!-- ─── EXECUTION FLOW ─────────────────────────────────────── -->
+        <section class="mpn-section">
+            <div class="p-shell">
+                <div class="mpn-separator"><div class="mpn-sep-line"></div><div class="mpn-sep-dot"></div><div class="mpn-sep-line"></div></div>
+                <div class="mpn-section-head mpn-fade">
+                    <span class="mpn-section-kicker">How Meals Are Built</span>
+                    <h2 class="mpn-section-title">From Lab to Plate</h2>
+                    <p class="mpn-section-sub">Every meal has a traceable logic — from the data that shaped the target to the plate you eat from.</p>
+                </div>
+                <div class="mpn-flow mpn-fade">
+                    <div class="mpn-flow-step">
+                        <span class="mpn-flow-num">01</span>
+                        <span class="mpn-flow-title">Biomarkers &amp; Goals</span>
+                        <span class="mpn-flow-copy">Lab work, body composition and performance targets</span>
+                    </div>
+                    <div class="mpn-flow-arrow">
+                        <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                    <div class="mpn-flow-step">
+                        <span class="mpn-flow-num">02</span>
+                        <span class="mpn-flow-title">Macro Targets</span>
+                        <span class="mpn-flow-copy">Daily and per-meal protein, carb and fat targets</span>
+                    </div>
+                    <div class="mpn-flow-arrow">
+                        <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                    <div class="mpn-flow-step">
+                        <span class="mpn-flow-num">03</span>
+                        <span class="mpn-flow-title">Recipe Design</span>
+                        <span class="mpn-flow-copy">Measured ingredients with preference, allergy and cultural mapping</span>
+                    </div>
+                    <div class="mpn-flow-arrow">
+                        <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                    <div class="mpn-flow-step">
+                        <span class="mpn-flow-num">04</span>
+                        <span class="mpn-flow-title">Execution &amp; Review</span>
+                        <span class="mpn-flow-copy">Weekly adherence review, adjustments and next cycle build</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── LIFE FACTORS ───────────────────────────────────────── -->
+        <section class="mpn-section" style="padding-top: 2vh;">
+            <div class="p-shell">
+                <div class="mpn-section-head mpn-fade">
+                    <span class="mpn-section-kicker">Mapped Into Your Life</span>
+                    <h2 class="mpn-section-title">What We<br>Account For</h2>
+                    <p class="mpn-section-sub">Nutrition that requires a perfect routine will fail. We build it to hold under real conditions.</p>
+                </div>
+                <div class="mpn-life-grid">
+                    <div class="mpn-life-item mpn-fade mpn-fade-delay-1">
+                        <div class="mpn-life-dot"></div>
+                        <div class="mpn-life-content">
+                            <h4>International Travel</h4>
+                            <p>Time zones, flight nutrition and country-specific food availability all pre-planned before departure.</p>
+                        </div>
+                    </div>
+                    <div class="mpn-life-item mpn-fade mpn-fade-delay-2">
+                        <div class="mpn-life-dot"></div>
+                        <div class="mpn-life-content">
+                            <h4>Social Dining</h4>
+                            <p>Restaurant ordering strategy, social event frameworks and post-event recalibration built in.</p>
+                        </div>
+                    </div>
+                    <div class="mpn-life-item mpn-fade mpn-fade-delay-3">
+                        <div class="mpn-life-dot"></div>
+                        <div class="mpn-life-content">
+                            <h4>Religious &amp; Cultural Requirements</h4>
+                            <p>Ramadan protocols, halal standards, fasting windows and cultural food preferences fully integrated.</p>
+                        </div>
+                    </div>
+                    <div class="mpn-life-item mpn-fade mpn-fade-delay-1">
+                        <div class="mpn-life-dot"></div>
+                        <div class="mpn-life-content">
+                            <h4>Allergies &amp; Intolerances</h4>
+                            <p>Comprehensive allergy mapping with nutrient-equivalent substitutions — never a degraded plan.</p>
+                        </div>
+                    </div>
+                    <div class="mpn-life-item mpn-fade mpn-fade-delay-2">
+                        <div class="mpn-life-dot"></div>
+                        <div class="mpn-life-content">
+                            <h4>Staff Delegation</h4>
+                            <p>Chef-ready recipe packs with prep guides for household staff to execute without your direct involvement.</p>
+                        </div>
+                    </div>
+                    <div class="mpn-life-item mpn-fade mpn-fade-delay-3">
+                        <div class="mpn-life-dot"></div>
+                        <div class="mpn-life-content">
+                            <h4>Culinary Preferences</h4>
+                            <p>Flavour profiles, textures, cuisines and meal formats matched to what you actually want to eat — not what's convenient to plan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── CTA ────────────────────────────────────────────────── -->
+        <section class="mpn-section" style="padding-top: 2vh;">
+            <div class="p-shell">
+                <div class="mpn-cta mpn-fade">
+                    <div class="mpn-cta-inner">
+                        <div>
+                            <h2>The Food Has to<br>Work With Your Life.</h2>
+                            <p>Book a private consultation and we'll show you what a fully integrated nutrition protocol looks like for your goals, your schedule and your kitchen.</p>
+                        </div>
+                        <div class="mpn-cta-actions">
+                            <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20am%20interested%20in%20a%20private%20nutrition%20consultation." class="p-btn p-btn-primary" target="_blank" rel="noopener">Book a Consultation →</a>
+                            <a href="plans.html" class="p-btn p-btn-ghost">View Plans</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <footer class="p-footer">
@@ -92,6 +943,7 @@
                     <a href="index.html">Home</a>
                     <a href="plans.html">Plans</a>
                     <a href="index.html#contact">Contact</a>
+                    <a href="faq.html">FAQ</a>
                 </nav>
                 <div class="p-footer-contact-col">
                     <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
@@ -107,5 +959,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
+    <script>
+    (function(){
+        var btn = document.getElementById('theme-toggle');
+        if (!btn || btn._themeWired) return;
+        btn._themeWired = true;
+        btn.addEventListener('click', function(){
+            var curr = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = curr === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('dare-theme', next); } catch(e){}
+        });
+
+        var fades = document.querySelectorAll('.mpn-fade');
+        requestAnimationFrame(function(){
+            fades.forEach(function(el){ el.classList.add('will-reveal'); });
+            if ('IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function(entries){
+                    entries.forEach(function(entry){
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+                fades.forEach(function(el){ io.observe(el); });
+            } else {
+                fades.forEach(function(el){ el.classList.add('is-visible'); });
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

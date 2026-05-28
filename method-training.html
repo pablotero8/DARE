@@ -6,79 +6,1038 @@
     <title>Training | DARE</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('dare-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) { document.documentElement.setAttribute('data-theme','dark'); }
+    })();
+    </script>
+    <style>
+    /* ===== TRAINING METHOD PAGE ===== */
+
+    .mpt-hero {
+        position: relative;
+        min-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+    }
+
+    .mpt-hero-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('./images/rackslide.jpg');
+        background-size: cover;
+        background-position: center 35%;
+        filter: saturate(0.85) brightness(0.7);
+        z-index: 0;
+        transform: scale(1.04);
+    }
+
+    .mpt-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(5,5,7,0.15) 0%,
+            rgba(5,5,7,0.35) 35%,
+            rgba(5,5,7,0.80) 65%,
+            rgba(5,5,7,1) 100%
+        );
+        z-index: 1;
+    }
+
+    /* Performance chart decoration */
+    .mpt-deco-chart {
+        position: absolute;
+        bottom: 18%;
+        right: 0;
+        width: 55%;
+        height: 60%;
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0.18;
+    }
+
+    /* Barbell decoration */
+    .mpt-deco-barbell {
+        position: absolute;
+        right: 5%;
+        top: 15%;
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0.09;
+        width: min(460px, 45vw);
+    }
+
+    .mpt-hero-content {
+        position: relative;
+        z-index: 3;
+        padding-bottom: 4rem;
+        padding-top: 120px;
+    }
+
+    .mpt-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2.8rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .mpt-back:hover { color: rgba(244,241,232,0.82); }
+
+    .mpt-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.74rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(166,200,94,0.92);
+        margin-bottom: 0.75rem;
+    }
+
+    .mpt-kicker-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(166,200,94,0.9);
+        box-shadow: 0 0 0 4px rgba(166,200,94,0.12);
+    }
+
+    .mpt-title {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(5rem, 14vw, 11rem);
+        line-height: 0.82;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-color);
+        margin-bottom: 1.1rem;
+    }
+
+    .mpt-lead {
+        font-family: 'Manrope', sans-serif;
+        font-size: clamp(0.95rem, 1.7vw, 1.15rem);
+        line-height: 1.65;
+        color: rgba(244,241,232,0.72);
+        max-width: 54ch;
+        margin-bottom: 2.5rem;
+    }
+
+    .mpt-stats-bar {
+        display: inline-flex;
+        align-items: stretch;
+        border: 1px solid rgba(244,241,232,0.12);
+        border-radius: 18px;
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        overflow: hidden;
+    }
+
+    .mpt-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.22rem;
+        padding: 1.05rem 1.7rem;
+    }
+
+    .mpt-stat-num {
+        font-family: 'Tulpen One', serif;
+        font-size: 1.9rem;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        background: linear-gradient(135deg, rgba(166,200,94,1), rgba(201,162,74,0.85));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .mpt-stat-lbl {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.66rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+    }
+
+    .mpt-stat-sep {
+        width: 1px;
+        background: rgba(244,241,232,0.1);
+        align-self: stretch;
+        flex-shrink: 0;
+    }
+
+    /* === SHARED SECTION STYLES === */
+    .mpt-section {
+        padding: 8vh 0;
+        position: relative;
+    }
+
+    .mpt-section-head {
+        margin-bottom: 2.8rem;
+    }
+
+    .mpt-section-kicker {
+        display: block;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(166,200,94,0.85);
+        margin-bottom: 0.65rem;
+    }
+
+    .mpt-section-title {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+        line-height: 0.88;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.7rem;
+    }
+
+    .mpt-section-sub {
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.65;
+        max-width: 60ch;
+    }
+
+    /* === PRINCIPLE CARDS === */
+    .mpt-principles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .mpt-principle-card {
+        border-radius: 24px;
+        padding: 2rem 1.8rem;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.03);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.28s ease, border-color 0.28s ease;
+    }
+
+    .mpt-principle-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 15%; right: 15%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(166,200,94,0.7), transparent);
+    }
+
+    .mpt-principle-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(166,200,94,0.28);
+    }
+
+    .mpt-principle-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: rgba(166,200,94,0.08);
+        border: 1px solid rgba(166,200,94,0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.4rem;
+    }
+
+    .mpt-principle-icon svg {
+        width: 22px;
+        height: 22px;
+        stroke: rgba(166,200,94,0.88);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mpt-principle-num {
+        display: block;
+        font-size: 0.66rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(166,200,94,0.6);
+        margin-bottom: 0.5rem;
+    }
+
+    .mpt-principle-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--text-color);
+        margin-bottom: 0.8rem;
+    }
+
+    .mpt-principle-copy {
+        font-size: 0.94rem;
+        color: var(--muted);
+        line-height: 1.62;
+    }
+
+    /* === BENTO PROTOCOL GRID === */
+    .mpt-bento {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-template-rows: auto auto;
+        gap: 1rem;
+    }
+
+    .mpt-bento-card {
+        border-radius: 22px;
+        padding: 1.7rem 1.6rem;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.03);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .mpt-bento-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(166,200,94,0.25);
+    }
+
+    .mpt-bc-strength { grid-column: span 5; }
+    .mpt-bc-conditioning { grid-column: span 4; }
+    .mpt-bc-mobility { grid-column: span 3; }
+    .mpt-bc-week { grid-column: span 12; }
+
+    .mpt-bento-kicker {
+        display: block;
+        font-size: 0.68rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(166,200,94,0.82);
+        margin-bottom: 0.55rem;
+    }
+
+    .mpt-bento-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 0.65rem;
+        letter-spacing: -0.01em;
+    }
+
+    .mpt-bento-copy {
+        font-size: 0.93rem;
+        color: var(--muted);
+        line-height: 1.58;
+    }
+
+    /* Load bars (decorative visual) */
+    .mpt-load-bars {
+        margin-top: 1.3rem;
+        display: grid;
+        gap: 0.6rem;
+    }
+
+    .mpt-load-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+    }
+
+    .mpt-load-label {
+        font-size: 0.64rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.38);
+        min-width: 68px;
+        flex-shrink: 0;
+    }
+
+    .mpt-load-track {
+        flex: 1;
+        height: 3px;
+        background: rgba(255,255,255,0.07);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .mpt-load-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(166,200,94,0.5), rgba(166,200,94,0.92));
+    }
+
+    .mpt-load-val {
+        font-size: 0.64rem;
+        letter-spacing: 0.1em;
+        color: rgba(166,200,94,0.7);
+        min-width: 28px;
+        text-align: right;
+    }
+
+    /* Week grid */
+    .mpt-week-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.65rem;
+        margin-top: 1.3rem;
+    }
+
+    .mpt-day {
+        border-radius: 14px;
+        padding: 1rem 0.55rem;
+        text-align: center;
+        background: rgba(0,0,0,0.22);
+        border: 1px solid rgba(244,241,232,0.07);
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .mpt-day.is-on {
+        background: rgba(166,200,94,0.08);
+        border-color: rgba(166,200,94,0.28);
+    }
+
+    .mpt-day.is-rest {
+        opacity: 0.6;
+    }
+
+    .mpt-day-name {
+        display: block;
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.38);
+        margin-bottom: 0.55rem;
+    }
+
+    .mpt-day-type {
+        display: block;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.15rem;
+    }
+
+    .mpt-day.is-on .mpt-day-type { color: rgba(166,200,94,0.9); }
+    .mpt-day.is-rest .mpt-day-type { color: rgba(244,241,232,0.25); }
+
+    /* === PROCESS STEPS === */
+    .mpt-steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        padding-bottom: 5rem;
+        position: relative;
+    }
+
+    .mpt-steps::before {
+        content: '';
+        position: absolute;
+        bottom: 2.5rem;
+        left: calc(33.33% + 0.5rem);
+        right: calc(33.33% + 0.5rem);
+        height: 1px;
+        background: linear-gradient(90deg, rgba(166,200,94,0.6), rgba(201,162,74,0.5));
+        pointer-events: none;
+    }
+
+    .mpt-step {
+        border-radius: 22px;
+        padding: 1.8rem 1.6rem;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.03);
+        position: relative;
+        transition: transform 0.25s ease;
+    }
+
+    .mpt-step:hover { transform: translateY(-4px); }
+
+    .mpt-step:nth-child(2) { top: 28px; }
+    .mpt-step:nth-child(3) { top: 56px; }
+
+    .mpt-step::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 22px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(166,200,94,0.2), transparent 60%);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    .mpt-step-num {
+        font-family: 'Tulpen One', serif;
+        font-size: 4.5rem;
+        line-height: 1;
+        letter-spacing: 0.04em;
+        background: linear-gradient(135deg, rgba(166,200,94,0.3), rgba(201,162,74,0.18));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.75rem;
+    }
+
+    .mpt-step-phase {
+        display: block;
+        font-size: 0.66rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.4);
+        margin-bottom: 0.55rem;
+    }
+
+    .mpt-step-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: rgba(166,200,94,0.95);
+        margin-bottom: 0.65rem;
+        letter-spacing: -0.01em;
+    }
+
+    .mpt-step-copy {
+        font-size: 0.93rem;
+        color: var(--muted);
+        line-height: 1.62;
+    }
+
+    /* === METRICS GRID === */
+    .mpt-metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    .mpt-metric {
+        border-radius: 18px;
+        padding: 1.25rem 1.1rem;
+        border: 1px solid rgba(244,241,232,0.08);
+        background: rgba(0,0,0,0.2);
+        transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .mpt-metric:hover {
+        transform: translateY(-3px);
+        border-color: rgba(166,200,94,0.22);
+    }
+
+    .mpt-metric-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: rgba(166,200,94,0.07);
+        border: 1px solid rgba(166,200,94,0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.9rem;
+    }
+
+    .mpt-metric-icon svg {
+        width: 16px;
+        height: 16px;
+        stroke: rgba(166,200,94,0.78);
+        fill: none;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mpt-metric-name {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 0.3rem;
+        letter-spacing: -0.01em;
+    }
+
+    .mpt-metric-desc {
+        font-size: 0.8rem;
+        color: var(--muted-2);
+        line-height: 1.42;
+    }
+
+    /* === CTA STRIP === */
+    .mpt-cta {
+        margin: 2vh 0 8vh;
+        border-radius: 28px;
+        border: 1px solid rgba(166,200,94,0.18);
+        background: linear-gradient(135deg,
+            rgba(166,200,94,0.05) 0%,
+            rgba(201,162,74,0.06) 100%
+        );
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mpt-cta::before {
+        content: '';
+        position: absolute;
+        inset: -60%;
+        background:
+            radial-gradient(circle at 20% 40%, rgba(166,200,94,0.14) 0%, transparent 52%),
+            radial-gradient(circle at 80% 60%, rgba(201,162,74,0.10) 0%, transparent 52%);
+        filter: blur(24px);
+        pointer-events: none;
+    }
+
+    .mpt-cta-inner {
+        padding: 4rem 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+    }
+
+    .mpt-cta h2 {
+        font-family: 'Tulpen One', serif;
+        font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+        line-height: 0.88;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.65rem;
+    }
+
+    .mpt-cta p {
+        font-size: 0.98rem;
+        color: var(--muted);
+        max-width: 44ch;
+        line-height: 1.6;
+    }
+
+    .mpt-cta-actions {
+        display: flex;
+        gap: 0.85rem;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    /* Fade-in animation — starts visible, animates when JS adds .will-reveal */
+    .mpt-fade { transition: opacity 0.65s ease, transform 0.65s ease; }
+    .mpt-fade.will-reveal { opacity: 0; transform: translateY(20px); }
+    .mpt-fade.will-reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .mpt-fade.will-reveal.is-visible.mpt-fade-delay-1 { transition-delay: 0.1s; }
+    .mpt-fade.will-reveal.is-visible.mpt-fade-delay-2 { transition-delay: 0.2s; }
+    .mpt-fade.will-reveal.is-visible.mpt-fade-delay-3 { transition-delay: 0.3s; }
+
+    /* Separator */
+    .mpt-separator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 0 0 4vh;
+        opacity: 0.85;
+    }
+
+    .mpt-sep-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(166,200,94,0.35), transparent);
+    }
+
+    .mpt-sep-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(166,200,94,1), rgba(201,162,74,0.9));
+        box-shadow: 0 0 0 6px rgba(166,200,94,0.10);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .mpt-principles { grid-template-columns: 1fr; }
+        .mpt-bento { grid-template-columns: 1fr; }
+        .mpt-bc-strength, .mpt-bc-conditioning,
+        .mpt-bc-mobility, .mpt-bc-week { grid-column: span 1; }
+        .mpt-steps { grid-template-columns: 1fr; padding-bottom: 0; }
+        .mpt-step:nth-child(2), .mpt-step:nth-child(3) { top: 0; }
+        .mpt-steps::before { display: none; }
+        .mpt-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+        .mpt-stats-bar { flex-direction: column; border-radius: 14px; width: 100%; }
+        .mpt-stat-sep { width: auto; height: 1px; margin: 0 1.7rem; }
+        .mpt-week-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .mpt-cta-inner { flex-direction: column; padding: 2.5rem 1.8rem; }
+        .mpt-cta h2 { font-size: 2.2rem; }
+    }
+    </style>
 </head>
 <body class="is-internal-page">
 
     <header class="header-main">
         <a href="index.html" class="logo">DARE</a>
-        <div class="header-actions">
-            <a href="client.html" class="header-login-btn">Log in</a>
-            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
-                <span class="line"></span>
-                <span class="line"></span>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html" class="header-nav-link">Home</a>
+            <a href="plans.html" class="header-nav-link">Plans</a>
+            <a href="team.html" class="header-nav-link">The Team</a>
+            <a href="faq.html" class="header-nav-link">FAQ</a>
+        </nav>
+        <div class="header-controls">
+            <button class="header-theme-btn" id="theme-toggle" aria-label="Toggle light / dark mode">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4.5"/>
+                    <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+                    <line x1="5.6" y1="5.6" x2="7" y2="7"/><line x1="17" y1="17" x2="18.4" y2="18.4"/>
+                    <line x1="18.4" y1="5.6" x2="17" y2="7"/><line x1="7" y1="17" x2="5.6" y2="18.4"/>
+                </svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
             </button>
+            <a href="client.html" class="header-user-btn" aria-label="Client area">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+                </svg>
+            </a>
         </div>
     </header>
 
-    <div class="full-menu" id="full-menu">
-        <nav class="menu-nav">
-            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
-            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
-            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
-            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
-        </nav>
-        <div class="menu-footer">Elevating your lifestyle since 2026</div>
-    </div>
+    <main>
 
-    <main class="page-container">
-        <section class="p-method-page p-method-page--training">
+        <!-- ─── HERO ─────────────────────────────────────────────── -->
+        <section class="mpt-hero">
+            <div class="mpt-hero-bg" aria-hidden="true"></div>
+            <div class="mpt-hero-overlay" aria-hidden="true"></div>
+
+            <!-- Barbell decoration -->
+            <div class="mpt-deco-barbell" aria-hidden="true">
+                <svg viewBox="0 0 520 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Left weight plates -->
+                    <rect x="0" y="20" width="72" height="120" rx="8" fill="rgba(166,200,94,0.12)" stroke="rgba(166,200,94,0.35)" stroke-width="1.5"/>
+                    <rect x="72" y="40" width="18" height="80" rx="4" fill="rgba(166,200,94,0.16)" stroke="rgba(166,200,94,0.3)" stroke-width="1"/>
+                    <rect x="4" y="28" width="64" height="104" rx="6" fill="none" stroke="rgba(166,200,94,0.15)" stroke-width="1"/>
+                    <!-- Bar -->
+                    <rect x="90" y="70" width="340" height="20" rx="10" fill="rgba(166,200,94,0.14)" stroke="rgba(166,200,94,0.28)" stroke-width="1.5"/>
+                    <!-- Knurling marks -->
+                    <line x1="150" y1="70" x2="150" y2="90" stroke="rgba(166,200,94,0.2)" stroke-width="1"/>
+                    <line x1="162" y1="70" x2="162" y2="90" stroke="rgba(166,200,94,0.2)" stroke-width="1"/>
+                    <line x1="174" y1="70" x2="174" y2="90" stroke="rgba(166,200,94,0.2)" stroke-width="1"/>
+                    <line x1="346" y1="70" x2="346" y2="90" stroke="rgba(166,200,94,0.2)" stroke-width="1"/>
+                    <line x1="358" y1="70" x2="358" y2="90" stroke="rgba(166,200,94,0.2)" stroke-width="1"/>
+                    <line x1="370" y1="70" x2="370" y2="90" stroke="rgba(166,200,94,0.2)" stroke-width="1"/>
+                    <!-- Right collar -->
+                    <rect x="430" y="40" width="18" height="80" rx="4" fill="rgba(166,200,94,0.16)" stroke="rgba(166,200,94,0.3)" stroke-width="1"/>
+                    <!-- Right weight plates -->
+                    <rect x="448" y="20" width="72" height="120" rx="8" fill="rgba(166,200,94,0.12)" stroke="rgba(166,200,94,0.35)" stroke-width="1.5"/>
+                    <rect x="452" y="28" width="64" height="104" rx="6" fill="none" stroke="rgba(166,200,94,0.15)" stroke-width="1"/>
+                </svg>
+            </div>
+
+            <!-- Performance chart decoration -->
+            <div class="mpt-deco-chart" aria-hidden="true">
+                <svg viewBox="0 0 600 380" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <!-- Grid lines -->
+                    <line x1="0" y1="76" x2="600" y2="76" stroke="rgba(166,200,94,0.12)" stroke-width="1"/>
+                    <line x1="0" y1="152" x2="600" y2="152" stroke="rgba(166,200,94,0.12)" stroke-width="1"/>
+                    <line x1="0" y1="228" x2="600" y2="228" stroke="rgba(166,200,94,0.12)" stroke-width="1"/>
+                    <line x1="0" y1="304" x2="600" y2="304" stroke="rgba(166,200,94,0.08)" stroke-width="1"/>
+                    <!-- Vertical guides -->
+                    <line x1="120" y1="0" x2="120" y2="380" stroke="rgba(166,200,94,0.06)" stroke-width="1"/>
+                    <line x1="240" y1="0" x2="240" y2="380" stroke="rgba(166,200,94,0.06)" stroke-width="1"/>
+                    <line x1="360" y1="0" x2="360" y2="380" stroke="rgba(166,200,94,0.06)" stroke-width="1"/>
+                    <line x1="480" y1="0" x2="480" y2="380" stroke="rgba(166,200,94,0.06)" stroke-width="1"/>
+                    <!-- Performance curve (ascending) -->
+                    <path d="M0 340 C 60 340, 100 310, 140 290 S 220 240, 280 210 S 380 160, 440 130 S 540 80, 600 60" stroke="rgba(166,200,94,0.55)" stroke-width="2.5" stroke-linecap="round"/>
+                    <!-- Area fill under curve -->
+                    <path d="M0 340 C 60 340, 100 310, 140 290 S 220 240, 280 210 S 380 160, 440 130 S 540 80, 600 60 L 600 380 L 0 380 Z" fill="rgba(166,200,94,0.04)"/>
+                    <!-- Data points -->
+                    <circle cx="140" cy="290" r="5" fill="rgba(166,200,94,0.4)" stroke="rgba(166,200,94,0.7)" stroke-width="1.5"/>
+                    <circle cx="280" cy="210" r="5" fill="rgba(166,200,94,0.4)" stroke="rgba(166,200,94,0.7)" stroke-width="1.5"/>
+                    <circle cx="440" cy="130" r="5" fill="rgba(166,200,94,0.4)" stroke="rgba(166,200,94,0.7)" stroke-width="1.5"/>
+                    <circle cx="600" cy="60" r="6" fill="rgba(166,200,94,0.7)" stroke="rgba(166,200,94,0.9)" stroke-width="2"/>
+                </svg>
+            </div>
+
+            <div class="p-shell mpt-hero-content">
+                <a href="index.html#our-method" class="mpt-back">← Our Method</a>
+                <div class="mpt-kicker">
+                    <span class="mpt-kicker-dot"></span>
+                    Our Method · 01
+                </div>
+                <h1 class="mpt-title">Training</h1>
+                <p class="mpt-lead">Performance is not programmed in a template. It is built session by session, calibrated to how you move, recover and live — in Dubai and beyond.</p>
+                <div class="mpt-stats-bar">
+                    <div class="mpt-stat">
+                        <span class="mpt-stat-num">4–6</span>
+                        <span class="mpt-stat-lbl">Sessions / Week</span>
+                    </div>
+                    <div class="mpt-stat-sep"></div>
+                    <div class="mpt-stat">
+                        <span class="mpt-stat-num">Weekly</span>
+                        <span class="mpt-stat-lbl">Plan Review</span>
+                    </div>
+                    <div class="mpt-stat-sep"></div>
+                    <div class="mpt-stat">
+                        <span class="mpt-stat-num">100%</span>
+                        <span class="mpt-stat-lbl">Custom Build</span>
+                    </div>
+                    <div class="mpt-stat-sep"></div>
+                    <div class="mpt-stat">
+                        <span class="mpt-stat-num">On-Site</span>
+                        <span class="mpt-stat-lbl">or Remote</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── PRINCIPLES ─────────────────────────────────────────── -->
+        <section class="mpt-section">
             <div class="p-shell">
-                <a href="index.html#our-method" class="p-method-page-back">← Back to Our Method</a>
-
-                <div class="p-method-page-hero">
-                    <div class="p-method-page-hero-inner">
-                        <span class="p-method-page-kicker">Our Method</span>
-                        <h1 class="p-method-page-title">Training</h1>
-                        <p class="p-method-page-lead">Placeholder copy — edit this page with your full training philosophy, process and deliverables.</p>
+                <div class="mpt-separator"><div class="mpt-sep-line"></div><div class="mpt-sep-dot"></div><div class="mpt-sep-line"></div></div>
+                <div class="mpt-section-head mpt-fade">
+                    <span class="mpt-section-kicker">The Foundation</span>
+                    <h2 class="mpt-section-title">Built Around<br>How You Move</h2>
+                    <p class="mpt-section-sub">Every DARE training block starts with an honest read of your current capacity — not where you want to be, but where you actually are today.</p>
+                </div>
+                <div class="mpt-principles">
+                    <div class="mpt-principle-card mpt-fade mpt-fade-delay-1">
+                        <div class="mpt-principle-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                        </div>
+                        <span class="mpt-principle-num">01 — Assessment</span>
+                        <h3 class="mpt-principle-title">Structural Assessment</h3>
+                        <p class="mpt-principle-copy">We open every engagement with a full joint-by-joint movement screen. Load tolerance, asymmetries and compensation patterns are mapped before a single training variable is written.</p>
+                    </div>
+                    <div class="mpt-principle-card mpt-fade mpt-fade-delay-2">
+                        <div class="mpt-principle-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <span class="mpt-principle-num">02 — Loading</span>
+                        <h3 class="mpt-principle-title">Periodised Progression</h3>
+                        <p class="mpt-principle-copy">Each block follows a structured load curve — volume, intensity and frequency adjusted weekly based on performance data. No two cycles are identical because no two seasons of your life are.</p>
+                    </div>
+                    <div class="mpt-principle-card mpt-fade mpt-fade-delay-3">
+                        <div class="mpt-principle-icon">
+                            <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M12 8v4l3 3"/></svg>
+                        </div>
+                        <span class="mpt-principle-num">03 — Recovery</span>
+                        <h3 class="mpt-principle-title">Recovery Integration</h3>
+                        <p class="mpt-principle-copy">Sleep quality, travel frequency, stress load and social calendar are active variables in the model. When life changes, the plan changes with it — not after it.</p>
                     </div>
                 </div>
-
-                <div class="p-method-page-body">
-                    <p>Every DARE training block starts with how you move today: joint capacity, load tolerance, sleep, travel and the hours you can actually train. We do not sell templates — we build a progression that respects your structure and your calendar.</p>
-                    <h3>What this includes</h3>
-                    <p>Periodised strength work, conditioning where it supports the goal, and recovery protocols aligned to your nervous system. Sessions are designed to be executed with precision — in your gym, at home, or with our team on site in Dubai.</p>
-                    <p>Weekly reviews adjust volume, intensity and exercise selection so the plan stays honest when life changes. This text is temporary and will be replaced with your final narrative.</p>
-                </div>
-
-                <p class="p-method-page-note">Content draft — replace with your definitive training page copy.</p>
             </div>
         </section>
 
-        <section class="contact-section">
-            <div class="contact-inner">
-                <div class="contact-copy">
-                    <h2>DISCREET ENQUIRIES</h2>
-                    <p>All contact is handled directly by the founding team. No assistants. No mailing lists.</p>
+        <!-- ─── PROTOCOL BENTO ─────────────────────────────────────── -->
+        <section class="mpt-section" style="padding-top: 0;">
+            <div class="p-shell">
+                <div class="mpt-section-head mpt-fade">
+                    <span class="mpt-section-kicker">Your Protocol</span>
+                    <h2 class="mpt-section-title">What Every Block<br>Contains</h2>
                 </div>
-                <form class="contact-form">
-                    <div class="contact-grid">
-                        <div class="field">
-                            <label for="name-training">Name</label>
-                            <input type="text" id="name-training" name="name" placeholder="Optional" />
-                        </div>
-                        <div class="field">
-                            <label for="email-training">Email</label>
-                            <input type="email" id="email-training" name="email" placeholder="Private contact email" />
+                <div class="mpt-bento">
+                    <div class="mpt-bento-card mpt-bc-strength mpt-fade mpt-fade-delay-1">
+                        <span class="mpt-bento-kicker">Primary Focus</span>
+                        <h3 class="mpt-bento-title">Strength &amp; Structural Loading</h3>
+                        <p class="mpt-bento-copy">Compound movement foundation built on squat, hinge, push, pull and carry patterns. Progressive overload tracked weekly — weight, volume and complexity scaled with your trajectory.</p>
+                        <div class="mpt-load-bars">
+                            <div class="mpt-load-row">
+                                <span class="mpt-load-label">Volume</span>
+                                <div class="mpt-load-track"><div class="mpt-load-fill" style="width:78%"></div></div>
+                                <span class="mpt-load-val">High</span>
+                            </div>
+                            <div class="mpt-load-row">
+                                <span class="mpt-load-label">Intensity</span>
+                                <div class="mpt-load-track"><div class="mpt-load-fill" style="width:65%"></div></div>
+                                <span class="mpt-load-val">Mod</span>
+                            </div>
+                            <div class="mpt-load-row">
+                                <span class="mpt-load-label">Frequency</span>
+                                <div class="mpt-load-track"><div class="mpt-load-fill" style="width:85%"></div></div>
+                                <span class="mpt-load-val">4–6x</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="field">
-                        <label for="message-training">How can we help?</label>
-                        <textarea id="message-training" name="message" rows="4" placeholder="Share context, constraints or questions."></textarea>
+                    <div class="mpt-bento-card mpt-bc-conditioning mpt-fade mpt-fade-delay-2">
+                        <span class="mpt-bento-kicker">Energy System</span>
+                        <h3 class="mpt-bento-title">Conditioning</h3>
+                        <p class="mpt-bento-copy">Energy system work calibrated to goal — not bolted on top of strength sessions. Aerobic base, threshold work or sport-specific conditioning depending on your protocol phase and lifestyle demand.</p>
                     </div>
-                    <button type="submit" class="contact-submit">SEND ENQUIRY</button>
-                </form>
+                    <div class="mpt-bento-card mpt-bc-mobility mpt-fade mpt-fade-delay-3">
+                        <span class="mpt-bento-kicker">Longevity</span>
+                        <h3 class="mpt-bento-title">Mobility &amp; Joint Health</h3>
+                        <p class="mpt-bento-copy">Integrated — not an afterthought. Protocols that protect your structure across decades of high performance.</p>
+                    </div>
+                    <div class="mpt-bento-card mpt-bc-week mpt-fade">
+                        <span class="mpt-bento-kicker">Sample Structure</span>
+                        <h3 class="mpt-bento-title">A Typical Training Week</h3>
+                        <div class="mpt-week-grid">
+                            <div class="mpt-day is-on">
+                                <span class="mpt-day-name">Mon</span>
+                                <span class="mpt-day-type">Lower Strength</span>
+                            </div>
+                            <div class="mpt-day is-on">
+                                <span class="mpt-day-name">Tue</span>
+                                <span class="mpt-day-type">Upper Push</span>
+                            </div>
+                            <div class="mpt-day is-rest">
+                                <span class="mpt-day-name">Wed</span>
+                                <span class="mpt-day-type">Active Rest</span>
+                            </div>
+                            <div class="mpt-day is-on">
+                                <span class="mpt-day-name">Thu</span>
+                                <span class="mpt-day-type">Upper Pull</span>
+                            </div>
+                            <div class="mpt-day is-on">
+                                <span class="mpt-day-name">Fri</span>
+                                <span class="mpt-day-type">Full Body</span>
+                            </div>
+                            <div class="mpt-day is-on">
+                                <span class="mpt-day-name">Sat</span>
+                                <span class="mpt-day-type">Conditioning</span>
+                            </div>
+                            <div class="mpt-day is-rest">
+                                <span class="mpt-day-name">Sun</span>
+                                <span class="mpt-day-type">Rest</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <!-- ─── PROCESS ─────────────────────────────────────────────── -->
+        <section class="mpt-section">
+            <div class="p-shell">
+                <div class="mpt-separator"><div class="mpt-sep-line"></div><div class="mpt-sep-dot"></div><div class="mpt-sep-line"></div></div>
+                <div class="mpt-section-head mpt-fade">
+                    <span class="mpt-section-kicker">The Process</span>
+                    <h2 class="mpt-section-title">From First Session<br>to Long-Term Gains</h2>
+                </div>
+                <div class="mpt-steps">
+                    <div class="mpt-step mpt-fade mpt-fade-delay-1">
+                        <div class="mpt-step-num">01</div>
+                        <span class="mpt-step-phase">Days 1–3</span>
+                        <h3 class="mpt-step-title">Deep Assessment</h3>
+                        <p class="mpt-step-copy">Movement screen, lifestyle intake, training history review and goal alignment. We establish your true baseline — not a guess at it.</p>
+                    </div>
+                    <div class="mpt-step mpt-fade mpt-fade-delay-2">
+                        <div class="mpt-step-num">02</div>
+                        <span class="mpt-step-phase">Weeks 1–2</span>
+                        <h3 class="mpt-step-title">Protocol Build</h3>
+                        <p class="mpt-step-copy">Full periodised plan built to your structure, schedule and goals. Exercise selection, modality split, loading scheme and progression model established.</p>
+                    </div>
+                    <div class="mpt-step mpt-fade mpt-fade-delay-3">
+                        <div class="mpt-step-num">03</div>
+                        <span class="mpt-step-phase">Ongoing</span>
+                        <h3 class="mpt-step-title">Live Adjustment</h3>
+                        <p class="mpt-step-copy">Weekly reviews update volume, intensity and exercise selection. The plan stays honest when travel hits, stress spikes or your schedule shifts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── METRICS ─────────────────────────────────────────────── -->
+        <section class="mpt-section" style="padding-top: 2vh;">
+            <div class="p-shell">
+                <div class="mpt-section-head mpt-fade">
+                    <span class="mpt-section-kicker">Full Picture</span>
+                    <h2 class="mpt-section-title">Variables We Track</h2>
+                    <p class="mpt-section-sub">Training adaptation doesn't live in isolation. We track everything that feeds into it.</p>
+                </div>
+                <div class="mpt-metrics">
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-1">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Training Volume</div>
+                        <div class="mpt-metric-desc">Sets, reps and tonnage per session and per week</div>
+                    </div>
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-2">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Session RPE</div>
+                        <div class="mpt-metric-desc">Rate of perceived exertion to calibrate intensity week to week</div>
+                    </div>
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-3">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M12 7v5l3 3"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Sleep Score</div>
+                        <div class="mpt-metric-desc">Duration and quality feeding directly into load decisions</div>
+                    </div>
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-1">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Travel Schedule</div>
+                        <div class="mpt-metric-desc">Time zones, flight frequency and gym access mapped in advance</div>
+                    </div>
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-2">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Stress &amp; Energy</div>
+                        <div class="mpt-metric-desc">Subjective daily energy levels informing session intensity</div>
+                    </div>
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-3">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Body Composition</div>
+                        <div class="mpt-metric-desc">Lean mass and fat tracking to guide nutrition and training split</div>
+                    </div>
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-1">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Joint Status</div>
+                        <div class="mpt-metric-desc">Pain, restriction and compensation patterns flagged weekly</div>
+                    </div>
+                    <div class="mpt-metric mpt-fade mpt-fade-delay-2">
+                        <div class="mpt-metric-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="mpt-metric-name">Performance PRs</div>
+                        <div class="mpt-metric-desc">Lift maxes, times and benchmarks tracked across every cycle</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── CTA ────────────────────────────────────────────────── -->
+        <section class="mpt-section" style="padding-top: 2vh;">
+            <div class="p-shell">
+                <div class="mpt-cta mpt-fade">
+                    <div class="mpt-cta-inner">
+                        <div class="mpt-cta-text">
+                            <h2>Your Structure.<br>Your Schedule.</h2>
+                            <p>Book a private consultation and we'll walk you through what a fully custom training protocol looks like for your body, your calendar and your goals.</p>
+                        </div>
+                        <div class="mpt-cta-actions">
+                            <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20am%20interested%20in%20a%20private%20training%20consultation." class="p-btn p-btn-primary" target="_blank" rel="noopener">Book a Consultation →</a>
+                            <a href="plans.html" class="p-btn p-btn-ghost">View Plans</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <footer class="p-footer">
@@ -92,6 +1051,7 @@
                     <a href="index.html">Home</a>
                     <a href="plans.html">Plans</a>
                     <a href="index.html#contact">Contact</a>
+                    <a href="faq.html">FAQ</a>
                 </nav>
                 <div class="p-footer-contact-col">
                     <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
@@ -107,5 +1067,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
+    <script>
+    (function(){
+        var btn = document.getElementById('theme-toggle');
+        if (!btn || btn._themeWired) return;
+        btn._themeWired = true;
+        btn.addEventListener('click', function(){
+            var curr = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = curr === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('dare-theme', next); } catch(e){}
+        });
+
+        /* Scroll fade-in */
+        var fades = document.querySelectorAll('.mpt-fade');
+        /* Mark as will-reveal only after content is confirmed loaded */
+        requestAnimationFrame(function(){
+            fades.forEach(function(el){ el.classList.add('will-reveal'); });
+            if ('IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function(entries){
+                    entries.forEach(function(entry){
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+                fades.forEach(function(el){ io.observe(el); });
+            } else {
+                fades.forEach(function(el){ el.classList.add('is-visible'); });
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

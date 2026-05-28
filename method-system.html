@@ -6,79 +6,1179 @@
     <title>One System | DARE</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('dare-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) { document.documentElement.setAttribute('data-theme','dark'); }
+    })();
+    </script>
+    <style>
+    /* ===== ONE SYSTEM METHOD PAGE ===== */
+
+    .mps-hero {
+        position: relative;
+        min-height: 92vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+    }
+
+    /* Gradient hero bg — no photo, pure atmosphere */
+    .mps-hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(900px 700px at 18% 22%, rgba(201,162,74,0.22) 0%, transparent 60%),
+            radial-gradient(900px 700px at 85% 20%, rgba(166,200,94,0.18) 0%, transparent 60%),
+            radial-gradient(1200px 900px at 50% 90%, rgba(255,255,255,0.06) 0%, transparent 60%),
+            var(--bg-color);
+        z-index: 0;
+    }
+
+    .mps-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 40%, rgba(5,5,7,0.6) 70%, rgba(5,5,7,1) 100%);
+        z-index: 1;
+    }
+
+    /* Network node decoration */
+    .mps-deco-network {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .mps-deco-network svg {
+        width: 100%;
+        height: 100%;
+        opacity: 0.28;
+    }
+
+    /* Orbital rings decoration */
+    .mps-deco-orbital {
+        position: absolute;
+        right: 5%;
+        top: 10%;
+        z-index: 2;
+        pointer-events: none;
+        width: min(400px, 40vw);
+        height: min(400px, 40vw);
+        opacity: 0.12;
+    }
+
+    .mps-hero-content {
+        position: relative;
+        z-index: 3;
+        padding-bottom: 4.5rem;
+        padding-top: 120px;
+    }
+
+    .mps-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2.8rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .mps-back:hover { color: rgba(244,241,232,0.82); }
+
+    .mps-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.74rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.8);
+        margin-bottom: 0.75rem;
+    }
+
+    .mps-kicker-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(201,162,74,0.9), rgba(166,200,94,0.9));
+        box-shadow: 0 0 0 4px rgba(201,162,74,0.12);
+    }
+
+    .mps-title {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(4.5rem, 13vw, 10rem);
+        line-height: 0.82;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-color);
+        margin-bottom: 1.1rem;
+    }
+
+    .mps-title .mps-title-accent {
+        background: linear-gradient(135deg, #d9d4c8, #c9a24a, #8fb85a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .mps-lead {
+        font-family: 'Manrope', sans-serif;
+        font-size: clamp(0.95rem, 1.7vw, 1.15rem);
+        line-height: 1.65;
+        color: rgba(244,241,232,0.72);
+        max-width: 56ch;
+        margin-bottom: 2.5rem;
+    }
+
+    .mps-stats-bar {
+        display: inline-flex;
+        align-items: stretch;
+        border: 1px solid rgba(244,241,232,0.12);
+        border-radius: 18px;
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        overflow: hidden;
+    }
+
+    .mps-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.22rem;
+        padding: 1.05rem 1.7rem;
+    }
+
+    .mps-stat-num {
+        font-family: 'Tulpen One', serif;
+        font-size: 1.9rem;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        background: linear-gradient(135deg, #c9a24a, #8fb85a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .mps-stat-lbl {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.66rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.45);
+    }
+
+    .mps-stat-sep {
+        width: 1px;
+        background: rgba(244,241,232,0.1);
+        align-self: stretch;
+        flex-shrink: 0;
+    }
+
+    /* === SHARED SECTION STYLES === */
+    .mps-section { padding: 8vh 0; position: relative; }
+
+    .mps-section-kicker {
+        display: block;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(201,162,74,0.82);
+        margin-bottom: 0.65rem;
+    }
+
+    .mps-section-title {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+        line-height: 0.88;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.7rem;
+    }
+
+    .mps-section-sub {
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.65;
+        max-width: 60ch;
+    }
+
+    /* === THREE LAYERS VISUAL === */
+    .mps-layers {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr);
+        align-items: center;
+        gap: 0;
+        margin-top: 0.5rem;
+    }
+
+    .mps-layer-card {
+        border-radius: 24px;
+        padding: 2.2rem 1.8rem 2rem;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.03);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.28s ease, border-color 0.28s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mps-layer-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .mps-layer-card--training { border-color: rgba(166,200,94,0.28); }
+    .mps-layer-card--training:hover { border-color: rgba(166,200,94,0.5); }
+    .mps-layer-card--nutrition { border-color: rgba(201,162,74,0.28); }
+    .mps-layer-card--nutrition:hover { border-color: rgba(201,162,74,0.5); }
+    .mps-layer-card--culinary { border-color: rgba(244,241,232,0.2); }
+    .mps-layer-card--culinary:hover { border-color: rgba(244,241,232,0.4); }
+
+    .mps-layer-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 15%; right: 15%;
+        height: 1px;
+    }
+
+    .mps-layer-card--training::before { background: linear-gradient(90deg, transparent, rgba(166,200,94,0.7), transparent); }
+    .mps-layer-card--nutrition::before { background: linear-gradient(90deg, transparent, rgba(201,162,74,0.7), transparent); }
+    .mps-layer-card--culinary::before { background: linear-gradient(90deg, transparent, rgba(244,241,232,0.35), transparent); }
+
+    .mps-layer-num {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.66rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        margin-bottom: 0.8rem;
+    }
+
+    .mps-layer-card--training .mps-layer-num { color: rgba(166,200,94,0.65); }
+    .mps-layer-card--nutrition .mps-layer-num { color: rgba(201,162,74,0.65); }
+    .mps-layer-card--culinary .mps-layer-num { color: rgba(244,241,232,0.45); }
+
+    .mps-layer-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.4rem;
+        flex-shrink: 0;
+    }
+
+    .mps-layer-card--training .mps-layer-icon {
+        background: rgba(166,200,94,0.08);
+        border: 1px solid rgba(166,200,94,0.18);
+    }
+    .mps-layer-card--nutrition .mps-layer-icon {
+        background: rgba(201,162,74,0.08);
+        border: 1px solid rgba(201,162,74,0.18);
+    }
+    .mps-layer-card--culinary .mps-layer-icon {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(244,241,232,0.14);
+    }
+
+    .mps-layer-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mps-layer-card--training .mps-layer-icon svg { stroke: rgba(166,200,94,0.88); }
+    .mps-layer-card--nutrition .mps-layer-icon svg { stroke: rgba(201,162,74,0.88); }
+    .mps-layer-card--culinary .mps-layer-icon svg { stroke: rgba(244,241,232,0.7); }
+
+    .mps-layer-title {
+        font-family: 'Tulpen One', serif;
+        font-size: 2.4rem;
+        line-height: 0.9;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.85rem;
+    }
+
+    .mps-layer-card--training .mps-layer-title { color: rgba(166,200,94,0.95); }
+    .mps-layer-card--nutrition .mps-layer-title { color: rgba(201,162,74,0.95); }
+    .mps-layer-card--culinary .mps-layer-title { color: rgba(244,241,232,0.88); }
+
+    .mps-layer-copy {
+        font-size: 0.93rem;
+        color: var(--muted);
+        line-height: 1.62;
+        flex: 1;
+    }
+
+    .mps-layer-tag {
+        display: inline-block;
+        margin-top: 1.5rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid;
+        background: rgba(0,0,0,0.2);
+    }
+
+    .mps-layer-card--training .mps-layer-tag { color: rgba(166,200,94,0.85); border-color: rgba(166,200,94,0.25); }
+    .mps-layer-card--nutrition .mps-layer-tag { color: rgba(201,162,74,0.85); border-color: rgba(201,162,74,0.25); }
+    .mps-layer-card--culinary .mps-layer-tag { color: rgba(244,241,232,0.65); border-color: rgba(244,241,232,0.18); }
+
+    .mps-connector {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0 4px;
+    }
+
+    .mps-connector-line {
+        flex: 1;
+        width: 1px;
+        background: linear-gradient(180deg, transparent, rgba(201,162,74,0.5), transparent);
+        min-height: 40px;
+    }
+
+    .mps-connector-node {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(201,162,74,0.9), rgba(166,200,94,0.9));
+        box-shadow: 0 0 0 5px rgba(201,162,74,0.10);
+        flex-shrink: 0;
+    }
+
+    .mps-connector-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.3);
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+    }
+
+    /* === INTEGRATION CARDS === */
+    .mps-integration {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .mps-int-card {
+        border-radius: 24px;
+        padding: 2rem 1.8rem;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.03);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.28s ease, border-color 0.28s ease;
+    }
+
+    .mps-int-card::before {
+        content: '';
+        position: absolute;
+        inset: -60%;
+        background:
+            radial-gradient(circle at 25% 25%, rgba(201,162,74,0.1) 0%, transparent 55%),
+            radial-gradient(circle at 75% 75%, rgba(166,200,94,0.08) 0%, transparent 55%);
+        filter: blur(20px);
+        pointer-events: none;
+    }
+
+    .mps-int-card > * { position: relative; z-index: 1; }
+
+    .mps-int-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(201,162,74,0.25);
+    }
+
+    .mps-int-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .mps-int-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: rgba(201,162,74,0.08);
+        border: 1px solid rgba(201,162,74,0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .mps-int-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: rgba(201,162,74,0.88);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mps-int-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.12rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--text-color);
+    }
+
+    .mps-int-copy {
+        font-size: 0.94rem;
+        color: var(--muted);
+        line-height: 1.65;
+    }
+
+    /* === COMPARISON TABLE === */
+    .mps-compare {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .mps-compare-col {
+        border-radius: 24px;
+        padding: 2rem 1.8rem;
+        border: 1px solid rgba(244,241,232,0.1);
+        background: rgba(255,255,255,0.02);
+    }
+
+    .mps-compare-col--dare {
+        border-color: rgba(201,162,74,0.25);
+        background: linear-gradient(180deg, rgba(201,162,74,0.05) 0%, rgba(166,200,94,0.03) 100%);
+    }
+
+    .mps-compare-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.6rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(244,241,232,0.1);
+    }
+
+    .mps-compare-col--dare .mps-compare-header {
+        border-bottom-color: rgba(201,162,74,0.2);
+    }
+
+    .mps-compare-badge {
+        font-size: 0.68rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .mps-compare-col--fragmented .mps-compare-badge {
+        color: rgba(244,241,232,0.45);
+        border-color: rgba(244,241,232,0.18);
+        background: rgba(0,0,0,0.2);
+    }
+
+    .mps-compare-col--dare .mps-compare-badge {
+        color: rgba(201,162,74,0.92);
+        border-color: rgba(201,162,74,0.3);
+        background: rgba(201,162,74,0.06);
+    }
+
+    .mps-compare-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    .mps-compare-col--fragmented .mps-compare-title { color: rgba(244,241,232,0.55); }
+    .mps-compare-col--dare .mps-compare-title { color: var(--text-color); }
+
+    .mps-compare-list {
+        list-style: none;
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .mps-compare-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        font-size: 0.93rem;
+        color: var(--muted);
+        line-height: 1.5;
+    }
+
+    .mps-compare-icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .mps-compare-icon--x {
+        color: rgba(244,241,232,0.3);
+    }
+
+    .mps-compare-icon--check {
+        color: rgba(166,200,94,0.85);
+    }
+
+    .mps-compare-col--dare .mps-compare-list li { color: rgba(244,241,232,0.75); }
+
+    /* === FEEDBACK LOOP === */
+    .mps-loop {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 0;
+    }
+
+    .mps-loop-ring {
+        position: relative;
+        width: min(480px, 90vw);
+        height: min(480px, 90vw);
+    }
+
+    /* Outer ring */
+    .mps-loop-ring::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(201,162,74,0.15);
+    }
+
+    /* Inner ring */
+    .mps-loop-ring::after {
+        content: '';
+        position: absolute;
+        inset: 40px;
+        border-radius: 50%;
+        border: 1px dashed rgba(244,241,232,0.1);
+    }
+
+    .mps-loop-center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .mps-loop-logo {
+        font-family: 'Tulpen One', serif;
+        font-size: 3.5rem;
+        line-height: 1;
+        letter-spacing: 0.12em;
+        background: linear-gradient(135deg, #d9d4c8, #c9a24a, #8fb85a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.35rem;
+    }
+
+    .mps-loop-sublabel {
+        font-size: 0.68rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(244,241,232,0.38);
+    }
+
+    /* Loop stage nodes */
+    .mps-loop-node {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.45rem;
+        transform: translate(-50%, -50%);
+    }
+
+    .mps-loop-node-dot {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(201,162,74,0.3);
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(8px);
+    }
+
+    .mps-loop-node-dot svg {
+        width: 18px;
+        height: 18px;
+        stroke: rgba(201,162,74,0.88);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .mps-loop-node-label {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(201,162,74,0.85);
+        white-space: nowrap;
+    }
+
+    /* Position each node at clock positions */
+    .mps-loop-node--assess  { top: 4%; left: 50%; }
+    .mps-loop-node--plan    { top: 28%; left: 94%; }
+    .mps-loop-node--execute { top: 78%; left: 82%; }
+    .mps-loop-node--review  { top: 78%; left: 18%; }
+    .mps-loop-node--adapt   { top: 28%; left: 6%; }
+
+    /* Animated arc */
+    .mps-loop-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .mps-loop-svg circle {
+        transform-origin: center;
+        animation: mps-rotate 8s linear infinite;
+    }
+
+    @keyframes mps-rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* === CTA === */
+    .mps-cta {
+        margin: 2vh 0 8vh;
+        border-radius: 28px;
+        border: 1px solid rgba(201,162,74,0.18);
+        background: linear-gradient(135deg,
+            rgba(201,162,74,0.05) 0%,
+            rgba(166,200,94,0.05) 100%
+        );
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mps-cta::before {
+        content: '';
+        position: absolute;
+        inset: -60%;
+        background:
+            radial-gradient(circle at 22% 38%, rgba(201,162,74,0.14) 0%, transparent 52%),
+            radial-gradient(circle at 80% 65%, rgba(166,200,94,0.10) 0%, transparent 52%);
+        filter: blur(24px);
+        pointer-events: none;
+    }
+
+    .mps-cta-inner {
+        padding: 4rem 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+    }
+
+    .mps-cta h2 {
+        font-family: 'Tulpen One', serif;
+        font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+        line-height: 0.88;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.65rem;
+    }
+
+    .mps-cta p {
+        font-size: 0.98rem;
+        color: var(--muted);
+        max-width: 44ch;
+        line-height: 1.6;
+    }
+
+    .mps-cta-actions {
+        display: flex;
+        gap: 0.85rem;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    /* Fade-in — starts visible, animates on scroll when JS is available */
+    .mps-fade { transition: opacity 0.65s ease, transform 0.65s ease; }
+    .mps-fade.will-reveal { opacity: 0; transform: translateY(20px); }
+    .mps-fade.will-reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .mps-fade.will-reveal.is-visible.mps-fade-delay-1 { transition-delay: 0.1s; }
+    .mps-fade.will-reveal.is-visible.mps-fade-delay-2 { transition-delay: 0.2s; }
+    .mps-fade.will-reveal.is-visible.mps-fade-delay-3 { transition-delay: 0.3s; }
+
+    /* Separator */
+    .mps-separator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 0 0 4vh;
+        opacity: 0.85;
+    }
+    .mps-sep-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(201,162,74,0.3), rgba(166,200,94,0.25), transparent);
+    }
+    .mps-sep-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #c9a24a, #8fb85a);
+        box-shadow: 0 0 0 6px rgba(201,162,74,0.10);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .mps-layers {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        .mps-connector { flex-direction: row; height: 30px; }
+        .mps-connector-line { width: 40px; height: 1px; min-height: unset; flex: unset; }
+        .mps-connector-label { writing-mode: horizontal-tb; transform: none; }
+        .mps-integration { grid-template-columns: 1fr; }
+        .mps-compare { grid-template-columns: 1fr; }
+        .mps-loop-ring { width: 340px; height: 340px; }
+    }
+
+    @media (max-width: 640px) {
+        .mps-stats-bar { flex-direction: column; border-radius: 14px; width: 100%; }
+        .mps-stat-sep { width: auto; height: 1px; margin: 0 1.7rem; }
+        .mps-cta-inner { flex-direction: column; padding: 2.5rem 1.8rem; }
+        .mps-loop-ring { width: 280px; height: 280px; }
+        .mps-loop-logo { font-size: 2.6rem; }
+        .mps-loop-node-dot { width: 34px; height: 34px; }
+        .mps-loop-node-label { font-size: 0.58rem; }
+    }
+    </style>
 </head>
 <body class="is-internal-page">
 
     <header class="header-main">
         <a href="index.html" class="logo">DARE</a>
-        <div class="header-actions">
-            <a href="client.html" class="header-login-btn">Log in</a>
-            <button class="menu-toggle" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
-                <span class="line"></span>
-                <span class="line"></span>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="index.html" class="header-nav-link">Home</a>
+            <a href="plans.html" class="header-nav-link">Plans</a>
+            <a href="team.html" class="header-nav-link">The Team</a>
+            <a href="faq.html" class="header-nav-link">FAQ</a>
+        </nav>
+        <div class="header-controls">
+            <button class="header-theme-btn" id="theme-toggle" aria-label="Toggle light / dark mode">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4.5"/>
+                    <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+                    <line x1="5.6" y1="5.6" x2="7" y2="7"/><line x1="17" y1="17" x2="18.4" y2="18.4"/>
+                    <line x1="18.4" y1="5.6" x2="17" y2="7"/><line x1="7" y1="17" x2="5.6" y2="18.4"/>
+                </svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
             </button>
+            <a href="client.html" class="header-user-btn" aria-label="Client area">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+                </svg>
+            </a>
         </div>
     </header>
 
-    <div class="full-menu" id="full-menu">
-        <nav class="menu-nav">
-            <div class="menu-item"><a href="index.html" data-text="HOME">HOME</a></div>
-            <div class="menu-item"><a href="plans.html" data-text="PLANS">PLANS</a></div>
-            <div class="menu-item"><a href="team.html" data-text="THE TEAM">THE TEAM</a></div>
-            <div class="menu-item"><a href="#" data-text="FAQ">FAQ</a></div>
-        </nav>
-        <div class="menu-footer">Elevating your lifestyle since 2026</div>
-    </div>
+    <main>
 
-    <main class="page-container">
-        <section class="p-method-page p-method-page--system">
+        <!-- ─── HERO ─────────────────────────────────────────────── -->
+        <section class="mps-hero">
+            <div class="mps-hero-bg" aria-hidden="true"></div>
+            <div class="mps-hero-overlay" aria-hidden="true"></div>
+
+            <!-- Network / circuit decoration -->
+            <div class="mps-deco-network" aria-hidden="true">
+                <svg viewBox="0 0 1440 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                    <!-- Connection lines between nodes -->
+                    <line x1="300" y1="120" x2="620" y2="280" stroke="rgba(201,162,74,0.35)" stroke-width="1"/>
+                    <line x1="620" y1="280" x2="980" y2="180" stroke="rgba(166,200,94,0.3)" stroke-width="1"/>
+                    <line x1="980" y1="180" x2="1200" y2="320" stroke="rgba(201,162,74,0.25)" stroke-width="1"/>
+                    <line x1="620" y1="280" x2="720" y2="520" stroke="rgba(201,162,74,0.2)" stroke-width="1"/>
+                    <line x1="980" y1="180" x2="850" y2="400" stroke="rgba(166,200,94,0.25)" stroke-width="1"/>
+                    <line x1="200" y1="400" x2="620" y2="280" stroke="rgba(244,241,232,0.12)" stroke-width="1"/>
+                    <line x1="1100" y1="500" x2="980" y2="180" stroke="rgba(244,241,232,0.1)" stroke-width="1"/>
+                    <line x1="450" y1="600" x2="720" y2="520" stroke="rgba(201,162,74,0.18)" stroke-width="1"/>
+                    <line x1="720" y1="520" x2="1100" y2="500" stroke="rgba(166,200,94,0.18)" stroke-width="1"/>
+                    <!-- Nodes -->
+                    <circle cx="300" cy="120" r="6" fill="rgba(201,162,74,0.5)" stroke="rgba(201,162,74,0.3)" stroke-width="8" stroke-opacity="0.1"/>
+                    <circle cx="620" cy="280" r="9" fill="rgba(201,162,74,0.7)" stroke="rgba(201,162,74,0.3)" stroke-width="12" stroke-opacity="0.12"/>
+                    <circle cx="980" cy="180" r="7" fill="rgba(166,200,94,0.6)" stroke="rgba(166,200,94,0.3)" stroke-width="10" stroke-opacity="0.1"/>
+                    <circle cx="1200" cy="320" r="5" fill="rgba(201,162,74,0.45)"/>
+                    <circle cx="720" cy="520" r="6" fill="rgba(166,200,94,0.5)"/>
+                    <circle cx="850" cy="400" r="4" fill="rgba(244,241,232,0.35)"/>
+                    <circle cx="200" cy="400" r="5" fill="rgba(201,162,74,0.35)"/>
+                    <circle cx="1100" cy="500" r="5" fill="rgba(166,200,94,0.4)"/>
+                    <circle cx="450" cy="600" r="4" fill="rgba(244,241,232,0.25)"/>
+                    <!-- Grid reference lines (very faint) -->
+                    <line x1="0" y1="200" x2="1440" y2="200" stroke="rgba(244,241,232,0.04)" stroke-width="1"/>
+                    <line x1="0" y1="400" x2="1440" y2="400" stroke="rgba(244,241,232,0.04)" stroke-width="1"/>
+                    <line x1="0" y1="600" x2="1440" y2="600" stroke="rgba(244,241,232,0.04)" stroke-width="1"/>
+                    <line x1="360" y1="0" x2="360" y2="800" stroke="rgba(244,241,232,0.03)" stroke-width="1"/>
+                    <line x1="720" y1="0" x2="720" y2="800" stroke="rgba(244,241,232,0.03)" stroke-width="1"/>
+                    <line x1="1080" y1="0" x2="1080" y2="800" stroke="rgba(244,241,232,0.03)" stroke-width="1"/>
+                </svg>
+            </div>
+
+            <!-- Orbital rings -->
+            <div class="mps-deco-orbital" aria-hidden="true">
+                <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <circle cx="200" cy="200" r="180" stroke="rgba(201,162,74,0.25)" stroke-width="1" stroke-dasharray="5 8"/>
+                    <circle cx="200" cy="200" r="140" stroke="rgba(166,200,94,0.2)" stroke-width="1" stroke-dasharray="3 12"/>
+                    <circle cx="200" cy="200" r="100" stroke="rgba(244,241,232,0.12)" stroke-width="1" stroke-dasharray="2 18"/>
+                    <circle cx="200" cy="200" r="60" stroke="rgba(201,162,74,0.18)" stroke-width="1"/>
+                    <!-- Orbit elements -->
+                    <circle cx="200" cy="20" r="8" fill="rgba(201,162,74,0.6)" stroke="rgba(201,162,74,0.2)" stroke-width="6" stroke-opacity="0.15"/>
+                    <circle cx="380" cy="200" r="6" fill="rgba(166,200,94,0.55)" stroke="rgba(166,200,94,0.2)" stroke-width="5" stroke-opacity="0.15"/>
+                    <circle cx="200" cy="380" r="7" fill="rgba(201,162,74,0.5)"/>
+                    <circle cx="60" cy="200" r="5" fill="rgba(244,241,232,0.35)"/>
+                    <!-- Inner orbit elements -->
+                    <circle cx="340" cy="340" r="5" fill="rgba(201,162,74,0.4)"/>
+                    <circle cx="60" cy="60" r="4" fill="rgba(166,200,94,0.4)"/>
+                    <!-- Center core -->
+                    <circle cx="200" cy="200" r="22" fill="rgba(201,162,74,0.08)" stroke="rgba(201,162,74,0.3)" stroke-width="1"/>
+                    <circle cx="200" cy="200" r="10" fill="rgba(201,162,74,0.25)"/>
+                </svg>
+            </div>
+
+            <div class="p-shell mps-hero-content">
+                <a href="index.html#our-method" class="mps-back">← Our Method</a>
+                <div class="mps-kicker">
+                    <span class="mps-kicker-dot"></span>
+                    Our Method · Integration
+                </div>
+                <h1 class="mps-title">One<br><span class="mps-title-accent">System</span></h1>
+                <p class="mps-lead">Training sets the demand. Nutrition answers it. Culinary execution removes the friction. One team, one plan — with a single feedback loop that adjusts every layer simultaneously.</p>
+                <div class="mps-stats-bar">
+                    <div class="mps-stat">
+                        <span class="mps-stat-num">3</span>
+                        <span class="mps-stat-lbl">Layers. One Plan.</span>
+                    </div>
+                    <div class="mps-stat-sep"></div>
+                    <div class="mps-stat">
+                        <span class="mps-stat-num">Weekly</span>
+                        <span class="mps-stat-lbl">Full-System Review</span>
+                    </div>
+                    <div class="mps-stat-sep"></div>
+                    <div class="mps-stat">
+                        <span class="mps-stat-num">Zero</span>
+                        <span class="mps-stat-lbl">Handoff Gaps</span>
+                    </div>
+                    <div class="mps-stat-sep"></div>
+                    <div class="mps-stat">
+                        <span class="mps-stat-num">Private</span>
+                        <span class="mps-stat-lbl">&amp; Discreet</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── THREE LAYERS ───────────────────────────────────────── -->
+        <section class="mps-section">
             <div class="p-shell">
-                <a href="index.html#our-method" class="p-method-page-back">← Back to Our Method</a>
-
-                <div class="p-method-page-hero">
-                    <div class="p-method-page-hero-inner">
-                        <span class="p-method-page-kicker">Our Method</span>
-                        <h1 class="p-method-page-title">One System</h1>
-                        <p class="p-method-page-lead">Placeholder copy — edit this page with how training and nutrition integrate into a single private operating system.</p>
+                <div class="mps-separator"><div class="mps-sep-line"></div><div class="mps-sep-dot"></div><div class="mps-sep-line"></div></div>
+                <div style="margin-bottom:2.8rem;" class="mps-fade">
+                    <span class="mps-section-kicker">The Architecture</span>
+                    <h2 class="mps-section-title">Three Layers.<br>One Direction.</h2>
+                    <p class="mps-section-sub">Each layer is a complete discipline. Together they form a single operating system that adapts in real time.</p>
+                </div>
+                <div class="mps-layers">
+                    <div class="mps-layer-card mps-layer-card--training mps-fade mps-fade-delay-1">
+                        <span class="mps-layer-num">Layer 01</span>
+                        <div class="mps-layer-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <h3 class="mps-layer-title">Training</h3>
+                        <p class="mps-layer-copy">Sets the demand. Periodised strength and conditioning work that drives the adaptation — and defines exactly what nutrition and recovery need to support.</p>
+                        <a href="method-training.html" class="mps-layer-tag">View Training →</a>
+                    </div>
+                    <div class="mps-connector mps-fade">
+                        <div class="mps-connector-line"></div>
+                        <div class="mps-connector-node"></div>
+                        <span class="mps-connector-label">feeds</span>
+                        <div class="mps-connector-node"></div>
+                        <div class="mps-connector-line"></div>
+                    </div>
+                    <div class="mps-layer-card mps-layer-card--nutrition mps-fade mps-fade-delay-2">
+                        <span class="mps-layer-num">Layer 02</span>
+                        <div class="mps-layer-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2a14.5 14.5 0 0 1 0 20 14.5 14.5 0 0 1 0-20"/><path d="M2 12h20"/></svg>
+                        </div>
+                        <h3 class="mps-layer-title">Nutrition</h3>
+                        <p class="mps-layer-copy">Answers the demand. Macro architecture, meal timing and micronutrient density calibrated directly to session output — not to a generic formula.</p>
+                        <a href="method-nutrition.html" class="mps-layer-tag">View Nutrition →</a>
+                    </div>
+                    <div class="mps-connector mps-fade">
+                        <div class="mps-connector-line"></div>
+                        <div class="mps-connector-node"></div>
+                        <span class="mps-connector-label">executes</span>
+                        <div class="mps-connector-node"></div>
+                        <div class="mps-connector-line"></div>
+                    </div>
+                    <div class="mps-layer-card mps-layer-card--culinary mps-fade mps-fade-delay-3">
+                        <span class="mps-layer-num">Layer 03</span>
+                        <div class="mps-layer-icon">
+                            <svg viewBox="0 0 24 24"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6V13.87z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+                        </div>
+                        <h3 class="mps-layer-title">Culinary<br>Execution</h3>
+                        <p class="mps-layer-copy">Removes the friction. Chef-designed recipes, measured portions and execution support — whether you cook, delegate to staff, or use our in-home team.</p>
+                        <span class="mps-layer-tag">Included in all plans</span>
                     </div>
                 </div>
-
-                <div class="p-method-page-body">
-                    <p>DARE is built on integration. Training sets the demand; nutrition answers it; culinary execution removes friction. One team, one plan, one feedback loop — adjusted weekly so nothing drifts out of alignment.</p>
-                    <h3>Why it matters</h3>
-                    <p>When training and nutrition live in separate apps or advisors, progress stalls at the handoff. Our system treats load, recovery, intake and execution as one dataset. Changes in travel, sleep or stress trigger coordinated updates across all three layers.</p>
-                    <p>This is placeholder text for the integration story. Replace with your final positioning, process diagram copy or client journey description.</p>
-                </div>
-
-                <p class="p-method-page-note">Content draft — replace with your definitive One System page copy.</p>
             </div>
         </section>
 
-        <section class="contact-section">
-            <div class="contact-inner">
-                <div class="contact-copy">
-                    <h2>DISCREET ENQUIRIES</h2>
-                    <p>All contact is handled directly by the founding team. No assistants. No mailing lists.</p>
+        <!-- ─── INTEGRATION CARDS ──────────────────────────────────── -->
+        <section class="mps-section" style="padding-top: 0;">
+            <div class="p-shell">
+                <div style="margin-bottom:2.8rem;" class="mps-fade">
+                    <span class="mps-section-kicker">How It Works</span>
+                    <h2 class="mps-section-title">The Integration<br>Model</h2>
+                    <p class="mps-section-sub">When training and nutrition live in separate systems, progress stalls at the handoff. DARE treats all data as one dataset.</p>
                 </div>
-                <form class="contact-form">
-                    <div class="contact-grid">
-                        <div class="field">
-                            <label for="name-system">Name</label>
-                            <input type="text" id="name-system" name="name" placeholder="Optional" />
+                <div class="mps-integration">
+                    <div class="mps-int-card mps-fade mps-fade-delay-1">
+                        <div class="mps-int-header">
+                            <div class="mps-int-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+                            </div>
+                            <h3 class="mps-int-title">One Dataset</h3>
                         </div>
-                        <div class="field">
-                            <label for="email-system">Email</label>
-                            <input type="email" id="email-system" name="email" placeholder="Private contact email" />
+                        <p class="mps-int-copy">Load data, recovery metrics, nutrition adherence and body composition all live in a single system — not three separate apps with no communication between them. Every number informs every decision.</p>
+                    </div>
+                    <div class="mps-int-card mps-fade mps-fade-delay-2">
+                        <div class="mps-int-header">
+                            <div class="mps-int-icon">
+                                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            </div>
+                            <h3 class="mps-int-title">Weekly Sync</h3>
                         </div>
+                        <p class="mps-int-copy">Every week, all three layers are reviewed simultaneously. Training volume, nutrition intake and culinary execution are adjusted together — never in isolation. One call, one plan update.</p>
                     </div>
-                    <div class="field">
-                        <label for="message-system">How can we help?</label>
-                        <textarea id="message-system" name="message" rows="4" placeholder="Share context, constraints or questions."></textarea>
+                    <div class="mps-int-card mps-fade mps-fade-delay-1">
+                        <div class="mps-int-header">
+                            <div class="mps-int-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                            </div>
+                            <h3 class="mps-int-title">Travel Protocol</h3>
+                        </div>
+                        <p class="mps-int-copy">When you travel, the system travels. Training modalities shift for the equipment available. Nutrition targets adjust for local food. Restaurant guides and hotel room protocols are pre-loaded before you land.</p>
                     </div>
-                    <button type="submit" class="contact-submit">SEND ENQUIRY</button>
-                </form>
+                    <div class="mps-int-card mps-fade mps-fade-delay-2">
+                        <div class="mps-int-header">
+                            <div class="mps-int-icon">
+                                <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                            </div>
+                            <h3 class="mps-int-title">Live Adjustment</h3>
+                        </div>
+                        <p class="mps-int-copy">If sleep suffers, training volume drops. If training volume drops, carbohydrate targets recalibrate. If stress spikes, session intensity adjusts. Every layer responds to every signal — without a gap.</p>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <!-- ─── COMPARISON ─────────────────────────────────────────── -->
+        <section class="mps-section">
+            <div class="p-shell">
+                <div class="mps-separator"><div class="mps-sep-line"></div><div class="mps-sep-dot"></div><div class="mps-sep-line"></div></div>
+                <div style="margin-bottom:2.8rem;" class="mps-fade">
+                    <span class="mps-section-kicker">Why It Matters</span>
+                    <h2 class="mps-section-title">The Fragmented<br>Alternative</h2>
+                    <p class="mps-section-sub">Most high performers already work with experts. The problem is those experts don't talk to each other.</p>
+                </div>
+                <div class="mps-compare">
+                    <div class="mps-compare-col mps-compare-col--fragmented mps-fade mps-fade-delay-1">
+                        <div class="mps-compare-header">
+                            <span class="mps-compare-badge">Fragmented Approach</span>
+                            <h3 class="mps-compare-title">Separate Systems</h3>
+                        </div>
+                        <ul class="mps-compare-list">
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                Personal trainer without nutritionist access — training load set with no awareness of caloric deficit
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                Dietitian working from generic targets, not from your actual session data
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                Progress stalls at the handoff between disciplines
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                Meal execution falls on you — planning, sourcing, and preparing without expert guidance
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                Travel breaks both training and nutrition simultaneously, with no pre-planned protocol
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mps-compare-col mps-compare-col--dare mps-fade mps-fade-delay-2">
+                        <div class="mps-compare-header">
+                            <span class="mps-compare-badge">DARE Method</span>
+                            <h3 class="mps-compare-title">One Integrated System</h3>
+                        </div>
+                        <ul class="mps-compare-list">
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Training load and nutrition targets built simultaneously — always in sync
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Macro targets update in real time as session data changes week to week
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Single weekly review covers all three layers — zero communication gaps
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Chef-ready recipes with execution support — for you, your staff, or our team
+                            </li>
+                            <li>
+                                <svg class="mps-compare-icon mps-compare-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Travel protocols pre-loaded before every trip — training and nutrition continuous
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── FEEDBACK LOOP ──────────────────────────────────────── -->
+        <section class="mps-section">
+            <div class="p-shell">
+                <div class="mps-separator"><div class="mps-sep-line"></div><div class="mps-sep-dot"></div><div class="mps-sep-line"></div></div>
+                <div style="margin-bottom:2.8rem;text-align:center;" class="mps-fade">
+                    <span class="mps-section-kicker">The Mechanism</span>
+                    <h2 class="mps-section-title">The Feedback Loop</h2>
+                    <p class="mps-section-sub" style="margin:0 auto;">This cycle never stops. Every output becomes an input for the next adjustment.</p>
+                </div>
+                <div class="mps-loop mps-fade">
+                    <div class="mps-loop-ring">
+                        <!-- Animated arc SVG -->
+                        <svg class="mps-loop-svg" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="loopGrad" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="rgba(201,162,74,0.9)"/>
+                                    <stop offset="50%" stop-color="rgba(166,200,94,0.8)"/>
+                                    <stop offset="100%" stop-color="rgba(201,162,74,0.5)"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Main orbital circle -->
+                            <circle cx="240" cy="240" r="200" stroke="url(#loopGrad)" stroke-width="1.5" stroke-dasharray="12 6" fill="none"/>
+                            <!-- Traveling dot (animated) -->
+                            <circle r="5" fill="rgba(201,162,74,0.9)">
+                                <animateMotion dur="8s" repeatCount="indefinite">
+                                    <mpath href="#loopPath"/>
+                                </animateMotion>
+                            </circle>
+                            <path id="loopPath" d="M 240 40 A 200 200 0 0 1 240 440 A 200 200 0 0 1 240 40" fill="none"/>
+                        </svg>
+                        <!-- Center -->
+                        <div class="mps-loop-center">
+                            <div class="mps-loop-logo">DARE</div>
+                            <div class="mps-loop-sublabel">Private Health OS</div>
+                        </div>
+                        <!-- Stage nodes -->
+                        <div class="mps-loop-node mps-loop-node--assess">
+                            <div class="mps-loop-node-dot">
+                                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+                            </div>
+                            <span class="mps-loop-node-label">Assess</span>
+                        </div>
+                        <div class="mps-loop-node mps-loop-node--plan">
+                            <div class="mps-loop-node-dot">
+                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <span class="mps-loop-node-label">Plan</span>
+                        </div>
+                        <div class="mps-loop-node mps-loop-node--execute">
+                            <div class="mps-loop-node-dot">
+                                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            </div>
+                            <span class="mps-loop-node-label">Execute</span>
+                        </div>
+                        <div class="mps-loop-node mps-loop-node--review">
+                            <div class="mps-loop-node-dot">
+                                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <span class="mps-loop-node-label">Review</span>
+                        </div>
+                        <div class="mps-loop-node mps-loop-node--adapt">
+                            <div class="mps-loop-node-dot">
+                                <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                            </div>
+                            <span class="mps-loop-node-label">Adapt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── CTA ────────────────────────────────────────────────── -->
+        <section class="mps-section" style="padding-top: 2vh;">
+            <div class="p-shell">
+                <div class="mps-cta mps-fade">
+                    <div class="mps-cta-inner">
+                        <div>
+                            <h2>One Team.<br>One Feedback Loop.</h2>
+                            <p>Book a private consultation and we'll walk you through the complete DARE system — what it covers, how it adjusts, and what it looks like for your specific life and goals.</p>
+                        </div>
+                        <div class="mps-cta-actions">
+                            <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20am%20interested%20in%20learning%20more%20about%20the%20DARE%20integrated%20system." class="p-btn p-btn-primary" target="_blank" rel="noopener">Book a Consultation →</a>
+                            <a href="plans.html" class="p-btn p-btn-ghost">View Plans</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <footer class="p-footer">
@@ -92,6 +1192,7 @@
                     <a href="index.html">Home</a>
                     <a href="plans.html">Plans</a>
                     <a href="index.html#contact">Contact</a>
+                    <a href="faq.html">FAQ</a>
                 </nav>
                 <div class="p-footer-contact-col">
                     <a href="https://wa.me/971501234567?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
@@ -107,5 +1208,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
+    <script>
+    (function(){
+        var btn = document.getElementById('theme-toggle');
+        if (!btn || btn._themeWired) return;
+        btn._themeWired = true;
+        btn.addEventListener('click', function(){
+            var curr = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = curr === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('dare-theme', next); } catch(e){}
+        });
+
+        var fades = document.querySelectorAll('.mps-fade');
+        requestAnimationFrame(function(){
+            fades.forEach(function(el){ el.classList.add('will-reveal'); });
+            if ('IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function(entries){
+                    entries.forEach(function(entry){
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+                fades.forEach(function(el){ io.observe(el); });
+            } else {
+                fades.forEach(function(el){ el.classList.add('is-visible'); });
+            }
+        });
+    })();
+    </script>
 </body>
 </html>
