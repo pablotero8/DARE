@@ -284,6 +284,20 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   .pp-metrics{grid-template-columns:1fr 1fr}
 }
 
+/* ─── NO PLAN / WELCOME STATE ─── */
+#no-plan-screen{
+  display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:3rem 1.5rem;gap:1rem;
+}
+.np-title{
+  font-family:'Tulpen One',serif;font-size:clamp(3.5rem,10vw,6rem);
+  letter-spacing:.12em;line-height:1;
+  background:linear-gradient(135deg,var(--gold),var(--green));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.np-name{font-size:clamp(1.1rem,3vw,1.5rem);font-weight:600;color:var(--text);letter-spacing:.04em}
+.np-sub{font-size:.9rem;color:var(--muted);max-width:340px;line-height:1.7}
+
 /* ─── NEXT WEEK PLAN BANNER ─── */
 #next-week-banner{
   position:relative;z-index:100;overflow:hidden;
@@ -347,7 +361,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
     <div class="lf"><label for="pw">Password</label><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
     <div class="login-error" id="login-error">Incorrect credentials. Please try again.</div>
     <button class="login-btn" id="login-btn">Enter Portal</button>
-    <p class="login-hint">Access by invitation only.<br>If you haven't received credentials, contact <strong>Erika</strong> or <strong>Daniel</strong>.</p>
+    <p class="login-hint">Access by invitation only.<br>If you haven't received credentials, contact <strong>Erika</strong> or <strong>Dani</strong>.</p>
   </div>
 </div>
 
@@ -364,7 +378,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       <button class="nav-arrow" id="next-day">&#8594;</button>
     </div>
     <button class="ch-profile" id="profile-btn">
-      <div class="ch-avatar">AH</div>
+      <div class="ch-avatar" id="header-avatar">?</div>
       <span class="ch-profile-label">Profile</span>
     </button>
   </header>
@@ -377,7 +391,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       <span class="nwb-icon">✦</span>
       <div class="nwb-text">
         <div class="nwb-title">Your plan for next week is ready!</div>
-        <div class="nwb-sub">Training &amp; nutrition &mdash; prepared by Erika &amp; Daniel</div>
+        <div class="nwb-sub">Training &amp; nutrition &mdash; prepared by Erika &amp; Dani</div>
       </div>
       <button class="nwb-see" id="nwb-see-btn">See</button>
       <button class="nwb-dismiss" id="nwb-dismiss-btn">&times;</button>
@@ -391,6 +405,12 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       <div id="week-selector" class="week-selector"></div>
       <div class="cs-plan-label" id="cs-plan-label">My plan for today</div>
     </div>
+  </div>
+
+  <div id="no-plan-screen">
+    <div class="np-title">WELCOME<br>TO DARE</div>
+    <div class="np-name" id="np-client-name"></div>
+    <div class="np-sub">Tu plan personalizado estará listo en breve.<br>Tu coach lo preparará para ti.</div>
   </div>
 
   <div id="day-plans">
@@ -427,17 +447,17 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   </div>
   <div class="pp-body">
     <div class="pp-client-row">
-      <div class="pp-avatar-lg">AH</div>
+      <div class="pp-avatar-lg" id="pp-avatar">?</div>
       <div>
-        <div class="pp-client-name">Alex Hammond</div>
-        <div class="pp-client-sub">Fat-Loss Protocol &nbsp;·&nbsp; Week 8 of 12 &nbsp;·&nbsp; 181 cm &nbsp;·&nbsp; Next check-in: Fri 30 May</div>
+        <div class="pp-client-name" id="pp-profile-name">—</div>
+        <div class="pp-client-sub" id="pp-profile-sub">—</div>
       </div>
     </div>
     <div class="pp-metrics">
-      <div class="pp-metric glass"><div class="pp-metric-label">Weight</div><div class="pp-metric-val">82.8<sup>kg</sup></div><div class="pp-metric-delta">↓ 5.2 kg since start</div></div>
-      <div class="pp-metric glass"><div class="pp-metric-label">BMI</div><div class="pp-metric-val">25.6</div><div class="pp-metric-delta">↓ 1.6 since start</div></div>
-      <div class="pp-metric glass"><div class="pp-metric-label">Body Fat</div><div class="pp-metric-val">18.8<sup>%</sup></div><div class="pp-metric-delta">↓ 3.6% since start</div></div>
-      <div class="pp-metric glass"><div class="pp-metric-label">Lean Mass</div><div class="pp-metric-val">67.4<sup>kg</sup></div><div class="pp-metric-delta">↑ 3.3 kg since start</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label">Weight</div><div class="pp-metric-val" id="pp-met-wt">—</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label">BMI</div><div class="pp-metric-val" id="pp-met-bmi">—</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label">Body Fat</div><div class="pp-metric-val" id="pp-met-fat">—</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label">Lean Mass</div><div class="pp-metric-val" id="pp-met-lean">—</div></div>
     </div>
     <div class="pp-charts">
       <div class="pp-chart-card glass">
@@ -724,8 +744,8 @@ const WEEK = [
 ];
 
 /* ═══ STATE ═══ */
-let ACTIVE_WEEK     = WEEK;   // 7-day array currently rendered
-let currentDay      = DEMO_TODAY;
+let ACTIVE_WEEK     = null;   // 7-day array currently rendered (null = no plan yet)
+let currentDay      = 0;
 let chartsInit      = false;
 let WEEK_LIST       = [];     // [{weekOf:'YYYY-MM-DD'}, …] from API
 let CURRENT_WEEK_OF = null;   // weekOf of the week being displayed
@@ -839,18 +859,33 @@ const loginError  = document.getElementById('login-error');
 
 function applyClientToUI(client){
   if(!client) return;
-  // Strip above training/nutrition cards
-  const nameEl = document.getElementById('cs-client-name');
-  const progEl = document.getElementById('cs-client-prog');
-  const initEl = document.getElementById('cs-avatar-initials');
-  if(nameEl) nameEl.textContent = client.name;
-  if(progEl) progEl.textContent = `${client.goal}  ·  Week ${client.currentWeek} of ${client.totalWeeks}`;
-  if(initEl) initEl.textContent = client.initials || (client.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  // Profile panel header
-  const ppName = document.querySelector('.pp-name');
-  const ppRole = document.querySelector('.pp-role');
-  if(ppName) ppName.textContent = client.name;
-  if(ppRole) ppRole.textContent = client.goal;
+  const initials = client.initials || (client.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const firstName = (client.name||'').split(' ')[0];
+  const el = (id) => document.getElementById(id);
+
+  // Header strip
+  if(el('cs-client-name')) el('cs-client-name').textContent = client.name;
+  if(el('cs-client-prog')) el('cs-client-prog').textContent = `${client.goal}  ·  Week ${client.currentWeek} of ${client.totalWeeks}`;
+  if(el('header-avatar'))  el('header-avatar').textContent  = initials;
+
+  // Profile panel
+  if(el('pp-avatar'))       el('pp-avatar').textContent       = initials;
+  if(el('pp-profile-name')) el('pp-profile-name').textContent = client.name;
+  const subParts = [client.goal, `Week ${client.currentWeek} of ${client.totalWeeks}`];
+  if(client.height) subParts.push(`${client.height} cm`);
+  if(el('pp-profile-sub')) el('pp-profile-sub').textContent = subParts.join(' · ');
+
+  // Metrics
+  if(el('pp-met-wt'))   el('pp-met-wt').innerHTML   = client.weight  ? `${client.weight}<sup>kg</sup>`  : '—';
+  if(el('pp-met-fat'))  el('pp-met-fat').innerHTML   = client.bodyFat ? `${client.bodyFat}<sup>%</sup>` : '—';
+  if(el('pp-met-lean')) el('pp-met-lean').innerHTML  = client.lean    ? `${client.lean}<sup>kg</sup>`   : '—';
+  if(el('pp-met-bmi')){
+    const bmi = (client.weight && client.height) ? (client.weight / ((client.height/100)**2)).toFixed(1) : null;
+    el('pp-met-bmi').textContent = bmi || '—';
+  }
+
+  // Welcome screen name
+  if(el('np-client-name')) el('np-client-name').textContent = firstName;
 }
 
 async function showDash(){
@@ -898,8 +933,18 @@ async function showDash(){
 
   // ── Step 3: render ───────────────────────────────────────────
   buildWeekSelector(WEEK_LIST, CURRENT_WEEK_OF);
-  renderDay(currentDay);
-  buildWeekStrip();
+  if(ACTIVE_WEEK){
+    document.getElementById('no-plan-screen').style.display = 'none';
+    document.getElementById('day-plans').style.display      = '';
+    renderDay(currentDay);
+    buildWeekStrip();
+  } else {
+    document.getElementById('day-plans').style.display      = 'none';
+    document.getElementById('no-plan-screen').style.display = 'flex';
+    document.getElementById('week-strip').style.display     = 'none';
+    document.getElementById('prev-day').style.visibility   = 'hidden';
+    document.getElementById('next-day').style.visibility   = 'hidden';
+  }
 
   // ── Step 4: notification — only when viewing past/current ────
   const nextWeekOf = nextMondayISO();
@@ -998,6 +1043,7 @@ document.getElementById('logout-btn').addEventListener('click',()=>{
 
 /* ═══ WEEK STRIP ═══ */
 function buildWeekStrip(){
+  if(!ACTIVE_WEEK) return;
   const strip = document.getElementById('week-strip');
   strip.innerHTML='';
   ACTIVE_WEEK.forEach((d,i)=>{
@@ -1032,6 +1078,7 @@ document.getElementById('next-day').addEventListener('click',()=>{ if(currentDay
 
 /* ═══ RENDER ═══ */
 function renderDay(idx){
+  if(!ACTIVE_WEEK) return;
   const d=ACTIVE_WEEK[idx];
   document.getElementById('prev-day').disabled=idx===0;
   document.getElementById('next-day').disabled=idx===6;
