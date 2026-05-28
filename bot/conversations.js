@@ -25,6 +25,9 @@ function getUsers() {
     ...(process.env.DANIEL_PHONE
       ? { [process.env.DANIEL_PHONE]: { name: 'Dani',  role: 'admin', specialty: 'nutrition' } }
       : {}),
+    ...(process.env.PABLO_PHONE
+      ? { [process.env.PABLO_PHONE]: { name: 'Pablo', role: 'admin', specialty: 'training' } }
+      : {}),
   };
 }
 
