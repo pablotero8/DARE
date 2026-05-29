@@ -148,42 +148,44 @@ ${clientList}
 
 Cuando el coach pide un plan para un cliente, PRIMERO confirma brevemente el cliente y la semana, y devuelve SIEMPRE esta plantilla rellenable para los 7 días. No generes el plan tú — deja que el coach la complete.
 
-Genera la plantilla con las FECHAS REALES de la semana solicitada (lunes a domingo). Usa este formato exacto, limpio y fácil de rellenar:
+Genera la plantilla con las FECHAS REALES de la semana solicitada (lunes a domingo). CADA CAMPO VA EN SU PROPIA LÍNEA para que el coach solo tenga que escribir después de los dos puntos. Usa este formato EXACTO:
 
----
-📋 **Plan de Entrenamiento — [Nombre cliente]**
+📋 Plan de Entrenamiento — [Nombre cliente]
 🗓️ Semana del [lunes DD] al [domingo DD mes]
+Rellena cada línea después de los dos puntos. Borra los ejercicios que no uses.
 
-Completa cada día. Para días de descanso, escribe solo "DESCANSO" y las actividades. Deja en blanco los ejercicios que no uses.
+━━━━━━━━━━━━━━━━━━━━━━━━
+📅 DÍA 1 — Lunes [DD mes]
+Tipo (fuerza / cardio / descanso):
+Nombre de la sesión:
+Ejercicio 1:
+Ejercicio 2:
+Ejercicio 3:
+Ejercicio 4:
+Ejercicio 5:
+Ejercicio 6:
+Ejercicio 7:
+Nota del día para el cliente:
+━━━━━━━━━━━━━━━━━━━━━━━━
+📅 DÍA 2 — Martes [DD mes]
+Tipo (fuerza / cardio / descanso):
+Nombre de la sesión:
+Ejercicio 1:
+Ejercicio 2:
+Ejercicio 3:
+Ejercicio 4:
+Ejercicio 5:
+Ejercicio 6:
+Ejercicio 7:
+Nota del día para el cliente:
+━━━━━━━━━━━━━━━━━━━━━━━━
 
-**🔹 DÍA 1 · LUNES [DD mes]**
-• Tipo: _(fuerza / cardio / descanso)_
-• Sesión: _(ej: Tren superior)_
-• Ejercicios:
-   1.  _(ej: Press banca — 4×8 @70%, descanso 2min)_
-   2.
-   3.
-   4.
-   5.
-• Nota para el cliente:
-
-**🔹 DÍA 2 · MARTES [DD mes]**
-_(mismo formato)_
-
-**🔹 DÍA 3 · MIÉRCOLES [DD mes]**
-**🔹 DÍA 4 · JUEVES [DD mes]**
-**🔹 DÍA 5 · VIERNES [DD mes]**
-**🔹 DÍA 6 · SÁBADO [DD mes]**
-**🔹 DÍA 7 · DOMINGO [DD mes]**
----
-
-Expande SIEMPRE los 7 días completos en la plantilla (no resumas con "mismo formato" — eso es solo para que entiendas tú). Cada día debe aparecer con sus campos listos para rellenar.
+… y así hasta el DÍA 7 (Domingo). EXPANDE SIEMPRE LOS 7 DÍAS completos con sus fechas reales, cada uno con todas sus líneas. Nunca abrevies con "igual que arriba".
 
 REGLAS DE LA PLANTILLA:
-- Tipo: fuerza, cardio o descanso
-- Cada ejercicio: nombre — series×reps y notas de técnica/descanso entre la misma línea
-- Para descanso: en vez de ejercicios, lista actividades de recuperación (ej: Caminar 30min ritmo suave)
-- Hasta 7 ejercicios por día, pero el coach completa solo los que necesite
+- En cada "Ejercicio N:" el coach escribe nombre + series×reps + técnica/descanso en la misma línea. Ej: "Press banca 4×8 @70%, descanso 2min"
+- Para días de descanso: el coach escribe las actividades de recuperación en las líneas de Ejercicio (ej: "Ejercicio 1: Caminar 30min ritmo suave")
+- El coach solo rellena los ejercicios que necesite; los vacíos se ignoran
 
 ═══ CUANDO EL COACH DEVUELVE LA PLANTILLA RELLENA ═══
 
@@ -218,42 +220,48 @@ ${clientList}
 
 Cuando el coach pide un plan para un cliente, PRIMERO confirma brevemente el cliente y la semana, y devuelve SIEMPRE esta plantilla rellenable para los 7 días. No generes el plan tú — deja que el coach la complete.
 
-Genera la plantilla con las FECHAS REALES de la semana solicitada (lunes a domingo). Usa este formato exacto, limpio y fácil de rellenar:
+Genera la plantilla con las FECHAS REALES de la semana solicitada (lunes a domingo). CADA CAMPO VA EN SU PROPIA LÍNEA para que el coach solo tenga que escribir después de los dos puntos. Usa este formato EXACTO:
 
----
-📋 **Plan de Nutrición — [Nombre cliente]**
+📋 Plan de Nutrición — [Nombre cliente]
 🗓️ Semana del [lunes DD] al [domingo DD mes]
+Rellena cada línea después de los dos puntos. El coach solo escribe los alimentos; yo generaré los pasos. Borra las comidas que no uses.
 
-Completa cada día. Solo escribe los ingredientes de cada comida — yo generaré los pasos de preparación. Deja en blanco las comidas que no uses.
+━━━━━━━━━━━━━━━━━━━━━━━━
+📅 DÍA 1 — Lunes [DD mes]
+Calorías totales:
+Proteína (g):
+Carbohidratos (g):
+Grasas (g):
+Comida 1 — hora y alimentos:
+Comida 2 — hora y alimentos:
+Comida 3 — hora y alimentos:
+Comida 4 — hora y alimentos:
+Comida 5 — hora y alimentos:
+Comida 6 — hora y alimentos:
+Comida 7 — hora y alimentos:
+Nota del día para el cliente:
+━━━━━━━━━━━━━━━━━━━━━━━━
+📅 DÍA 2 — Martes [DD mes]
+Calorías totales:
+Proteína (g):
+Carbohidratos (g):
+Grasas (g):
+Comida 1 — hora y alimentos:
+Comida 2 — hora y alimentos:
+Comida 3 — hora y alimentos:
+Comida 4 — hora y alimentos:
+Comida 5 — hora y alimentos:
+Comida 6 — hora y alimentos:
+Comida 7 — hora y alimentos:
+Nota del día para el cliente:
+━━━━━━━━━━━━━━━━━━━━━━━━
 
-**🔹 DÍA 1 · LUNES [DD mes]**
-• Calorías totales: _(ej: 2100 kcal)_
-• Macros: Proteína __g · Carbos __g · Grasas __g
-• Comidas:
-   08:00 — Desayuno: _(ej: avena · plátano · proteína · leche)_
-   11:00 — Media mañana:
-   14:00 — Comida:
-   17:00 — Merienda:
-   20:30 — Cena:
-• Nota para el cliente:
-
-**🔹 DÍA 2 · MARTES [DD mes]**
-_(mismo formato)_
-
-**🔹 DÍA 3 · MIÉRCOLES [DD mes]**
-**🔹 DÍA 4 · JUEVES [DD mes]**
-**🔹 DÍA 5 · VIERNES [DD mes]**
-**🔹 DÍA 6 · SÁBADO [DD mes]**
-**🔹 DÍA 7 · DOMINGO [DD mes]**
----
-
-Expande SIEMPRE los 7 días completos en la plantilla (no resumas con "mismo formato" — eso es solo para que entiendas tú). Cada día debe aparecer con sus campos listos para rellenar.
+… y así hasta el DÍA 7 (Domingo). EXPANDE SIEMPRE LOS 7 DÍAS completos con sus fechas reales, cada uno con todas sus líneas. Nunca abrevies con "igual que arriba".
 
 REGLAS DE LA PLANTILLA:
-- Calorías: total del día
-- Macros: proteína, carbohidratos y grasas en gramos
-- Comidas: entre 4 y 7 al día, con su hora. El coach solo escribe ingredientes
-- Horarios sugeridos editables por el coach
+- En cada "Comida N:" el coach escribe la hora y los alimentos en la misma línea. Ej: "08:00 — avena, plátano, proteína, leche"
+- El coach solo rellena las comidas que necesite (entre 4 y 7); las vacías se ignoran
+- El coach NO escribe los pasos de preparación: los generas tú al guardar el plan
 
 ═══ CUANDO EL COACH DEVUELVE LA PLANTILLA RELLENA ═══
 
