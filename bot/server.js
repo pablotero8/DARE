@@ -9,7 +9,7 @@ import {
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession } from './auth.js';
-import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL } from './tools.js';
+import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT  = join(__dir, '..');
@@ -138,157 +138,31 @@ app.post('/api/coach/chat', requireCoach, async (req, res) => {
     .map((c, i) => `${i + 1}. ${c.name} (id: ${c.id}) — ${c.goal}, Semana ${c.currentWeek}/${c.totalWeeks}`)
     .join('\n') || '(Sin clientes todavía)';
 
-  const trainingSystemPrompt = `Eres ${coach.name}, coach de entrenamiento en DARE.
+  const specialtyLabel = coach.specialty === 'training' ? 'entrenamiento' : 'nutrición';
+  const systemPrompt = `Eres ${coach.name}, coach de ${specialtyLabel} en DARE.
 Hoy es ${today}. La próxima semana empieza el lunes ${nextMon}.
 
 CLIENTES ACTIVOS:
 ${clientList}
 
-═══ FLUJO DE PLANES DE ENTRENAMIENTO ═══
+FLUJO PARA CREAR UN PLAN:
+1. Cuando el coach pida un plan, confirma brevemente: cliente y semana (lunes en formato YYYY-MM-DD).
+2. Una vez confirmados, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto.
+3. El coach rellenará la tabla interactiva que aparecerá en el chat.
+4. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.
 
-Cuando el coach pide un plan para un cliente, PRIMERO confirma brevemente el cliente y la semana, y devuelve SIEMPRE esta plantilla rellenable para los 7 días. No generes el plan tú — deja que el coach la complete.
-
-Genera la plantilla con las FECHAS REALES de la semana solicitada (lunes a domingo). CADA CAMPO VA EN SU PROPIA LÍNEA para que el coach solo tenga que escribir después de los dos puntos. Usa este formato EXACTO:
-
-📋 Plan de Entrenamiento — [Nombre cliente]
-🗓️ Semana del [lunes DD] al [domingo DD mes]
-Rellena cada línea después de los dos puntos. Borra los ejercicios que no uses.
-
-━━━━━━━━━━━━━━━━━━━━━━━━
-📅 DÍA 1 — Lunes [DD mes]
-Tipo (fuerza / cardio / descanso):
-Nombre de la sesión:
-Ejercicio 1:
-Ejercicio 2:
-Ejercicio 3:
-Ejercicio 4:
-Ejercicio 5:
-Ejercicio 6:
-Ejercicio 7:
-Nota del día para el cliente:
-━━━━━━━━━━━━━━━━━━━━━━━━
-📅 DÍA 2 — Martes [DD mes]
-Tipo (fuerza / cardio / descanso):
-Nombre de la sesión:
-Ejercicio 1:
-Ejercicio 2:
-Ejercicio 3:
-Ejercicio 4:
-Ejercicio 5:
-Ejercicio 6:
-Ejercicio 7:
-Nota del día para el cliente:
-━━━━━━━━━━━━━━━━━━━━━━━━
-
-… y así hasta el DÍA 7 (Domingo). EXPANDE SIEMPRE LOS 7 DÍAS completos con sus fechas reales, cada uno con todas sus líneas. Nunca abrevies con "igual que arriba".
-
-REGLAS DE LA PLANTILLA:
-- En cada "Ejercicio N:" el coach escribe nombre + series×reps + técnica/descanso en la misma línea. Ej: "Press banca 4×8 @70%, descanso 2min"
-- Para días de descanso: el coach escribe las actividades de recuperación en las líneas de Ejercicio (ej: "Ejercicio 1: Caminar 30min ritmo suave")
-- El coach solo rellena los ejercicios que necesite; los vacíos se ignoran
-
-═══ CUANDO EL COACH DEVUELVE LA PLANTILLA RELLENA ═══
-
-Interpreta cada línea y llama a save_training_plan con este mapeo:
-- label: Mon/Tue/Wed/Thu/Fri/Sat/Sun
-- fullDate: "Monday, 26 May 2026" (en inglés para el cliente)
-- type: strength / cardio / rest
-- session: nombre descriptivo de la sesión (ej: "Upper Body", "HIIT & Cardio", "Active Rest")
-- items[]: para strength y cardio → { name, detail (técnica y descanso de los paréntesis), badge (series×reps) }
-  - Para cardio: añade gold:true a cada item
-- activities[]: solo para rest → { name, detail }
-- note: las notas del día (del punto de vista del coach hacia el cliente)
-- noteType: igual que type
-
-REGLAS JSON:
-- Genera steps de ejercicios detallados en el campo detail
-- Adapta las notas a tono motivacional cercano (de Erika al cliente)
-- weekOf debe ser el lunes en formato YYYY-MM-DD
-
-═══ OTRAS FUNCIONES ═══
-- Crear cliente: usa create_client (necesitas nombre, email, objetivo, semanas totales)
+OTRAS FUNCIONES:
+- Crear cliente: usa create_client (nombre, email, objetivo, semanas totales)
 - Resetear contraseña: usa reset_client_password
 - Responde en español. Tono profesional y cercano. Respuestas concisas.`;
 
-  const nutritionSystemPrompt = `Eres ${coach.name}, coach de nutrición en DARE.
-Hoy es ${today}. La próxima semana empieza el lunes ${nextMon}.
-
-CLIENTES ACTIVOS:
-${clientList}
-
-═══ FLUJO DE PLANES DE NUTRICIÓN ═══
-
-Cuando el coach pide un plan para un cliente, PRIMERO confirma brevemente el cliente y la semana, y devuelve SIEMPRE esta plantilla rellenable para los 7 días. No generes el plan tú — deja que el coach la complete.
-
-Genera la plantilla con las FECHAS REALES de la semana solicitada (lunes a domingo). CADA CAMPO VA EN SU PROPIA LÍNEA para que el coach solo tenga que escribir después de los dos puntos. Usa este formato EXACTO:
-
-📋 Plan de Nutrición — [Nombre cliente]
-🗓️ Semana del [lunes DD] al [domingo DD mes]
-Rellena cada línea después de los dos puntos. El coach solo escribe los alimentos; yo generaré los pasos. Borra las comidas que no uses.
-
-━━━━━━━━━━━━━━━━━━━━━━━━
-📅 DÍA 1 — Lunes [DD mes]
-Calorías totales:
-Proteína (g):
-Carbohidratos (g):
-Grasas (g):
-Comida 1 — hora y alimentos:
-Comida 2 — hora y alimentos:
-Comida 3 — hora y alimentos:
-Comida 4 — hora y alimentos:
-Comida 5 — hora y alimentos:
-Comida 6 — hora y alimentos:
-Comida 7 — hora y alimentos:
-Nota del día para el cliente:
-━━━━━━━━━━━━━━━━━━━━━━━━
-📅 DÍA 2 — Martes [DD mes]
-Calorías totales:
-Proteína (g):
-Carbohidratos (g):
-Grasas (g):
-Comida 1 — hora y alimentos:
-Comida 2 — hora y alimentos:
-Comida 3 — hora y alimentos:
-Comida 4 — hora y alimentos:
-Comida 5 — hora y alimentos:
-Comida 6 — hora y alimentos:
-Comida 7 — hora y alimentos:
-Nota del día para el cliente:
-━━━━━━━━━━━━━━━━━━━━━━━━
-
-… y así hasta el DÍA 7 (Domingo). EXPANDE SIEMPRE LOS 7 DÍAS completos con sus fechas reales, cada uno con todas sus líneas. Nunca abrevies con "igual que arriba".
-
-REGLAS DE LA PLANTILLA:
-- En cada "Comida N:" el coach escribe la hora y los alimentos en la misma línea. Ej: "08:00 — avena, plátano, proteína, leche"
-- El coach solo rellena las comidas que necesite (entre 4 y 7); las vacías se ignoran
-- El coach NO escribe los pasos de preparación: los generas tú al guardar el plan
-
-═══ CUANDO EL COACH DEVUELVE LA PLANTILLA RELLENA ═══
-
-Interpreta cada línea y llama a save_nutrition_plan con este mapeo:
-- label: Mon/Tue/Wed/Thu/Fri/Sat/Sun
-- kcal, protein, carbs, fat: números
-- meals[]: { time (HH:MM), name, desc (ingredientes), kcal, steps[] }
-  - IMPORTANTE: genera tú los steps de preparación (3-5 pasos detallados y ejecutables) basándote en los ingredientes
-- note: las notas del día (del punto de vista de Dani al cliente)
-
-REGLAS JSON:
-- Los steps deben ser prácticos, claros y ejecutables (como los de un libro de cocina)
-- Adapta las notas a tono motivacional cercano (de Dani al cliente)
-- weekOf debe ser el lunes en formato YYYY-MM-DD
-
-═══ OTRAS FUNCIONES ═══
-- Crear cliente: usa create_client (necesitas nombre, email, objetivo, semanas totales)
-- Resetear contraseña: usa reset_client_password
-- Responde en español. Tono profesional y cercano. Respuestas concisas.`;
-
-  const systemPrompt = coach.specialty === 'training' ? trainingSystemPrompt : nutritionSystemPrompt;
-
-  const createClientFn  = { type: 'function', function: { name: CREATE_CLIENT_TOOL.name,    description: CREATE_CLIENT_TOOL.description,    parameters: CREATE_CLIENT_TOOL.input_schema    } };
-  const resetPwdFn      = { type: 'function', function: { name: RESET_PASSWORD_TOOL.name,   description: RESET_PASSWORD_TOOL.description,   parameters: RESET_PASSWORD_TOOL.input_schema   } };
-  const tools = coach.specialty === 'training'
-    ? [{ type: 'function', function: { name: TRAINING_TOOL.name, description: TRAINING_TOOL.description, parameters: TRAINING_TOOL.input_schema } }, createClientFn, resetPwdFn]
-    : [{ type: 'function', function: { name: NUTRITION_TOOL.name, description: NUTRITION_TOOL.description, parameters: NUTRITION_TOOL.input_schema } }, createClientFn, resetPwdFn];
+  const toFn = t => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.input_schema } });
+  const tools = [
+    toFn(SHOW_TEMPLATE_TOOL),
+    toFn(coach.specialty === 'training' ? TRAINING_TOOL : NUTRITION_TOOL),
+    toFn(CREATE_CLIENT_TOOL),
+    toFn(RESET_PASSWORD_TOOL),
+  ];
 
   try {
     // ── Prompt caching: keep recent messages window to balance cache efficiency ──
@@ -326,7 +200,26 @@ REGLAS JSON:
     let toolResultContent;
     let action = null;
 
-    if (toolName === 'save_training_plan' || toolName === 'save_nutrition_plan') {
+    if (toolName === 'show_plan_template') {
+      // Build 7-day labels from weekOf
+      const dayNames = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+      const shortLabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      const days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(toolInput.weekOf + 'T12:00:00Z');
+        d.setUTCDate(d.getUTCDate() + i);
+        const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+        const fullDateEn = d.toLocaleDateString('en-GB', {
+          weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC'
+        });
+        return {
+          label: `${dayNames[i]} ${d.getUTCDate()} ${months[d.getUTCMonth()]}`,
+          shortLabel: shortLabels[i],
+          fullDate: fullDateEn,
+        };
+      });
+      action = { type: 'show_template', specialty: coach.specialty, clientId: toolInput.clientId, weekOf: toolInput.weekOf, clientName: toolInput.clientName, days };
+      toolResultContent = JSON.stringify({ success: true, message: 'Tabla interactiva mostrada al coach.' });
+    } else if (toolName === 'save_training_plan' || toolName === 'save_nutrition_plan') {
       const plan = savePlan(toolName, toolInput);
       action = { type: 'plan_saved', toolName, weekOf: toolInput.weekOf, clientId: toolInput.clientId };
       toolResultContent = JSON.stringify({ success: true, weekOf: toolInput.weekOf, clientId: toolInput.clientId });
@@ -367,6 +260,101 @@ REGLAS JSON:
   } catch (err) {
     console.error('[coach/chat]', err);
     res.status(500).json({ error: 'Error al procesar el mensaje.' });
+  }
+});
+
+// ── Save plan from table ──────────────────────────────────────
+
+app.post('/api/coach/save-plan-table', requireCoach, async (req, res) => {
+  try {
+    const { specialty, clientId, weekOf, days } = req.body;
+    if (!specialty || !clientId || !weekOf || !Array.isArray(days)) {
+      return res.status(400).json({ error: 'Faltan campos requeridos' });
+    }
+
+    if (specialty === 'nutrition') {
+      // Collect meals that have content
+      const mealsToProcess = [];
+      days.forEach((d, di) => {
+        (d.meals || []).forEach((m, mi) => {
+          if (m.name && m.alimentos) mealsToProcess.push({ di, mi, name: m.name, alimentos: m.alimentos });
+        });
+      });
+
+      // Generate preparation steps for all meals in one OpenAI call
+      const stepsMap = {};
+      if (mealsToProcess.length > 0) {
+        const stepsResp = await openai.chat.completions.create({
+          model: 'gpt-4o-mini', max_tokens: 2000,
+          response_format: { type: 'json_object' },
+          messages: [{
+            role: 'user',
+            content: `Para cada comida genera 3-5 pasos de preparación claros, prácticos y ejecutables en español.
+Responde SOLO con JSON: {"meals":[{"id":"di-mi","steps":["paso 1","paso 2","paso 3"]}]}
+${mealsToProcess.map(m => `id="${m.di}-${m.mi}" nombre="${m.name}" alimentos="${m.alimentos}"`).join('\n')}`,
+          }],
+        });
+        const parsed = JSON.parse(stepsResp.choices[0].message.content);
+        (parsed.meals || []).forEach(m => { stepsMap[m.id] = m.steps; });
+      }
+
+      const toolInput = {
+        clientId, weekOf,
+        days: days.map((d, di) => ({
+          label: d.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][di],
+          kcal: Number(d.kcal) || 0,
+          protein: Number(d.protein) || 0,
+          carbs: Number(d.carbs) || 0,
+          fat: Number(d.fat) || 0,
+          note: d.note || '',
+          meals: (d.meals || []).filter(m => m.name).map((m, mi) => ({
+            time: m.time || '12:00',
+            name: m.name,
+            desc: m.alimentos || '',
+            kcal: Number(m.kcal) || 0,
+            steps: stepsMap[`${di}-${mi}`] || [m.alimentos || ''],
+          })),
+        })),
+      };
+      savePlan('save_nutrition_plan', toolInput);
+
+    } else if (specialty === 'training') {
+      const toolInput = {
+        clientId, weekOf,
+        days: days.map((d, di) => {
+          const type = d.type || 'rest';
+          const base = {
+            label: d.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][di],
+            fullDate: d.fullDate || '',
+            type,
+            session: d.session || (type === 'rest' ? 'Active Rest' : 'Training'),
+            note: d.note || '',
+            noteType: type,
+          };
+          const exs = (d.exercises || []).filter(e => e.name);
+          if (type === 'rest') {
+            base.activities = exs.map(e => ({ name: e.name, detail: e.notes || 'Ritmo suave' }));
+          } else {
+            base.items = exs.map(e => ({
+              name: e.name,
+              detail: e.notes || '',
+              badge: e.setsReps || '',
+              gold: type === 'cardio',
+            }));
+          }
+          return base;
+        }),
+      };
+      savePlan('save_training_plan', toolInput);
+
+    } else {
+      return res.status(400).json({ error: 'Especialidad no válida' });
+    }
+
+    res.json({ success: true, weekOf, clientId });
+  } catch (err) {
+    console.error('[save-plan-table]', err);
+    res.status(500).json({ error: 'Error al guardar el plan' });
   }
 });
 
