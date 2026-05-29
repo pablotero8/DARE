@@ -199,6 +199,13 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
   font-family:'Manrope',sans-serif;font-size:.76rem;outline:none;cursor:pointer;
 }
 .pt-select:focus{border-color:rgba(201,162,74,.5)}
+.pt-totals-block{
+  background:rgba(201,162,74,.08);border:1px solid rgba(201,162,74,.15);
+  border-radius:10px;padding:.6rem .65rem;margin-bottom:.6rem;
+}
+.pt-macro-row{display:flex;gap:.5rem;margin-bottom:0;flex-wrap:wrap}
+.pt-macro-grp{display:flex;flex-direction:column;align-items:center;flex:1;min-width:70px}
+.pt-macro-lbl{font-size:.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;font-weight:700}
 .pt-meal-block{
   background:rgba(255,255,255,.025);border:1px solid rgba(244,241,232,.06);
   border-radius:10px;padding:.5rem .65rem;margin-bottom:.45rem;
@@ -535,15 +542,29 @@ function buildNutritionTable(action){
     hdr.addEventListener('click',()=>block.classList.toggle('collapsed'));
     const body=document.createElement('div'); body.className='pt-day-body';
 
-    // 5 fixed meals
+    // Day totals section
+    const totRow=document.createElement('div'); totRow.className='pt-totals-block';
+    totRow.innerHTML=`<div style="font-weight:700;color:var(--gold);margin-bottom:.35rem;font-size:.75rem">Daily Totals</div>`;
+    const macRow=document.createElement('div'); macRow.className='pt-macro-row';
+    ['kcal','Protein','Carbs','Fat'].forEach((label,li)=>{
+      const grp=document.createElement('div'); grp.className='pt-macro-grp';
+      const unit = label==='kcal' ? '' : ' (g)';
+      grp.innerHTML=`<span class="pt-macro-lbl">${label}${unit}</span>`;
+      const ph = label==='kcal' ? '2100' : label==='Protein' ? '160' : label==='Carbs' ? '220' : '70';
+      grp.appendChild(ptIn(ph,true,{field:['kcal','protein','carbs','fat'][li],day:di,type:'daily'}));
+      macRow.appendChild(grp);
+    });
+    totRow.appendChild(macRow);
+    body.appendChild(totRow);
+
+    // 5 fixed meals with dishes/ingredients
     MEAL_NAMES.forEach((mName,mi)=>{
       const mb=document.createElement('div'); mb.className='pt-meal-block';
       mb.innerHTML=`<div class="pt-meal-name"><span>${mName}</span><span class="pt-meal-time">${MEAL_TIMES[mi]}</span></div>`;
-      // Ingredients row (AI will calculate macros from raw ingredients)
-      const ingRow=document.createElement('div'); ingRow.className='pt-row';
-      ingRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Ingredients (raw)'}));
-      ingRow.appendChild(ptIn('e.g. 3 eggs, 1 slice bread, 50g oats, 200ml milk, half avocado',false,{field:'alimentos',day:di,meal:mi}));
-      mb.appendChild(ingRow);
+      const dishRow=document.createElement('div'); dishRow.className='pt-row';
+      dishRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Dishes'}));
+      dishRow.appendChild(ptIn('e.g. grilled chicken breast, brown rice, broccoli',false,{field:'dishes',day:di,meal:mi}));
+      mb.appendChild(dishRow);
       body.appendChild(mb);
     });
 
@@ -656,13 +677,20 @@ function collectNutrition(wrap,action){
   return action.days.map((day,di)=>{
     const meals=[];
     for(let mi=0;mi<5;mi++){
-      const alim=q(wrap,'alimentos',di,['meal',mi]);
-      if(!alim) continue;
+      const dishes=q(wrap,'dishes',di,['meal',mi]);
+      if(!dishes) continue;
       meals.push({
-        name:MEAL_NAMES[mi], time:MEAL_TIMES[mi], alimentos:alim,
+        name:MEAL_NAMES[mi], time:MEAL_TIMES[mi], dishes:dishes,
       });
     }
-    return {label:day.shortLabel, fullDate:day.fullDate, note:q(wrap,'note',di), meals};
+    return {
+      label:day.shortLabel, fullDate:day.fullDate,
+      kcal:Number(q(wrap,'kcal',di,['type','daily']))||0,
+      protein:Number(q(wrap,'protein',di,['type','daily']))||0,
+      carbs:Number(q(wrap,'carbs',di,['type','daily']))||0,
+      fat:Number(q(wrap,'fat',di,['type','daily']))||0,
+      note:q(wrap,'note',di), meals
+    };
   });
 }
 
