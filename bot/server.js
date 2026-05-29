@@ -273,34 +273,44 @@ app.post('/api/coach/save-plan-table', requireCoach, async (req, res) => {
     }
 
     if (specialty === 'nutrition') {
-      // Collect all meals for AI processing
+      // Collect all meals with ingredients (no macros from coach)
       const mealsForAI = [];
       days.forEach((d, di) => {
         (d.meals || []).forEach((m, mi) => {
-          if (m.alimentos) mealsForAI.push({ id: `${di}-${mi}`, name: m.name, alimentos: m.alimentos, protein: m.protein||0, carbs: m.carbs||0, fat: m.fat||0 });
+          if (m.alimentos) mealsForAI.push({ id: `${di}-${mi}`, name: m.name, alimentos: m.alimentos });
         });
       });
 
       // Notes for AI translation
       const notesForAI = days.map((d, di) => ({ id: di, raw: d.note || '' })).filter(n => n.raw);
 
-      // Single AI call: perfect names, generate steps, generate shopping list, translate notes, compute kcal
+      // Single AI call: calculate macros from RAW ingredients, perfect names, generate steps & shopping list, translate notes
       let aiResult = { meals: [], notes: {} };
       if (mealsForAI.length > 0 || notesForAI.length > 0) {
         const aiResp = await openai.chat.completions.create({
           model: 'gpt-4o-mini', max_tokens: 4000,
           response_format: { type: 'json_object' },
-          messages: [{ role: 'user', content: `You are a fitness nutrition assistant. Process this data and return JSON.
+          messages: [{ role: 'user', content: `You are a fitness nutrition assistant. Calculate macros from RAW (uncooked) ingredients using standard nutritional databases.
 
-MEALS (perfect the name to proper English, generate 3-5 clear preparation steps in English, compute kcal from macros using 4cal/g protein, 4cal/g carbs, 9cal/g fat, and generate a shopping list item with quantity in grams or units):
-${mealsForAI.map(m => `id="${m.id}" name="${m.name}" ingredients="${m.alimentos}" protein=${m.protein}g carbs=${m.carbs}g fat=${m.fat}g`).join('\n')}
+IMPORTANT: Use RAW ingredient values only. Example: raw eggs, uncooked oats, fresh vegetables, raw nuts. Do NOT account for cooking losses.
+
+For each meal, list ingredients with quantities (e.g., "3 eggs, 50g oats, 200ml milk"). Calculate:
+- Total protein in grams (RAW ingredient basis)
+- Total carbs in grams (RAW ingredient basis)
+- Total fat in grams (RAW ingredient basis)
+- kcal = (protein×4) + (carbs×4) + (fat×9)
+
+Generate 3-4 preparation steps in English. Create shopping list with quantities in grams or units.
+
+MEALS:
+${mealsForAI.map(m => `id="${m.id}" name="${m.name}" raw_ingredients="${m.alimentos}"`).join('\n')}
 
 NOTES TO TRANSLATE AND REFINE (make them motivational, professional, in English — Daniel's coaching voice):
 ${notesForAI.map(n => `day=${n.id} raw="${n.raw}"`).join('\n')}
 
 Return ONLY this JSON:
 {
-  "meals": [{"id":"0-0","name":"Perfected Name","desc":"brief ingredient description","kcal":450,"steps":["step 1","step 2","step 3"],"shopping":[{"item":"Rolled oats","qty":"80g"},{"item":"Banana","qty":"1 medium"}]}],
+  "meals": [{"id":"0-0","name":"Perfected English Name","desc":"brief description","protein":45,"carbs":60,"fat":12,"kcal":492,"steps":["step 1","step 2","step 3"],"shopping":[{"item":"Eggs (large)","qty":"3"},{"item":"Oats (raw)","qty":"50g"}]}],
   "notes": {"0":"Refined note text","1":"..."}
 }` }],
         });
@@ -315,26 +325,26 @@ Return ONLY this JSON:
         days: days.map((d, di) => {
           const processedMeals = (d.meals || []).filter(m => m.alimentos).map((m, mi) => {
             const ai = aiMeals[`${di}-${mi}`] || {};
-            const prot = Number(m.protein) || 0, carb = Number(m.carbs) || 0, fat = Number(m.fat) || 0;
             return {
               time: m.time || '12:00',
               name: ai.name || m.name,
               desc: ai.desc || m.alimentos,
-              kcal: ai.kcal || (prot * 4 + carb * 4 + fat * 9),
+              kcal: ai.kcal || 0,
+              protein: ai.protein || 0,
+              carbs: ai.carbs || 0,
+              fat: ai.fat || 0,
               steps: ai.steps || [m.alimentos],
               shopping: ai.shopping || [],
             };
           });
-          const totProt = processedMeals.reduce((s, m) => s + ((d.meals||[])[processedMeals.indexOf(m)]?.protein || 0), 0);
-          // Compute day totals from individual meals
+          // Compute day totals from AI-calculated meal macros
           let dayKcal = 0, dayProt = 0, dayCarbs = 0, dayFat = 0;
-          (d.meals || []).filter(m => m.alimentos).forEach(m => {
-            dayProt += Number(m.protein) || 0; dayCarbs += Number(m.carbs) || 0; dayFat += Number(m.fat) || 0;
+          processedMeals.forEach(m => {
+            dayKcal += m.kcal; dayProt += m.protein; dayCarbs += m.carbs; dayFat += m.fat;
           });
-          dayKcal = dayProt * 4 + dayCarbs * 4 + dayFat * 9;
           return {
             label: d.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][di],
-            kcal: dayKcal, protein: dayProt, carbs: dayCarbs, fat: dayFat,
+            kcal: Math.round(dayKcal), protein: Math.round(dayProt), carbs: Math.round(dayCarbs), fat: Math.round(dayFat),
             note: (aiResult.notes || {})[String(di)] || d.note || '',
             meals: processedMeals,
           };

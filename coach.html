@@ -205,9 +205,6 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 }
 .pt-meal-name{font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
 .pt-meal-name .pt-meal-time{font-weight:400;color:var(--muted);font-size:.68rem}
-.pt-macro-row{display:flex;gap:.4rem;margin-bottom:.3rem}
-.pt-macro-grp{display:flex;flex-direction:column;align-items:center;flex:1}
-.pt-macro-lbl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem}
 .pt-note-row{margin-top:.55rem;border-top:1px solid rgba(244,241,232,.06);padding-top:.5rem}
 .pt-note-label{font-size:.68rem;font-weight:700;color:var(--gold);margin-bottom:.25rem;display:flex;align-items:center;gap:.3rem}
 .pt-shop-btn{
@@ -542,20 +539,11 @@ function buildNutritionTable(action){
     MEAL_NAMES.forEach((mName,mi)=>{
       const mb=document.createElement('div'); mb.className='pt-meal-block';
       mb.innerHTML=`<div class="pt-meal-name"><span>${mName}</span><span class="pt-meal-time">${MEAL_TIMES[mi]}</span></div>`;
-      // Ingredients row
+      // Ingredients row (AI will calculate macros from raw ingredients)
       const ingRow=document.createElement('div'); ingRow.className='pt-row';
-      ingRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Ingredients'}));
-      ingRow.appendChild(ptIn('e.g. oats, banana, protein powder, milk',false,{field:'alimentos',day:di,meal:mi}));
+      ingRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Ingredients (raw)'}));
+      ingRow.appendChild(ptIn('e.g. 3 eggs, 1 slice bread, 50g oats, 200ml milk, half avocado',false,{field:'alimentos',day:di,meal:mi}));
       mb.appendChild(ingRow);
-      // Macros row
-      const macRow=document.createElement('div'); macRow.className='pt-macro-row';
-      ['Protein','Carbs','Fat'].forEach((label,li)=>{
-        const grp=document.createElement('div'); grp.className='pt-macro-grp';
-        grp.innerHTML=`<span class="pt-macro-lbl">${label} (g)</span>`;
-        grp.appendChild(ptIn('0',true,{field:['protein','carbs','fat'][li],day:di,meal:mi}));
-        macRow.appendChild(grp);
-      });
-      mb.appendChild(macRow);
       body.appendChild(mb);
     });
 
@@ -672,9 +660,6 @@ function collectNutrition(wrap,action){
       if(!alim) continue;
       meals.push({
         name:MEAL_NAMES[mi], time:MEAL_TIMES[mi], alimentos:alim,
-        protein:Number(q(wrap,'protein',di,['meal',mi]))||0,
-        carbs:Number(q(wrap,'carbs',di,['meal',mi]))||0,
-        fat:Number(q(wrap,'fat',di,['meal',mi]))||0,
       });
     }
     return {label:day.shortLabel, fullDate:day.fullDate, note:q(wrap,'note',di), meals};
