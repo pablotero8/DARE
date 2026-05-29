@@ -144,6 +144,20 @@ export const RESET_PASSWORD_TOOL = {
   },
 };
 
+export const SHOW_TEMPLATE_TOOL = {
+  name: 'show_plan_template',
+  description: 'Muestra al coach una tabla interactiva para rellenar el plan semanal. Úsalo SIEMPRE que el coach quiera crear un plan y hayas confirmado cliente y semana. NUNCA escribas una plantilla de texto — usa siempre esta función.',
+  input_schema: {
+    type: 'object',
+    required: ['clientId', 'weekOf', 'clientName'],
+    properties: {
+      clientId:   { type: 'string', description: 'ID del cliente (ej: alex-hammond)' },
+      weekOf:     { type: 'string', description: 'Lunes de la semana en formato YYYY-MM-DD' },
+      clientName: { type: 'string', description: 'Nombre completo del cliente' },
+    },
+  },
+};
+
 export const CREATE_CLIENT_TOOL = {
   name: 'create_client',
   description: 'Da de alta un nuevo cliente en el sistema DARE. Úsalo cuando el coach quiera crear una cuenta para un nuevo cliente.',

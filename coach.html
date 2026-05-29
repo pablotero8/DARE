@@ -167,6 +167,50 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
   letter-spacing:.08em;
 }
 
+/* ── PLAN TABLE ── */
+.plan-table-wrap{margin-top:.85rem;overflow-x:auto;border:1px solid var(--border2);border-radius:12px}
+.plan-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:580px}
+.plan-table th{
+  background:rgba(255,255,255,.06);padding:.5rem .7rem;text-align:left;
+  font-weight:700;color:var(--muted);font-size:.67rem;letter-spacing:.07em;
+  text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.plan-table td{padding:.28rem .45rem;border-bottom:1px solid rgba(244,241,232,.04);vertical-align:middle}
+.pt-day-row td{
+  background:rgba(201,162,74,.055);padding:.5rem .7rem;
+  border-top:1px solid rgba(201,162,74,.18);border-bottom:1px solid rgba(201,162,74,.1);
+}
+.pt-day-label{font-weight:700;color:var(--gold);font-size:.74rem;white-space:nowrap}
+.pt-sub-td{padding-left:1.4rem!important}
+.pt-in{
+  background:rgba(255,255,255,.05);border:1px solid rgba(244,241,232,.1);
+  border-radius:6px;padding:.28rem .45rem;color:var(--text);
+  font-family:'Manrope',sans-serif;font-size:.74rem;outline:none;
+  width:100%;transition:border-color .18s;
+}
+.pt-in:focus{border-color:rgba(201,162,74,.5);background:rgba(201,162,74,.04)}
+.pt-in::placeholder{color:var(--muted2)}
+.pt-in.narrow{width:64px}
+.pt-select{
+  background:rgba(255,255,255,.05);border:1px solid rgba(244,241,232,.1);
+  border-radius:6px;padding:.28rem .45rem;color:var(--text);
+  font-family:'Manrope',sans-serif;font-size:.74rem;outline:none;cursor:pointer;
+  transition:border-color .18s;
+}
+.pt-select:focus{border-color:rgba(201,162,74,.5)}
+.pt-sep td{height:4px;background:rgba(0,0,0,.25);border:none}
+.pt-save-wrap{padding:.75rem .1rem .15rem;display:flex;align-items:center;gap:.65rem}
+.pt-save-btn{
+  background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;border:none;
+  border-radius:10px;padding:.5rem 1.2rem;font-family:'Manrope',sans-serif;
+  font-size:.8rem;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 16px rgba(201,162,74,.28);transition:transform .15s,box-shadow .15s;
+}
+.pt-save-btn:hover:not(:disabled){transform:scale(1.04);box-shadow:0 6px 20px rgba(201,162,74,.4)}
+.pt-save-btn:disabled{opacity:.4;cursor:default}
+.pt-status{font-size:.74rem;color:var(--muted);flex:1}
+.pt-status.ok{color:var(--green)} .pt-status.err{color:#e07070}
+
 /* typing indicator */
 .typing{display:flex;align-items:center;gap:.3rem;padding:.5rem .75rem}
 .typing span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bounce .9s infinite}
@@ -432,8 +476,201 @@ function appendMsg(role, content, action){
 
   wrap.appendChild(av);
   wrap.appendChild(bubble);
+
+  if(action?.type === 'show_template'){
+    const tbl = action.specialty === 'nutrition'
+      ? buildNutritionTable(action)
+      : buildTrainingTable(action);
+    // Table goes full-width below the bubble, not inside it
+    const fullRow = document.createElement('div');
+    fullRow.style.cssText='margin-top:.75rem;max-width:calc(100% - 36px);margin-left:36px';
+    fullRow.appendChild(tbl);
+    wrap.style.flexDirection='column';
+    wrap.appendChild(fullRow);
+  }
+
   messagesEl.appendChild(wrap);
   scrollBottom();
+}
+
+// ── Plan Tables ───────────────────────────────────────────────
+
+function ptInput(placeholder, narrow, extraData){
+  const i = document.createElement('input');
+  i.className = 'pt-in' + (narrow?' narrow':'');
+  i.type = 'text'; i.placeholder = placeholder||'';
+  if(extraData) Object.entries(extraData).forEach(([k,v])=>i.dataset[k]=v);
+  return i;
+}
+
+function buildNutritionTable(action){
+  const wrap = document.createElement('div');
+  wrap.className = 'plan-table-wrap';
+  const tbl = document.createElement('table');
+  tbl.className = 'plan-table';
+  tbl.innerHTML = `<thead><tr>
+    <th>Día / Comida</th><th>kcal</th><th>Prot (g)</th>
+    <th>Carbos (g)</th><th>Grasas (g)</th><th>Notas / Alimentos</th>
+  </tr></thead>`;
+  const tbody = document.createElement('tbody');
+  const defaultTimes = ['08:00','11:00','14:00','17:30','20:30'];
+  const mealNames   = ['Desayuno','Media mañana','Comida','Merienda','Cena'];
+
+  action.days.forEach((day, di)=>{
+    // Day totals row
+    const dr = document.createElement('tr'); dr.className='pt-day-row';
+    const dayTd = document.createElement('td'); dayTd.className='pt-day-label'; dayTd.textContent='📅 '+day.label;
+    const kcalIn = ptInput('2100',true,{field:'kcal',day:di});
+    const protIn = ptInput('160',true,{field:'protein',day:di});
+    const carbIn = ptInput('220',true,{field:'carbs',day:di});
+    const fatIn  = ptInput('55',true,{field:'fat',day:di});
+    const noteIn = ptInput('Nota del día…',false,{field:'note',day:di});
+    kcalIn.type=protIn.type=carbIn.type=fatIn.type='number';
+    [dayTd, kcalIn, protIn, carbIn, fatIn, noteIn].forEach((el,i)=>{
+      const td=document.createElement('td'); if(i>0) td.appendChild(el); else td.appendChild(el===dayTd?dayTd:el); dr.appendChild(td);
+    });
+    const mkTd=(child)=>{ const td=document.createElement('td'); td.appendChild(child); return td; };
+    dr.appendChild(mkTd(dayTd)); dr.appendChild(mkTd(kcalIn)); dr.appendChild(mkTd(protIn));
+    dr.appendChild(mkTd(carbIn)); dr.appendChild(mkTd(fatIn)); dr.appendChild(mkTd(noteIn));
+    tbody.appendChild(dr);
+
+    // Meal rows
+    for(let mi=0;mi<5;mi++){
+      const mr = document.createElement('tr');
+      const stTd = document.createElement('td'); stTd.className='pt-sub-td';
+      const timeIn = ptInput(defaultTimes[mi],true,{field:'time',day:di,meal:mi}); timeIn.style.width='52px';
+      const nameIn = ptInput(mealNames[mi],false,{field:'mname',day:di,meal:mi}); nameIn.style.maxWidth='120px';
+      const sp=document.createElement('span'); sp.style.cssText='margin:0 4px;color:var(--muted2)'; sp.textContent='—';
+      stTd.appendChild(timeIn); stTd.appendChild(sp); stTd.appendChild(nameIn);
+      const mKcalIn = ptInput('kcal',true,{field:'mkcal',day:di,meal:mi}); mKcalIn.type='number';
+      const macroTd = document.createElement('td'); macroTd.colSpan=3;
+      macroTd.style.cssText='opacity:.28;font-size:.65rem;text-align:center;vertical-align:middle'; macroTd.textContent='↑ macros en totales del día';
+      const alimentosIn = ptInput('avena, plátano, proteína…',false,{field:'alimentos',day:di,meal:mi});
+      const mkTd2=(child,cs)=>{ const td=document.createElement('td'); if(cs) td.colSpan=cs; td.appendChild(child); return td; };
+      mr.appendChild(stTd); mr.appendChild(mkTd2(mKcalIn)); mr.appendChild(macroTd); mr.appendChild(mkTd2(alimentosIn));
+      tbody.appendChild(mr);
+    }
+    // Separator between days
+    if(di<action.days.length-1){
+      const sep=document.createElement('tr'); sep.className='pt-sep';
+      sep.innerHTML='<td colspan="6"></td>'; tbody.appendChild(sep);
+    }
+  });
+  tbl.appendChild(tbody); wrap.appendChild(tbl);
+  wrap.appendChild(buildSaveRow(action, 'nutrition'));
+  return wrap;
+}
+
+function buildTrainingTable(action){
+  const wrap = document.createElement('div');
+  wrap.className = 'plan-table-wrap';
+  const tbl = document.createElement('table');
+  tbl.className = 'plan-table';
+  tbl.innerHTML = `<thead><tr>
+    <th>Día / Ejercicio</th><th>Tipo</th><th>Sesión</th><th>Series × Reps</th><th>Notas / Técnica</th>
+  </tr></thead>`;
+  const tbody = document.createElement('tbody');
+
+  action.days.forEach((day, di)=>{
+    const dr = document.createElement('tr'); dr.className='pt-day-row';
+    // Day label
+    const dayTd=document.createElement('td'); dayTd.className='pt-day-label'; dayTd.textContent='📅 '+day.label;
+    // Type select
+    const sel=document.createElement('select'); sel.className='pt-select'; sel.dataset.field='type'; sel.dataset.day=di;
+    [['strength','Fuerza'],['cardio','Cardio'],['rest','Descanso']].forEach(([v,l])=>{
+      const o=document.createElement('option'); o.value=v; o.textContent=l; sel.appendChild(o);
+    });
+    const sessionIn=ptInput('Nombre sesión',false,{field:'session',day:di});
+    const noteIn=ptInput('Nota del día…',false,{field:'note',day:di});
+    const mkTd=(child)=>{ const td=document.createElement('td'); td.appendChild(child); return td; };
+    const emptyTd=document.createElement('td');
+    dr.appendChild(mkTd(dayTd)); dr.appendChild(mkTd(sel)); dr.appendChild(mkTd(sessionIn));
+    dr.appendChild(emptyTd); dr.appendChild(mkTd(noteIn));
+    tbody.appendChild(dr);
+
+    for(let ei=0;ei<6;ei++){
+      const er=document.createElement('tr');
+      const nameTd=document.createElement('td'); nameTd.className='pt-sub-td';
+      nameTd.appendChild(ptInput('Ejercicio '+(ei+1),false,{field:'exname',day:di,ex:ei}));
+      const mkTd2=(child)=>{ const td=document.createElement('td'); td.appendChild(child); return td; };
+      er.appendChild(nameTd);
+      er.appendChild(document.createElement('td'));
+      er.appendChild(document.createElement('td'));
+      er.appendChild(mkTd2(ptInput('4×8 @70%',false,{field:'setsreps',day:di,ex:ei})));
+      er.appendChild(mkTd2(ptInput('Técnica, descanso…',false,{field:'exnote',day:di,ex:ei})));
+      tbody.appendChild(er);
+    }
+    if(di<action.days.length-1){
+      const sep=document.createElement('tr'); sep.className='pt-sep';
+      sep.innerHTML='<td colspan="5"></td>'; tbody.appendChild(sep);
+    }
+  });
+  tbl.appendChild(tbody); wrap.appendChild(tbl);
+  wrap.appendChild(buildSaveRow(action, 'training'));
+  return wrap;
+}
+
+function buildSaveRow(action, specialty){
+  const div=document.createElement('div'); div.className='pt-save-wrap';
+  const btn=document.createElement('button'); btn.className='pt-save-btn'; btn.textContent='Guardar Plan →';
+  const status=document.createElement('span'); status.className='pt-status'; status.textContent='Rellena los campos y guarda.';
+  div.appendChild(btn); div.appendChild(status);
+
+  btn.addEventListener('click', async ()=>{
+    btn.disabled=true; status.className='pt-status'; status.textContent='Guardando…';
+    try{
+      const days = specialty==='nutrition' ? collectNutrition(div.closest('.plan-table-wrap'), action) : collectTraining(div.closest('.plan-table-wrap'), action);
+      const r = await fetch(`${BASE}/api/coach/save-plan-table`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json', Authorization:`Bearer ${storedToken()}`},
+        body: JSON.stringify({specialty, clientId:action.clientId, weekOf:action.weekOf, days}),
+      });
+      const data=await r.json();
+      if(r.ok){
+        status.textContent='✅ Plan guardado en el portal del cliente.'; status.className='pt-status ok';
+        btn.textContent='Guardado ✓';
+        const confirmMsg=`Plan de ${specialty==='nutrition'?'nutrición':'entrenamiento'} guardado para ${action.clientName} — semana del ${action.weekOf}.`;
+        appendMsg('assistant', confirmMsg);
+        chatHistory.push({role:'assistant', content: confirmMsg});
+      } else {
+        status.textContent='❌ '+(data.error||'Error al guardar.'); status.className='pt-status err';
+        btn.disabled=false;
+      }
+    }catch(e){
+      status.textContent='❌ Error de conexión.'; status.className='pt-status err'; btn.disabled=false;
+    }
+  });
+  return div;
+}
+
+function q(wrap, field, day, extra){
+  const sel = extra!==undefined
+    ? `[data-field="${field}"][data-day="${day}"][data-${extra[0]}="${extra[1]}"]`
+    : `[data-field="${field}"][data-day="${day}"]`;
+  return (wrap.querySelector(sel)||{}).value||'';
+}
+
+function collectNutrition(wrap, action){
+  return action.days.map((day,di)=>{
+    const meals=[];
+    for(let mi=0;mi<5;mi++){
+      const name=q(wrap,'mname',di,['meal',mi]);
+      if(name) meals.push({time:q(wrap,'time',di,['meal',mi])||['08:00','11:00','14:00','17:30','20:30'][mi], name, kcal:Number(q(wrap,'mkcal',di,['meal',mi]))||0, alimentos:q(wrap,'alimentos',di,['meal',mi])});
+    }
+    return {label:day.shortLabel, fullDate:day.fullDate, kcal:Number(q(wrap,'kcal',di))||0, protein:Number(q(wrap,'protein',di))||0, carbs:Number(q(wrap,'carbs',di))||0, fat:Number(q(wrap,'fat',di))||0, note:q(wrap,'note',di), meals};
+  });
+}
+
+function collectTraining(wrap, action){
+  return action.days.map((day,di)=>{
+    const type=q(wrap,'type',di)||'rest';
+    const exercises=[];
+    for(let ei=0;ei<6;ei++){
+      const name=q(wrap,'exname',di,['ex',ei]);
+      if(name) exercises.push({name, setsReps:q(wrap,'setsreps',di,['ex',ei]), notes:q(wrap,'exnote',di,['ex',ei])});
+    }
+    return {label:day.shortLabel, fullDate:day.fullDate, type, session:q(wrap,'session',di)||(type==='rest'?'Active Rest':'Training'), note:q(wrap,'note',di), exercises};
+  });
 }
 
 function showTyping(){
