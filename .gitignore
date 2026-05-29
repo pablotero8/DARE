@@ -11,3 +11,6 @@ bot/data/*.db-wal
 .DS_Store
 *.log
 dist/
+
+# Scratch files
+temp_*.txt
