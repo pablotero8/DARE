@@ -1,120 +1,283 @@
-# Despliegue en Railway + Netlify
+# DARE Deployment Guide
 
-## 1. Preparar el código local
+## 🚀 Local Development
+
+### Prerequisites
+- Node.js >= 20
+- npm
+
+### Setup
+```bash
+cd /Users/pablootero/Desktop/PAODAN
+npm install
+cd bot && npm install && cd ..
+```
+
+### Run locally
+```bash
+npm start
+# Server runs on http://localhost:3001
+```
+
+Access the app:
+- **Coach portal:** http://localhost:3001/coach.html
+- **Client portal:** http://localhost:3001/client.html
+
+**Demo credentials:**
+- Coach (Training): `silvaepao@gmail.com` / `erika2026`
+- Coach (Nutrition): `daniotero15@gmail.com` / `dani2026`
+- Client: `client@dare.ae` / `dare2026`
+
+---
+
+## 🌐 Production Deployment
+
+### Option A: VPS (DigitalOcean, Linode, AWS, etc.)
+
+#### 1. Prepare your server
+```bash
+# SSH into your server
+ssh root@your-server-ip
+
+# Update system
+apt update && apt upgrade -y
+
+# Install Node.js (v20+)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+apt install -y nodejs
+
+# Install PM2 (process manager)
+npm install -g pm2
+```
+
+#### 2. Clone and setup the project
+```bash
+cd /opt
+git clone <your-repo-url> dare
+cd dare
+npm install
+cd bot && npm install && cd ..
+```
+
+#### 3. Configure environment
+```bash
+# Copy template and edit
+cp .env.example .env
+nano .env
+
+# Add your values:
+# - OPENAI_API_KEY=your-key
+# - PORT=3001
+# - DATA_DIR=/opt/dare/data
+```
+
+#### 4. Create data directory
+```bash
+mkdir -p /opt/dare/data
+chmod 755 /opt/dare/data
+```
+
+#### 5. Start the app with PM2
+```bash
+cd /opt/dare
+pm2 start bot/server.js --name dare --env .env
+pm2 startup
+pm2 save
+```
+
+#### 6. Setup Nginx reverse proxy (optional but recommended)
+```bash
+# Install Nginx
+apt install -y nginx
+
+# Create config
+cat > /etc/nginx/sites-available/dare << 'NGINX'
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+NGINX
+
+# Enable site
+ln -s /etc/nginx/sites-available/dare /etc/nginx/sites-enabled/
+nginx -t
+systemctl restart nginx
+```
+
+#### 7. Setup HTTPS with Let's Encrypt (optional)
+```bash
+apt install -y certbot python3-certbot-nginx
+certbot --nginx -d your-domain.com
+```
+
+---
+
+### Option B: Docker
+
+#### 1. Create Dockerfile
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy files
+COPY package*.json ./
+COPY bot/package*.json ./bot/
+
+# Install dependencies
+RUN npm install && cd bot && npm install && cd ..
+
+# Copy app code
+COPY . .
+
+# Expose port
+EXPOSE 3001
+
+# Start server
+CMD ["npm", "start"]
+```
+
+#### 2. Create docker-compose.yml
+```yaml
+version: '3.8'
+
+services:
+  dare:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PORT=3001
+      - NODE_ENV=production
+      - DATA_DIR=/app/data
+    volumes:
+      - dare-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  dare-data:
+```
+
+#### 3. Run with Docker
+```bash
+# Build
+docker build -t dare .
+
+# Run
+docker run -d \
+  -p 3001:3001 \
+  -e OPENAI_API_KEY=your-key \
+  -v dare-data:/app/data \
+  --name dare \
+  --restart unless-stopped \
+  dare
+```
+
+---
+
+## 🔒 Database Backup
+
+The app uses SQLite. Backup your data regularly:
 
 ```bash
-cd /Users/pabloutero/Desktop/PAODAN
-git add .
-git commit -m "Bot ready for production"
-git push origin main
+# Manual backup
+cp /opt/dare/data/dare.db /opt/dare/data/dare.db.backup.$(date +%Y%m%d)
+
+# Automated backup (cron)
+0 2 * * * cp /opt/dare/data/dare.db /backups/dare.db.$(date +\%Y\%m\%d)
 ```
 
-## 2. Desplegar BOT en Railway
+---
 
-### 2.1 Crea cuenta en Railway
-- Ve a https://railway.app
-- Registrate con GitHub
-- Conecta tu cuenta de GitHub
+## ✅ Verification Checklist
 
-### 2.2 Nuevo proyecto
-1. Haz clic en **New Project**
-2. Selecciona **Deploy from GitHub repo**
-3. Busca `pabloutero/PAODAN` (o similar)
-4. Selecciona el repo
-5. Elige branch `main`
-6. Railway detecta automáticamente que es Node.js
+- [ ] Node.js installed (node --version >= 20)
+- [ ] Dependencies installed (npm install completed)
+- [ ] .env file created with OPENAI_API_KEY
+- [ ] Server starts without errors (npm start)
+- [ ] Can login as coach (silvaepao@gmail.com / erika2026)
+- [ ] Can login as client (client@dare.ae / dare2026)
+- [ ] Plans load and display correctly
+- [ ] Coach chat works and calls OpenAI
+- [ ] Database file exists at ./data/dare.db or $DATA_DIR/dare.db
 
-### 2.3 Configurar variables de entorno
-En el panel de Railway, ve a **Variables** y añade:
+---
 
-```
-OPENAI_API_KEY=sk-proj-XXXXX
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_WHATSAPP_FROM=+14155238886
-DANIEL_PHONE=whatsapp:+34651585260
-PORT=3001
+## 🐛 Troubleshooting
+
+### "Cannot find module 'better-sqlite3'"
+```bash
+cd bot
+npm rebuild
+cd ..
 ```
 
-### 2.4 Obtén la URL pública
-En Railway, ve a **Settings > Domains**. Verás algo como:
-```
-https://dare-bot-prod-production.up.railway.app
-```
-
-Copia esta URL.
-
-## 3. Actualizar Twilio
-
-Ve a https://console.twilio.com → **Messaging > Whatsapp Sandbox Settings**
-
-En **When a message comes in**, reemplaza con:
-```
-https://dare-bot-prod-production.up.railway.app/webhook
+### "OPENAI_API_KEY is not set"
+```bash
+# Make sure .env file exists with OPENAI_API_KEY
+cat .env | grep OPENAI_API_KEY
 ```
 
-Guarda.
-
-## 4. Desplegar FRONTEND en Netlify
-
-### 4.1 Crea cuenta en Netlify
-- Ve a https://netlify.com
-- Registrate con GitHub
-
-### 4.2 Conecta el repo
-1. Haz clic en **New site from Git**
-2. Selecciona GitHub
-3. Busca `pabloutero/PAODAN`
-4. Netlify detecta que es un sitio estático
-5. Haz clic en **Deploy site**
-
-### 4.3 Actualizar URL de producción en client.html
-
-En `/Users/pabloutero/Desktop/PAODAN/client.html`, busca esta línea:
-
-```javascript
-window.DARE_API_URL = isDev ? 'http://localhost:3001' : 'https://tu-app-railway.railway.app';
+### "Database is locked"
+```bash
+# Better-sqlite3 uses WAL mode. If you see lock errors:
+rm /opt/dare/data/dare.db-wal
+rm /opt/dare/data/dare.db-shm
+npm start
 ```
 
-Reemplaza `https://tu-app-railway.railway.app` con la URL de Railway que copiaste:
-
-```javascript
-window.DARE_API_URL = isDev ? 'http://localhost:3001' : 'https://dare-bot-prod-production.up.railway.app';
+### Port 3001 already in use
+```bash
+# Change PORT in .env or kill existing process
+lsof -i :3001
+kill -9 <PID>
 ```
 
-Guarda y haz push:
+---
+
+## 📊 Monitoring
 
 ```bash
-git add client.html
-git commit -m "Update production API URL"
-git push origin main
+# View PM2 logs
+pm2 logs dare
+
+# Check PM2 status
+pm2 status
+
+# Monitor in real-time
+pm2 monit
 ```
 
-Netlify redeploya automáticamente.
+---
 
-## 5. Verificar que funciona
+## 🔄 Updates
 
-1. **Abre el portal en producción:**
-   ```
-   https://tu-sitio-en-netlify.netlify.app/client.html?client=alex-hammond
-   ```
+To update the app:
 
-2. **Envía un mensaje por WhatsApp desde el teléfono de Daniel:**
-   ```
-   plan de entrenamiento para alex hammond
-   ```
+```bash
+cd /opt/dare
+git pull origin main
+npm install
+cd bot && npm install && cd ..
+pm2 restart dare
+```
 
-3. Responde con los datos cuando pregunte
+---
 
-4. Cuando diga `[LISTO PARA GENERAR]`, confirma
+## 📞 Support
 
-5. **Recarga el portal**
-
-El plan debería aparecer automáticamente.
-
-## Notas
-
-- Railway corre **24/7** sin costo (primeros $5/mes son gratis)
-- Netlify aloja el frontend **gratis**
-- Solo usas **WhatsApp** para generar planes
-- No necesitas tocar la computadora después del despliegue
+For issues:
+1. Check logs: pm2 logs dare
+2. Verify .env settings
+3. Ensure OpenAI API key is valid
+4. Check database exists at $DATA_DIR/dare.db

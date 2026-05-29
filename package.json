@@ -2,10 +2,16 @@
   "name": "dare",
   "version": "1.0.0",
   "type": "module",
+  "description": "DARE - AI-powered fitness coaching platform",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "start": "cd bot && npm install && npm start"
-  }
+    "install-all": "npm install && cd bot && npm install && cd ..",
+    "start": "cd bot && node server.js",
+    "dev": "cd bot && node --watch server.js",
+    "setup": "bash setup-production.sh"
+  },
+  "keywords": ["fitness", "coaching", "training", "nutrition", "ai"],
+  "author": "DARE Coaches"
 }

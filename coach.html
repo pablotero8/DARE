@@ -258,9 +258,7 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 <script>
 (function(){
 
-const BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-  ? 'http://localhost:3001'
-  : 'https://web-production-df21c.up.railway.app';
+const BASE = window.location.origin;
 
 // ── Auth ──────────────────────────────────────────────────────
 function storedToken(){ return sessionStorage.getItem('dare_token') }
