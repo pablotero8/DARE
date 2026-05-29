@@ -273,79 +273,113 @@ app.post('/api/coach/save-plan-table', requireCoach, async (req, res) => {
     }
 
     if (specialty === 'nutrition') {
-      // Collect all meals with ingredients (no macros from coach)
-      const mealsForAI = [];
+      // Collect days with daily macros and meal dishes
+      const daysForAI = [];
       days.forEach((d, di) => {
-        (d.meals || []).forEach((m, mi) => {
-          if (m.alimentos) mealsForAI.push({ id: `${di}-${mi}`, name: m.name, alimentos: m.alimentos });
-        });
+        const meals = (d.meals || []).filter(m => m.dishes).map((m, mi) => ({
+          id: mi, name: m.name, time: m.time, dishes: m.dishes
+        }));
+        if (meals.length > 0) {
+          daysForAI.push({
+            dayId: di, label: d.label, kcal: Number(d.kcal)||0, protein: Number(d.protein)||0,
+            carbs: Number(d.carbs)||0, fat: Number(d.fat)||0, meals, note: d.note || ''
+          });
+        }
       });
 
-      // Notes for AI translation
-      const notesForAI = days.map((d, di) => ({ id: di, raw: d.note || '' })).filter(n => n.raw);
-
-      // Single AI call: calculate macros from RAW ingredients, perfect names, generate steps & shopping list, translate notes
-      let aiResult = { meals: [], notes: {} };
-      if (mealsForAI.length > 0 || notesForAI.length > 0) {
+      // Single AI call: calculate ingredient distribution across 5 meals to hit daily macros
+      let aiResult = { days: [], notes: {} };
+      if (daysForAI.length > 0) {
         const aiResp = await openai.chat.completions.create({
-          model: 'gpt-4o-mini', max_tokens: 4000,
+          model: 'gpt-4o-mini', max_tokens: 5000,
           response_format: { type: 'json_object' },
-          messages: [{ role: 'user', content: `You are a fitness nutrition assistant. Calculate macros from RAW (uncooked) ingredients using standard nutritional databases.
+          messages: [{ role: 'user', content: `You are a nutrition planning expert. For each day, you receive:
+- Daily macros target: kcal, protein (g), carbs (g), fat (g)
+- 5 meal slots with dish names (e.g., "grilled chicken breast, brown rice, broccoli")
 
-IMPORTANT: Use RAW ingredient values only. Example: raw eggs, uncooked oats, fresh vegetables, raw nuts. Do NOT account for cooking losses.
+Your task:
+1. For each dish, identify the main ingredients
+2. Calculate ingredient quantities (raw, uncooked) to hit the daily macros EXACTLY
+3. Distribute those ingredients logically across the 5 meals (e.g., don't put all protein at breakfast)
+4. For each meal, list: ingredients with quantities, macros (protein/carbs/fat), kcal, and 3-4 preparation steps
+5. Create a complete shopping list for the day with all quantities in grams or units
 
-For each meal, list ingredients with quantities (e.g., "3 eggs, 50g oats, 200ml milk"). Calculate:
-- Total protein in grams (RAW ingredient basis)
-- Total carbs in grams (RAW ingredient basis)
-- Total fat in grams (RAW ingredient basis)
-- kcal = (protein×4) + (carbs×4) + (fat×9)
+IMPORTANT: All calculations use RAW/UNCOOKED ingredient values. Ensure meal distribution is realistic and balanced.
 
-Generate 3-4 preparation steps in English. Create shopping list with quantities in grams or units.
+DAYS:
+${daysForAI.map(day => `
+day_id=${day.dayId} label="${day.label}" target_kcal=${day.kcal} target_protein=${day.protein}g target_carbs=${day.carbs}g target_fat=${day.fat}g note="${day.note}"
+meals=[${day.meals.map(m => `{id:${m.id},name:"${m.name}",time:"${m.time}",dishes:"${m.dishes}"}`).join(',')}]
+`).join('\n')}
 
-MEALS:
-${mealsForAI.map(m => `id="${m.id}" name="${m.name}" raw_ingredients="${m.alimentos}"`).join('\n')}
-
-NOTES TO TRANSLATE AND REFINE (make them motivational, professional, in English — Daniel's coaching voice):
-${notesForAI.map(n => `day=${n.id} raw="${n.raw}"`).join('\n')}
-
-Return ONLY this JSON:
+Return ONLY this JSON structure:
 {
-  "meals": [{"id":"0-0","name":"Perfected English Name","desc":"brief description","protein":45,"carbs":60,"fat":12,"kcal":492,"steps":["step 1","step 2","step 3"],"shopping":[{"item":"Eggs (large)","qty":"3"},{"item":"Oats (raw)","qty":"50g"}]}],
-  "notes": {"0":"Refined note text","1":"..."}
+  "days": [
+    {
+      "dayId": 0,
+      "meals": [
+        {
+          "id": 0,
+          "name": "Breakfast",
+          "time": "08:00",
+          "ingredients": "2 eggs, 50g oats, 200ml milk, 1 banana",
+          "protein": 22,
+          "carbs": 48,
+          "fat": 12,
+          "kcal": 380,
+          "steps": ["Boil the eggs...", "Cook the oats...", "Combine and serve"]
+        }
+      ],
+      "dayTotals": {
+        "protein": 160,
+        "carbs": 220,
+        "fat": 70,
+        "kcal": 2100
+      },
+      "shopping": [
+        {"item": "Eggs (large)", "qty": "18"},
+        {"item": "Oats (raw)", "qty": "350g"},
+        {"item": "Whole milk", "qty": "1.4L"},
+        {"item": "Bananas", "qty": "7"}
+      ]
+    }
+  ]
 }` }],
         });
         try { aiResult = JSON.parse(aiResp.choices[0].message.content); } catch(e) { console.error('[AI parse]', e); }
       }
 
-      const aiMeals = {};
-      (aiResult.meals || []).forEach(m => { aiMeals[m.id] = m; });
+      const aiDays = {};
+      (aiResult.days || []).forEach(d => { aiDays[d.dayId] = d; });
 
       const toolInput = {
         clientId, weekOf,
         days: days.map((d, di) => {
-          const processedMeals = (d.meals || []).filter(m => m.alimentos).map((m, mi) => {
-            const ai = aiMeals[`${di}-${mi}`] || {};
+          const aiDay = aiDays[di] || {};
+          const aiMeals = (aiDay.meals || []).reduce((acc, m) => { acc[m.id] = m; return acc; }, {});
+
+          const processedMeals = (d.meals || []).filter(m => m.dishes).map((m, mi) => {
+            const ai = aiMeals[mi] || {};
             return {
-              time: m.time || '12:00',
-              name: ai.name || m.name,
-              desc: ai.desc || m.alimentos,
+              time: m.time || ['08:00','11:00','14:00','17:00','20:30'][mi],
+              name: m.name,
+              desc: ai.ingredients || m.dishes,
               kcal: ai.kcal || 0,
               protein: ai.protein || 0,
               carbs: ai.carbs || 0,
               fat: ai.fat || 0,
-              steps: ai.steps || [m.alimentos],
-              shopping: ai.shopping || [],
+              steps: ai.steps || [m.dishes],
+              shopping: mi === 0 ? (aiDay.shopping || []) : [], // Shopping list only on first meal
             };
           });
-          // Compute day totals from AI-calculated meal macros
-          let dayKcal = 0, dayProt = 0, dayCarbs = 0, dayFat = 0;
-          processedMeals.forEach(m => {
-            dayKcal += m.kcal; dayProt += m.protein; dayCarbs += m.carbs; dayFat += m.fat;
-          });
+
           return {
             label: d.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][di],
-            kcal: Math.round(dayKcal), protein: Math.round(dayProt), carbs: Math.round(dayCarbs), fat: Math.round(dayFat),
-            note: (aiResult.notes || {})[String(di)] || d.note || '',
+            kcal: Number(d.kcal) || 0,
+            protein: Number(d.protein) || 0,
+            carbs: Number(d.carbs) || 0,
+            fat: Number(d.fat) || 0,
+            note: d.note || '',
             meals: processedMeals,
           };
         }),
