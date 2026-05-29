@@ -269,78 +269,137 @@ app.post('/api/coach/save-plan-table', requireCoach, async (req, res) => {
   try {
     const { specialty, clientId, weekOf, days } = req.body;
     if (!specialty || !clientId || !weekOf || !Array.isArray(days)) {
-      return res.status(400).json({ error: 'Faltan campos requeridos' });
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
     if (specialty === 'nutrition') {
-      // Collect meals that have content
-      const mealsToProcess = [];
+      // Collect all meals for AI processing
+      const mealsForAI = [];
       days.forEach((d, di) => {
         (d.meals || []).forEach((m, mi) => {
-          if (m.name && m.alimentos) mealsToProcess.push({ di, mi, name: m.name, alimentos: m.alimentos });
+          if (m.alimentos) mealsForAI.push({ id: `${di}-${mi}`, name: m.name, alimentos: m.alimentos, protein: m.protein||0, carbs: m.carbs||0, fat: m.fat||0 });
         });
       });
 
-      // Generate preparation steps for all meals in one OpenAI call
-      const stepsMap = {};
-      if (mealsToProcess.length > 0) {
-        const stepsResp = await openai.chat.completions.create({
-          model: 'gpt-4o-mini', max_tokens: 2000,
+      // Notes for AI translation
+      const notesForAI = days.map((d, di) => ({ id: di, raw: d.note || '' })).filter(n => n.raw);
+
+      // Single AI call: perfect names, generate steps, generate shopping list, translate notes, compute kcal
+      let aiResult = { meals: [], notes: {} };
+      if (mealsForAI.length > 0 || notesForAI.length > 0) {
+        const aiResp = await openai.chat.completions.create({
+          model: 'gpt-4o-mini', max_tokens: 4000,
           response_format: { type: 'json_object' },
-          messages: [{
-            role: 'user',
-            content: `Para cada comida genera 3-5 pasos de preparación claros, prácticos y ejecutables en español.
-Responde SOLO con JSON: {"meals":[{"id":"di-mi","steps":["paso 1","paso 2","paso 3"]}]}
-${mealsToProcess.map(m => `id="${m.di}-${m.mi}" nombre="${m.name}" alimentos="${m.alimentos}"`).join('\n')}`,
-          }],
+          messages: [{ role: 'user', content: `You are a fitness nutrition assistant. Process this data and return JSON.
+
+MEALS (perfect the name to proper English, generate 3-5 clear preparation steps in English, compute kcal from macros using 4cal/g protein, 4cal/g carbs, 9cal/g fat, and generate a shopping list item with quantity in grams or units):
+${mealsForAI.map(m => `id="${m.id}" name="${m.name}" ingredients="${m.alimentos}" protein=${m.protein}g carbs=${m.carbs}g fat=${m.fat}g`).join('\n')}
+
+NOTES TO TRANSLATE AND REFINE (make them motivational, professional, in English — Daniel's coaching voice):
+${notesForAI.map(n => `day=${n.id} raw="${n.raw}"`).join('\n')}
+
+Return ONLY this JSON:
+{
+  "meals": [{"id":"0-0","name":"Perfected Name","desc":"brief ingredient description","kcal":450,"steps":["step 1","step 2","step 3"],"shopping":[{"item":"Rolled oats","qty":"80g"},{"item":"Banana","qty":"1 medium"}]}],
+  "notes": {"0":"Refined note text","1":"..."}
+}` }],
         });
-        const parsed = JSON.parse(stepsResp.choices[0].message.content);
-        (parsed.meals || []).forEach(m => { stepsMap[m.id] = m.steps; });
+        try { aiResult = JSON.parse(aiResp.choices[0].message.content); } catch(e) { console.error('[AI parse]', e); }
       }
+
+      const aiMeals = {};
+      (aiResult.meals || []).forEach(m => { aiMeals[m.id] = m; });
 
       const toolInput = {
         clientId, weekOf,
-        days: days.map((d, di) => ({
-          label: d.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][di],
-          kcal: Number(d.kcal) || 0,
-          protein: Number(d.protein) || 0,
-          carbs: Number(d.carbs) || 0,
-          fat: Number(d.fat) || 0,
-          note: d.note || '',
-          meals: (d.meals || []).filter(m => m.name).map((m, mi) => ({
-            time: m.time || '12:00',
-            name: m.name,
-            desc: m.alimentos || '',
-            kcal: Number(m.kcal) || 0,
-            steps: stepsMap[`${di}-${mi}`] || [m.alimentos || ''],
-          })),
-        })),
+        days: days.map((d, di) => {
+          const processedMeals = (d.meals || []).filter(m => m.alimentos).map((m, mi) => {
+            const ai = aiMeals[`${di}-${mi}`] || {};
+            const prot = Number(m.protein) || 0, carb = Number(m.carbs) || 0, fat = Number(m.fat) || 0;
+            return {
+              time: m.time || '12:00',
+              name: ai.name || m.name,
+              desc: ai.desc || m.alimentos,
+              kcal: ai.kcal || (prot * 4 + carb * 4 + fat * 9),
+              steps: ai.steps || [m.alimentos],
+              shopping: ai.shopping || [],
+            };
+          });
+          const totProt = processedMeals.reduce((s, m) => s + ((d.meals||[])[processedMeals.indexOf(m)]?.protein || 0), 0);
+          // Compute day totals from individual meals
+          let dayKcal = 0, dayProt = 0, dayCarbs = 0, dayFat = 0;
+          (d.meals || []).filter(m => m.alimentos).forEach(m => {
+            dayProt += Number(m.protein) || 0; dayCarbs += Number(m.carbs) || 0; dayFat += Number(m.fat) || 0;
+          });
+          dayKcal = dayProt * 4 + dayCarbs * 4 + dayFat * 9;
+          return {
+            label: d.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][di],
+            kcal: dayKcal, protein: dayProt, carbs: dayCarbs, fat: dayFat,
+            note: (aiResult.notes || {})[String(di)] || d.note || '',
+            meals: processedMeals,
+          };
+        }),
       };
       savePlan('save_nutrition_plan', toolInput);
 
     } else if (specialty === 'training') {
+      // Collect exercises and notes for AI
+      const exsForAI = [];
+      days.forEach((d, di) => {
+        (d.exercises || []).forEach((e, ei) => {
+          if (e.name) exsForAI.push({ id: `${di}-${ei}`, name: e.name, setsReps: e.setsReps||'', notes: e.notes||'' });
+        });
+      });
+      const notesForAI = days.map((d, di) => ({ id: di, raw: d.note || '' })).filter(n => n.raw);
+
+      let aiResult = { exercises: [], notes: {} };
+      if (exsForAI.length > 0 || notesForAI.length > 0) {
+        const aiResp = await openai.chat.completions.create({
+          model: 'gpt-4o-mini', max_tokens: 3000,
+          response_format: { type: 'json_object' },
+          messages: [{ role: 'user', content: `You are a fitness training assistant. Process this data and return JSON.
+
+EXERCISES (perfect the name to proper English, generate a clear 2-3 sentence execution description in English):
+${exsForAI.map(e => `id="${e.id}" name="${e.name}" sets="${e.setsReps}" notes="${e.notes}"`).join('\n')}
+
+NOTES TO TRANSLATE AND REFINE (make them motivational, professional, in English — Erika's coaching voice):
+${notesForAI.map(n => `day=${n.id} raw="${n.raw}"`).join('\n')}
+
+Return ONLY this JSON:
+{
+  "exercises": [{"id":"0-0","name":"Barbell Bench Press","detail":"Lie flat on bench, grip slightly wider than shoulders. Lower bar to mid-chest with controlled tempo, press up explosively. Keep shoulder blades retracted throughout."}],
+  "notes": {"0":"Refined note text","1":"..."}
+}` }],
+        });
+        try { aiResult = JSON.parse(aiResp.choices[0].message.content); } catch(e) { console.error('[AI parse]', e); }
+      }
+
+      const aiExs = {};
+      (aiResult.exercises || []).forEach(e => { aiExs[e.id] = e; });
+
       const toolInput = {
         clientId, weekOf,
         days: days.map((d, di) => {
           const type = d.type || 'rest';
+          const rawExs = (d.exercises || []).filter(e => e.name);
           const base = {
             label: d.label || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][di],
             fullDate: d.fullDate || '',
             type,
             session: d.session || (type === 'rest' ? 'Active Rest' : 'Training'),
-            note: d.note || '',
+            note: (aiResult.notes || {})[String(di)] || d.note || '',
             noteType: type,
           };
-          const exs = (d.exercises || []).filter(e => e.name);
           if (type === 'rest') {
-            base.activities = exs.map(e => ({ name: e.name, detail: e.notes || 'Ritmo suave' }));
+            base.activities = rawExs.map((e, ei) => {
+              const ai = aiExs[`${di}-${ei}`] || {};
+              return { name: ai.name || e.name, detail: ai.detail || e.notes || 'Easy pace' };
+            });
           } else {
-            base.items = exs.map(e => ({
-              name: e.name,
-              detail: e.notes || '',
-              badge: e.setsReps || '',
-              gold: type === 'cardio',
-            }));
+            base.items = rawExs.map((e, ei) => {
+              const ai = aiExs[`${di}-${ei}`] || {};
+              return { name: ai.name || e.name, detail: ai.detail || e.notes || '', badge: e.setsReps || '', gold: type === 'cardio' };
+            });
           }
           return base;
         }),
@@ -348,13 +407,13 @@ ${mealsToProcess.map(m => `id="${m.di}-${m.mi}" nombre="${m.name}" alimentos="${
       savePlan('save_training_plan', toolInput);
 
     } else {
-      return res.status(400).json({ error: 'Especialidad no válida' });
+      return res.status(400).json({ error: 'Invalid specialty' });
     }
 
     res.json({ success: true, weekOf, clientId });
   } catch (err) {
     console.error('[save-plan-table]', err);
-    res.status(500).json({ error: 'Error al guardar el plan' });
+    res.status(500).json({ error: 'Error saving plan' });
   }
 });
 

@@ -168,41 +168,64 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 }
 
 /* ── PLAN TABLE ── */
-.plan-table-wrap{margin-top:.85rem;overflow-x:auto;border:1px solid var(--border2);border-radius:12px}
-.plan-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:580px}
-.plan-table th{
-  background:rgba(255,255,255,.06);padding:.5rem .7rem;text-align:left;
-  font-weight:700;color:var(--muted);font-size:.67rem;letter-spacing:.07em;
-  text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;
+.plan-table-wrap{margin-top:.85rem;overflow-x:auto;border:1px solid var(--border2);border-radius:12px;background:rgba(5,5,7,.4)}
+.pt-day-block{border-bottom:1px solid var(--border2);padding:0}
+.pt-day-block:last-of-type{border-bottom:none}
+.pt-day-header{
+  display:flex;align-items:center;justify-content:space-between;gap:.8rem;
+  background:rgba(201,162,74,.06);padding:.6rem .9rem;
+  border-bottom:1px solid rgba(201,162,74,.12);cursor:pointer;user-select:none;
 }
-.plan-table td{padding:.28rem .45rem;border-bottom:1px solid rgba(244,241,232,.04);vertical-align:middle}
-.pt-day-row td{
-  background:rgba(201,162,74,.055);padding:.5rem .7rem;
-  border-top:1px solid rgba(201,162,74,.18);border-bottom:1px solid rgba(201,162,74,.1);
-}
-.pt-day-label{font-weight:700;color:var(--gold);font-size:.74rem;white-space:nowrap}
-.pt-sub-td{padding-left:1.4rem!important}
+.pt-day-header:hover{background:rgba(201,162,74,.1)}
+.pt-day-label{font-weight:700;color:var(--gold);font-size:.78rem;white-space:nowrap}
+.pt-day-chevron{color:var(--muted);font-size:.7rem;transition:transform .2s}
+.pt-day-block.collapsed .pt-day-body{display:none}
+.pt-day-block.collapsed .pt-day-chevron{transform:rotate(-90deg)}
+.pt-day-body{padding:.5rem .9rem .75rem}
+.pt-row{display:flex;gap:.5rem;margin-bottom:.45rem;align-items:center;flex-wrap:wrap}
+.pt-row-label{font-size:.68rem;font-weight:600;color:var(--muted);min-width:90px;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
 .pt-in{
   background:rgba(255,255,255,.05);border:1px solid rgba(244,241,232,.1);
-  border-radius:6px;padding:.28rem .45rem;color:var(--text);
-  font-family:'Manrope',sans-serif;font-size:.74rem;outline:none;
-  width:100%;transition:border-color .18s;
+  border-radius:6px;padding:.32rem .5rem;color:var(--text);
+  font-family:'Manrope',sans-serif;font-size:.76rem;outline:none;
+  flex:1;min-width:0;transition:border-color .18s;
 }
 .pt-in:focus{border-color:rgba(201,162,74,.5);background:rgba(201,162,74,.04)}
 .pt-in::placeholder{color:var(--muted2)}
-.pt-in.narrow{width:64px}
+.pt-in.narrow{flex:0 0 58px;width:58px;text-align:center}
 .pt-select{
   background:rgba(255,255,255,.05);border:1px solid rgba(244,241,232,.1);
-  border-radius:6px;padding:.28rem .45rem;color:var(--text);
-  font-family:'Manrope',sans-serif;font-size:.74rem;outline:none;cursor:pointer;
-  transition:border-color .18s;
+  border-radius:6px;padding:.32rem .5rem;color:var(--text);
+  font-family:'Manrope',sans-serif;font-size:.76rem;outline:none;cursor:pointer;
 }
 .pt-select:focus{border-color:rgba(201,162,74,.5)}
-.pt-sep td{height:4px;background:rgba(0,0,0,.25);border:none}
-.pt-save-wrap{padding:.75rem .1rem .15rem;display:flex;align-items:center;gap:.65rem}
+.pt-meal-block{
+  background:rgba(255,255,255,.025);border:1px solid rgba(244,241,232,.06);
+  border-radius:10px;padding:.5rem .65rem;margin-bottom:.45rem;
+}
+.pt-meal-name{font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.pt-meal-name .pt-meal-time{font-weight:400;color:var(--muted);font-size:.68rem}
+.pt-macro-row{display:flex;gap:.4rem;margin-bottom:.3rem}
+.pt-macro-grp{display:flex;flex-direction:column;align-items:center;flex:1}
+.pt-macro-lbl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem}
+.pt-note-row{margin-top:.55rem;border-top:1px solid rgba(244,241,232,.06);padding-top:.5rem}
+.pt-note-label{font-size:.68rem;font-weight:700;color:var(--gold);margin-bottom:.25rem;display:flex;align-items:center;gap:.3rem}
+.pt-shop-btn{
+  margin-top:.35rem;background:none;border:1px solid rgba(201,162,74,.3);
+  border-radius:8px;padding:.3rem .7rem;color:var(--gold);font-size:.68rem;
+  font-family:'Manrope',sans-serif;cursor:pointer;transition:all .18s;
+}
+.pt-shop-btn:hover{background:rgba(201,162,74,.1);border-color:rgba(201,162,74,.5)}
+.pt-shop-list{
+  display:none;margin-top:.4rem;padding:.5rem .7rem;
+  background:rgba(201,162,74,.04);border:1px solid rgba(201,162,74,.12);
+  border-radius:8px;font-size:.72rem;color:var(--text);line-height:1.7;
+}
+.pt-shop-list.visible{display:block}
+.pt-save-wrap{padding:.85rem .9rem;display:flex;align-items:center;gap:.75rem;border-top:1px solid var(--border)}
 .pt-save-btn{
   background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;border:none;
-  border-radius:10px;padding:.5rem 1.2rem;font-family:'Manrope',sans-serif;
+  border-radius:10px;padding:.55rem 1.4rem;font-family:'Manrope',sans-serif;
   font-size:.8rem;font-weight:700;cursor:pointer;
   box-shadow:0 4px 16px rgba(201,162,74,.28);transition:transform .15s,box-shadow .15s;
 }
@@ -495,131 +518,122 @@ function appendMsg(role, content, action){
 
 // ── Plan Tables ───────────────────────────────────────────────
 
-function ptInput(placeholder, narrow, extraData){
-  const i = document.createElement('input');
-  i.className = 'pt-in' + (narrow?' narrow':'');
-  i.type = 'text'; i.placeholder = placeholder||'';
-  if(extraData) Object.entries(extraData).forEach(([k,v])=>i.dataset[k]=v);
+function ptIn(ph, narrow, data){
+  const i=document.createElement('input'); i.className='pt-in'+(narrow?' narrow':'');
+  i.type='text'; i.placeholder=ph||'';
+  if(data) Object.entries(data).forEach(([k,v])=>i.dataset[k]=v);
   return i;
 }
 
+const MEAL_NAMES=['Breakfast','Morning Snack','Lunch','Snack','Dinner'];
+const MEAL_TIMES=['08:00','11:00','14:00','17:00','20:30'];
+
 function buildNutritionTable(action){
-  const wrap = document.createElement('div');
-  wrap.className = 'plan-table-wrap';
-  const tbl = document.createElement('table');
-  tbl.className = 'plan-table';
-  tbl.innerHTML = `<thead><tr>
-    <th>Día / Comida</th><th>kcal</th><th>Prot (g)</th>
-    <th>Carbos (g)</th><th>Grasas (g)</th><th>Notas / Alimentos</th>
-  </tr></thead>`;
-  const tbody = document.createElement('tbody');
-  const defaultTimes = ['08:00','11:00','14:00','17:30','20:30'];
-  const mealNames   = ['Desayuno','Media mañana','Comida','Merienda','Cena'];
+  const wrap=document.createElement('div'); wrap.className='plan-table-wrap';
 
-  action.days.forEach((day, di)=>{
-    // Day totals row
-    const dr = document.createElement('tr'); dr.className='pt-day-row';
-    const dayTd = document.createElement('td'); dayTd.className='pt-day-label'; dayTd.textContent='📅 '+day.label;
-    const kcalIn = ptInput('2100',true,{field:'kcal',day:di});
-    const protIn = ptInput('160',true,{field:'protein',day:di});
-    const carbIn = ptInput('220',true,{field:'carbs',day:di});
-    const fatIn  = ptInput('55',true,{field:'fat',day:di});
-    const noteIn = ptInput('Nota del día…',false,{field:'note',day:di});
-    kcalIn.type=protIn.type=carbIn.type=fatIn.type='number';
-    [dayTd, kcalIn, protIn, carbIn, fatIn, noteIn].forEach((el,i)=>{
-      const td=document.createElement('td'); if(i>0) td.appendChild(el); else td.appendChild(el===dayTd?dayTd:el); dr.appendChild(td);
+  action.days.forEach((day,di)=>{
+    const block=document.createElement('div'); block.className='pt-day-block'+(di>0?' collapsed':'');
+    const hdr=document.createElement('div'); hdr.className='pt-day-header';
+    hdr.innerHTML=`<span class="pt-day-label">${day.label}</span><span class="pt-day-chevron">▼</span>`;
+    hdr.addEventListener('click',()=>block.classList.toggle('collapsed'));
+    const body=document.createElement('div'); body.className='pt-day-body';
+
+    // 5 fixed meals
+    MEAL_NAMES.forEach((mName,mi)=>{
+      const mb=document.createElement('div'); mb.className='pt-meal-block';
+      mb.innerHTML=`<div class="pt-meal-name"><span>${mName}</span><span class="pt-meal-time">${MEAL_TIMES[mi]}</span></div>`;
+      // Ingredients row
+      const ingRow=document.createElement('div'); ingRow.className='pt-row';
+      ingRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Ingredients'}));
+      ingRow.appendChild(ptIn('e.g. oats, banana, protein powder, milk',false,{field:'alimentos',day:di,meal:mi}));
+      mb.appendChild(ingRow);
+      // Macros row
+      const macRow=document.createElement('div'); macRow.className='pt-macro-row';
+      ['Protein','Carbs','Fat'].forEach((label,li)=>{
+        const grp=document.createElement('div'); grp.className='pt-macro-grp';
+        grp.innerHTML=`<span class="pt-macro-lbl">${label} (g)</span>`;
+        grp.appendChild(ptIn('0',true,{field:['protein','carbs','fat'][li],day:di,meal:mi}));
+        macRow.appendChild(grp);
+      });
+      mb.appendChild(macRow);
+      body.appendChild(mb);
     });
-    const mkTd=(child)=>{ const td=document.createElement('td'); td.appendChild(child); return td; };
-    dr.appendChild(mkTd(dayTd)); dr.appendChild(mkTd(kcalIn)); dr.appendChild(mkTd(protIn));
-    dr.appendChild(mkTd(carbIn)); dr.appendChild(mkTd(fatIn)); dr.appendChild(mkTd(noteIn));
-    tbody.appendChild(dr);
 
-    // Meal rows
-    for(let mi=0;mi<5;mi++){
-      const mr = document.createElement('tr');
-      const stTd = document.createElement('td'); stTd.className='pt-sub-td';
-      const timeIn = ptInput(defaultTimes[mi],true,{field:'time',day:di,meal:mi}); timeIn.style.width='52px';
-      const nameIn = ptInput(mealNames[mi],false,{field:'mname',day:di,meal:mi}); nameIn.style.maxWidth='120px';
-      const sp=document.createElement('span'); sp.style.cssText='margin:0 4px;color:var(--muted2)'; sp.textContent='—';
-      stTd.appendChild(timeIn); stTd.appendChild(sp); stTd.appendChild(nameIn);
-      const mKcalIn = ptInput('kcal',true,{field:'mkcal',day:di,meal:mi}); mKcalIn.type='number';
-      const macroTd = document.createElement('td'); macroTd.colSpan=3;
-      macroTd.style.cssText='opacity:.28;font-size:.65rem;text-align:center;vertical-align:middle'; macroTd.textContent='↑ macros en totales del día';
-      const alimentosIn = ptInput('avena, plátano, proteína…',false,{field:'alimentos',day:di,meal:mi});
-      const mkTd2=(child,cs)=>{ const td=document.createElement('td'); if(cs) td.colSpan=cs; td.appendChild(child); return td; };
-      mr.appendChild(stTd); mr.appendChild(mkTd2(mKcalIn)); mr.appendChild(macroTd); mr.appendChild(mkTd2(alimentosIn));
-      tbody.appendChild(mr);
-    }
-    // Separator between days
-    if(di<action.days.length-1){
-      const sep=document.createElement('tr'); sep.className='pt-sep';
-      sep.innerHTML='<td colspan="6"></td>'; tbody.appendChild(sep);
-    }
+    // Daniel's Note
+    const noteDiv=document.createElement('div'); noteDiv.className='pt-note-row';
+    noteDiv.innerHTML=`<div class="pt-note-label">📝 Daniel's Note</div>`;
+    noteDiv.appendChild(ptIn('Write your note — AI will translate and refine it',false,{field:'note',day:di}));
+    body.appendChild(noteDiv);
+
+    block.appendChild(hdr); block.appendChild(body); wrap.appendChild(block);
   });
-  tbl.appendChild(tbody); wrap.appendChild(tbl);
-  wrap.appendChild(buildSaveRow(action, 'nutrition'));
+
+  wrap.appendChild(buildSaveRow(action,'nutrition'));
   return wrap;
 }
 
 function buildTrainingTable(action){
-  const wrap = document.createElement('div');
-  wrap.className = 'plan-table-wrap';
-  const tbl = document.createElement('table');
-  tbl.className = 'plan-table';
-  tbl.innerHTML = `<thead><tr>
-    <th>Día / Ejercicio</th><th>Tipo</th><th>Sesión</th><th>Series × Reps</th><th>Notas / Técnica</th>
-  </tr></thead>`;
-  const tbody = document.createElement('tbody');
+  const wrap=document.createElement('div'); wrap.className='plan-table-wrap';
 
-  action.days.forEach((day, di)=>{
-    const dr = document.createElement('tr'); dr.className='pt-day-row';
-    // Day label
-    const dayTd=document.createElement('td'); dayTd.className='pt-day-label'; dayTd.textContent='📅 '+day.label;
-    // Type select
+  action.days.forEach((day,di)=>{
+    const block=document.createElement('div'); block.className='pt-day-block'+(di>0?' collapsed':'');
+    const hdr=document.createElement('div'); hdr.className='pt-day-header';
+    hdr.innerHTML=`<span class="pt-day-label">${day.label}</span><span class="pt-day-chevron">▼</span>`;
+    hdr.addEventListener('click',()=>block.classList.toggle('collapsed'));
+    const body=document.createElement('div'); body.className='pt-day-body';
+
+    // Type + Session row
+    const topRow=document.createElement('div'); topRow.className='pt-row';
+    topRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Type'}));
     const sel=document.createElement('select'); sel.className='pt-select'; sel.dataset.field='type'; sel.dataset.day=di;
-    [['strength','Fuerza'],['cardio','Cardio'],['rest','Descanso']].forEach(([v,l])=>{
+    [['strength','Strength'],['cardio','Cardio'],['rest','Rest / Recovery']].forEach(([v,l])=>{
       const o=document.createElement('option'); o.value=v; o.textContent=l; sel.appendChild(o);
     });
-    const sessionIn=ptInput('Nombre sesión',false,{field:'session',day:di});
-    const noteIn=ptInput('Nota del día…',false,{field:'note',day:di});
-    const mkTd=(child)=>{ const td=document.createElement('td'); td.appendChild(child); return td; };
-    const emptyTd=document.createElement('td');
-    dr.appendChild(mkTd(dayTd)); dr.appendChild(mkTd(sel)); dr.appendChild(mkTd(sessionIn));
-    dr.appendChild(emptyTd); dr.appendChild(mkTd(noteIn));
-    tbody.appendChild(dr);
+    topRow.appendChild(sel);
+    topRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Session',style:'margin-left:.5rem'}));
+    topRow.appendChild(ptIn('e.g. Upper Body Push',false,{field:'session',day:di}));
+    body.appendChild(topRow);
 
+    // 6 exercise slots
     for(let ei=0;ei<6;ei++){
-      const er=document.createElement('tr');
-      const nameTd=document.createElement('td'); nameTd.className='pt-sub-td';
-      nameTd.appendChild(ptInput('Ejercicio '+(ei+1),false,{field:'exname',day:di,ex:ei}));
-      const mkTd2=(child)=>{ const td=document.createElement('td'); td.appendChild(child); return td; };
-      er.appendChild(nameTd);
-      er.appendChild(document.createElement('td'));
-      er.appendChild(document.createElement('td'));
-      er.appendChild(mkTd2(ptInput('4×8 @70%',false,{field:'setsreps',day:di,ex:ei})));
-      er.appendChild(mkTd2(ptInput('Técnica, descanso…',false,{field:'exnote',day:di,ex:ei})));
-      tbody.appendChild(er);
+      const exBlock=document.createElement('div'); exBlock.className='pt-meal-block';
+      exBlock.innerHTML=`<div class="pt-meal-name">Exercise ${ei+1}</div>`;
+      const nameRow=document.createElement('div'); nameRow.className='pt-row';
+      nameRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Name'}));
+      nameRow.appendChild(ptIn('e.g. bench press',false,{field:'exname',day:di,ex:ei}));
+      exBlock.appendChild(nameRow);
+      const detailRow=document.createElement('div'); detailRow.className='pt-row';
+      detailRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Sets × Reps'}));
+      detailRow.appendChild(ptIn('e.g. 4×8 @70%',false,{field:'setsreps',day:di,ex:ei}));
+      detailRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Notes',style:'margin-left:.5rem'}));
+      detailRow.appendChild(ptIn('Technique, rest, tempo…',false,{field:'exnote',day:di,ex:ei}));
+      exBlock.appendChild(detailRow);
+      body.appendChild(exBlock);
     }
-    if(di<action.days.length-1){
-      const sep=document.createElement('tr'); sep.className='pt-sep';
-      sep.innerHTML='<td colspan="5"></td>'; tbody.appendChild(sep);
-    }
+
+    // Erika's Note
+    const noteDiv=document.createElement('div'); noteDiv.className='pt-note-row';
+    noteDiv.innerHTML=`<div class="pt-note-label">📝 Erika's Note</div>`;
+    noteDiv.appendChild(ptIn('Write your note — AI will translate and refine it',false,{field:'note',day:di}));
+    body.appendChild(noteDiv);
+
+    block.appendChild(hdr); block.appendChild(body); wrap.appendChild(block);
   });
-  tbl.appendChild(tbody); wrap.appendChild(tbl);
-  wrap.appendChild(buildSaveRow(action, 'training'));
+
+  wrap.appendChild(buildSaveRow(action,'training'));
   return wrap;
 }
 
 function buildSaveRow(action, specialty){
   const div=document.createElement('div'); div.className='pt-save-wrap';
-  const btn=document.createElement('button'); btn.className='pt-save-btn'; btn.textContent='Guardar Plan →';
-  const status=document.createElement('span'); status.className='pt-status'; status.textContent='Rellena los campos y guarda.';
+  const btn=document.createElement('button'); btn.className='pt-save-btn'; btn.textContent='Save Plan →';
+  const status=document.createElement('span'); status.className='pt-status'; status.textContent='Fill in the fields and save.';
   div.appendChild(btn); div.appendChild(status);
 
   btn.addEventListener('click', async ()=>{
-    btn.disabled=true; status.className='pt-status'; status.textContent='Guardando…';
+    btn.disabled=true; status.className='pt-status'; status.textContent='Saving — AI is perfecting names and generating details…';
     try{
-      const days = specialty==='nutrition' ? collectNutrition(div.closest('.plan-table-wrap'), action) : collectTraining(div.closest('.plan-table-wrap'), action);
+      const days = specialty==='nutrition' ? collectNutrition(div.closest('.plan-table-wrap'),action) : collectTraining(div.closest('.plan-table-wrap'),action);
       const r = await fetch(`${BASE}/api/coach/save-plan-table`,{
         method:'POST',
         headers:{'Content-Type':'application/json', Authorization:`Bearer ${storedToken()}`},
@@ -627,41 +641,47 @@ function buildSaveRow(action, specialty){
       });
       const data=await r.json();
       if(r.ok){
-        status.textContent='✅ Plan guardado en el portal del cliente.'; status.className='pt-status ok';
-        btn.textContent='Guardado ✓';
-        const confirmMsg=`Plan de ${specialty==='nutrition'?'nutrición':'entrenamiento'} guardado para ${action.clientName} — semana del ${action.weekOf}.`;
+        status.textContent='✅ Plan saved to client portal.'; status.className='pt-status ok';
+        btn.textContent='Saved ✓';
+        const confirmMsg=`${specialty==='nutrition'?'Nutrition':'Training'} plan saved for ${action.clientName} — week of ${action.weekOf}.`;
         appendMsg('assistant', confirmMsg);
         chatHistory.push({role:'assistant', content: confirmMsg});
       } else {
-        status.textContent='❌ '+(data.error||'Error al guardar.'); status.className='pt-status err';
+        status.textContent='❌ '+(data.error||'Failed to save.'); status.className='pt-status err';
         btn.disabled=false;
       }
     }catch(e){
-      status.textContent='❌ Error de conexión.'; status.className='pt-status err'; btn.disabled=false;
+      status.textContent='❌ Connection error.'; status.className='pt-status err'; btn.disabled=false;
     }
   });
   return div;
 }
 
-function q(wrap, field, day, extra){
-  const sel = extra!==undefined
+function q(wrap,field,day,extra){
+  const sel=extra!==undefined
     ? `[data-field="${field}"][data-day="${day}"][data-${extra[0]}="${extra[1]}"]`
     : `[data-field="${field}"][data-day="${day}"]`;
   return (wrap.querySelector(sel)||{}).value||'';
 }
 
-function collectNutrition(wrap, action){
+function collectNutrition(wrap,action){
   return action.days.map((day,di)=>{
     const meals=[];
     for(let mi=0;mi<5;mi++){
-      const name=q(wrap,'mname',di,['meal',mi]);
-      if(name) meals.push({time:q(wrap,'time',di,['meal',mi])||['08:00','11:00','14:00','17:30','20:30'][mi], name, kcal:Number(q(wrap,'mkcal',di,['meal',mi]))||0, alimentos:q(wrap,'alimentos',di,['meal',mi])});
+      const alim=q(wrap,'alimentos',di,['meal',mi]);
+      if(!alim) continue;
+      meals.push({
+        name:MEAL_NAMES[mi], time:MEAL_TIMES[mi], alimentos:alim,
+        protein:Number(q(wrap,'protein',di,['meal',mi]))||0,
+        carbs:Number(q(wrap,'carbs',di,['meal',mi]))||0,
+        fat:Number(q(wrap,'fat',di,['meal',mi]))||0,
+      });
     }
-    return {label:day.shortLabel, fullDate:day.fullDate, kcal:Number(q(wrap,'kcal',di))||0, protein:Number(q(wrap,'protein',di))||0, carbs:Number(q(wrap,'carbs',di))||0, fat:Number(q(wrap,'fat',di))||0, note:q(wrap,'note',di), meals};
+    return {label:day.shortLabel, fullDate:day.fullDate, note:q(wrap,'note',di), meals};
   });
 }
 
-function collectTraining(wrap, action){
+function collectTraining(wrap,action){
   return action.days.map((day,di)=>{
     const type=q(wrap,'type',di)||'rest';
     const exercises=[];
