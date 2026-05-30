@@ -8,6 +8,159 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="stylesheet" href="style.css">
+    <style>
+    .p-whoop-partner {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 2rem;
+        padding-top: 1.8rem;
+        border-top: 1px solid rgba(201,162,74,0.12);
+        flex-wrap: wrap;
+    }
+    .p-whoop-partner-label {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(201,162,74,0.5);
+        font-weight: 600;
+    }
+    .p-whoop-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.38rem 0.9rem 0.38rem 0.65rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(244,241,232,0.1);
+        border-radius: 999px;
+        text-decoration: none;
+    }
+    .p-whoop-badge svg { color: rgba(244,241,232,0.75); flex-shrink: 0; }
+    .p-whoop-badge-name {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        color: rgba(244,241,232,0.82);
+    }
+    .p-whoop-badge-tag {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.58rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: rgba(244,241,232,0.32);
+    }
+
+    /* ── WHOOP VISUAL SECTION ── */
+    .p-whoop-section {
+        padding: 9vh 0;
+        background: #0d0d10;
+        border-top: 1px solid rgba(244,241,232,0.05);
+        border-bottom: 1px solid rgba(244,241,232,0.05);
+    }
+    .p-whoop-section-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 5%;
+        display: grid;
+        grid-template-columns: 5fr 7fr;
+        gap: 4.5rem;
+        align-items: center;
+    }
+    .p-whoop-eyebrow {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.68rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(201,162,74,0.6);
+        font-weight: 700;
+        margin-bottom: 1.1rem;
+    }
+    .p-whoop-hl-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.52rem;
+        padding: 0.4rem 0.9rem 0.4rem 0.65rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(244,241,232,0.1);
+        border-radius: 8px;
+        margin-bottom: 1.8rem;
+    }
+    .p-whoop-hl-badge svg { color: rgba(244,241,232,0.75); }
+    .p-whoop-hl-badge-name {
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        color: rgba(244,241,232,0.85);
+    }
+    .p-whoop-hl-title {
+        font-family: 'Tulpen One', serif;
+        font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+        line-height: 0.9;
+        text-transform: uppercase;
+        color: #f4f1e8;
+        margin-bottom: 1.2rem;
+    }
+    .p-whoop-hl-sub {
+        font-size: 0.9rem;
+        color: rgba(244,241,232,0.45);
+        line-height: 1.72;
+        margin-bottom: 1.6rem;
+        max-width: 340px;
+    }
+    .p-whoop-hl-link {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(166,200,94,0.7);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .p-whoop-hl-link:hover { color: #a6c85e; }
+    .p-whoop-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.85rem;
+    }
+    .p-whoop-tile {
+        padding: 1.4rem 1.3rem;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(244,241,232,0.08);
+    }
+    .p-whoop-tile-green {
+        background: rgba(166,200,94,0.06);
+        border-color: rgba(166,200,94,0.2);
+    }
+    .p-whoop-tile-val {
+        font-family: 'Tulpen One', serif;
+        font-size: 2.6rem;
+        line-height: 1;
+        color: #f4f1e8;
+        margin-bottom: 0.35rem;
+    }
+    .p-whoop-tile-green .p-whoop-tile-val { color: #a6c85e; }
+    .p-whoop-tile-name {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #f4f1e8;
+        margin-bottom: 0.12rem;
+    }
+    .p-whoop-tile-green .p-whoop-tile-name { color: #a6c85e; }
+    .p-whoop-tile-sub {
+        font-size: 0.65rem;
+        color: rgba(244,241,232,0.38);
+        line-height: 1.4;
+    }
+    @media (max-width: 960px) {
+        .p-whoop-section-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+    </style>
     <script>
     (function(){
       try {
@@ -118,6 +271,16 @@
                     <div class="p-philosophy-stat">
                         <span class="p-stat-val">2</span>
                         <span class="p-stat-key">coaches<br>one system</span>
+                    </div>
+                </div>
+                <div class="p-whoop-partner">
+                    <span class="p-whoop-partner-label">Biometric tracking</span>
+                    <div class="p-whoop-badge">
+                        <svg width="16" height="12" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1.5 L5.5 14.5 L11 6 L16.5 14.5 L21 1.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="p-whoop-badge-name">WHOOP</span>
+                        <span class="p-whoop-badge-tag">Peak · included</span>
                     </div>
                 </div>
             </div>
@@ -270,6 +433,59 @@
             </div>
         </section>
 
+        <!-- ── WHOOP RECOVERY INTELLIGENCE ── -->
+        <section class="p-whoop-section" id="whoop-tracking" aria-label="WHOOP recovery tracking">
+            <div class="p-whoop-section-inner">
+                <div class="p-whoop-copy">
+                    <p class="p-whoop-eyebrow">Included in every protocol</p>
+                    <div class="p-whoop-hl-badge">
+                        <svg width="17" height="13" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1.5 L5.5 14.5 L11 6 L16.5 14.5 L21 1.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="p-whoop-hl-badge-name">WHOOP</span>
+                    </div>
+                    <h2 class="p-whoop-hl-title">YOUR RECOVERY<br>IN THE BRIEF.</h2>
+                    <p class="p-whoop-hl-sub">Four biometric signals reviewed by your coaches every Monday morning. Your plan responds before you feel the need to ask.</p>
+                    <a href="plan-online.html" class="p-whoop-hl-link">Included in the Online Protocol →</a>
+                </div>
+                <div class="p-whoop-grid">
+                    <!-- Recovery tile with SVG ring -->
+                    <div class="p-whoop-tile p-whoop-tile-green">
+                        <div style="position:relative;width:60px;height:60px;margin-bottom:0.75rem;">
+                            <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+                                <circle cx="30" cy="30" r="24" stroke="rgba(166,200,94,0.14)" stroke-width="5"/>
+                                <circle cx="30" cy="30" r="24" stroke="#a6c85e" stroke-width="5" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="32" transform="rotate(-90 30 30)"/>
+                            </svg>
+                            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                                <span style="font-family:'Tulpen One',serif;font-size:1.3rem;line-height:1;color:#a6c85e;">79</span>
+                                <span style="font-size:0.42rem;letter-spacing:0.08em;color:rgba(244,241,232,0.4);text-transform:uppercase;">%</span>
+                            </div>
+                        </div>
+                        <div class="p-whoop-tile-name">Recovery</div>
+                        <div class="p-whoop-tile-sub">Green · Ready to train</div>
+                    </div>
+                    <!-- HRV tile -->
+                    <div class="p-whoop-tile">
+                        <div class="p-whoop-tile-val">61<span style="font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0;">ms</span> <span style="font-size:1.4rem;color:#a6c85e;">↑</span></div>
+                        <div class="p-whoop-tile-name">HRV</div>
+                        <div class="p-whoop-tile-sub">Above 14-day baseline</div>
+                    </div>
+                    <!-- Sleep tile -->
+                    <div class="p-whoop-tile">
+                        <div class="p-whoop-tile-val">7.8<span style="font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0;">h</span></div>
+                        <div class="p-whoop-tile-name">Sleep</div>
+                        <div class="p-whoop-tile-sub">87% performance score</div>
+                    </div>
+                    <!-- Strain tile -->
+                    <div class="p-whoop-tile">
+                        <div class="p-whoop-tile-val">9.2</div>
+                        <div class="p-whoop-tile-name">Strain</div>
+                        <div class="p-whoop-tile-sub">Moderate · within target</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="p-section p-section-tight" id="method" aria-label="Method">
             <div class="p-shell">
                 <div class="p-section-head">
@@ -361,7 +577,7 @@
                         <span class="p-process-num" aria-hidden="true">03</span>
                         <div class="p-process-body">
                             <h3 class="p-process-title">Execution &amp; monitoring</h3>
-                            <p class="p-process-copy">Weekly adjustments, tight feedback loops, and hands‑on control — so outcomes are inevitable.</p>
+                            <p class="p-process-copy">Weekly adjustments, tight feedback loops, and hands‑on control — so outcomes are inevitable. Biometric data via WHOOP — recovery, HRV, and sleep — feeds directly into every Monday review.</p>
                         </div>
                         <div class="p-process-art" aria-hidden="true">
                             <!-- Performance gauge dial — execution & monitoring -->
@@ -538,7 +754,7 @@
                         </div>
                         <div class="p-timeline-body">
                             <h3 class="p-timeline-title">Full baseline assessment</h3>
-                            <p class="p-timeline-copy">Movement screening, metabolic markers, lifestyle audit and schedule mapping. Every variable accounted for before we design a single session.</p>
+                            <p class="p-timeline-copy">Movement screening, metabolic markers, lifestyle audit and schedule mapping. Your WHOOP Peak band is dispatched at this stage — biometric data begins flowing to your coaches before your first session.</p>
                         </div>
                     </div>
                     <div class="p-timeline-item">

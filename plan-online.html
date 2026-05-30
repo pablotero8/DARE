@@ -490,7 +490,7 @@
         /* ── CALLOUTS ── */
         .preview-callouts {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 1.5rem;
             margin-top: 3.5rem;
         }
@@ -659,6 +659,8 @@
             .op-features-inner { grid-template-columns: 1fr; gap: 2.5rem; }
             .op-preview-header { flex-direction: column; align-items: flex-start; }
             .op-preview-note { text-align: left; border-right: none; border-left: 2px solid rgba(201,162,74,0.4); padding-right: 0; padding-left: 1.2rem; }
+            .op-whoop-inner { grid-template-columns: 1fr; gap: 3rem; }
+            .op-whoop-visual { display: none; }
         }
 
         @media (max-width: 600px) {
@@ -666,6 +668,50 @@
             .mock-ch { padding: 0.6rem 0.85rem; }
             .mock-grid { padding: 0.85rem; gap: 0.75rem; }
         }
+
+        /* ── WHOOP INTELLIGENCE ── */
+        .op-whoop { padding: 10vh 6vw; background: #111114; color: #f4f1e8; }
+        .op-whoop-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+        .op-whoop-title { font-family: 'Tulpen One', serif; font-size: clamp(3rem, 6vw, 5.5rem); line-height: 0.88; text-transform: uppercase; margin-bottom: 1.5rem; }
+        .op-whoop-title span { color: var(--green); }
+        .op-whoop-sub { font-size: 0.93rem; color: rgba(244,241,232,0.52); line-height: 1.72; margin-bottom: 2rem; }
+        .op-whoop-brand { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.45rem 1rem 0.45rem 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(244,241,232,0.1); border-radius: 8px; margin-bottom: 2rem; }
+        .op-whoop-brand svg { color: rgba(244,241,232,0.75); }
+        .op-whoop-brand-name { font-family: 'Manrope', sans-serif; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.18em; color: rgba(244,241,232,0.85); }
+        .op-whoop-brand-tag { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(244,241,232,0.35); margin-left: 0.3rem; }
+        .op-whoop-metrics { display: flex; flex-direction: column; gap: 0; }
+        .op-whoop-metric { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(244,241,232,0.07); }
+        .op-whoop-metric:first-child { border-top: 1px solid rgba(244,241,232,0.07); }
+        .op-whm-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 5px; }
+        .op-whm-name { font-size: 0.8rem; font-weight: 700; color: #f4f1e8; margin-bottom: 0.2rem; }
+        .op-whm-desc { font-size: 0.82rem; color: rgba(244,241,232,0.48); line-height: 1.55; }
+        .op-whoop-visual { position: relative; }
+        .op-whoop-dash { background: #050507; border-radius: 16px; border: 1px solid rgba(244,241,232,0.07); overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.5); }
+        .op-whoop-dash-bar { background: rgba(5,5,7,0.95); border-bottom: 1px solid rgba(244,241,232,0.07); padding: 0.55rem 1.2rem; display: flex; align-items: center; gap: 0.4rem; }
+        .op-whoop-dash-body { padding: 1.4rem; }
+        .op-whoop-ring-card { display: flex; align-items: center; gap: 1.2rem; padding: 1rem 1.2rem; background: rgba(166,200,94,0.06); border: 1px solid rgba(166,200,94,0.18); border-radius: 12px; margin-bottom: 1rem; }
+        .op-whoop-ring { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+        .op-whoop-ring-val { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .op-whoop-ring-num { font-family: 'Tulpen One', serif; font-size: 1.6rem; line-height: 1; color: #a6c85e; }
+        .op-whoop-ring-pct { font-size: 0.5rem; letter-spacing: 0.1em; color: rgba(244,241,232,0.4); text-transform: uppercase; }
+        .op-whoop-ring-info { flex: 1; }
+        .op-whoop-ring-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #a6c85e; margin-bottom: 0.3rem; }
+        .op-whoop-ring-desc { font-size: 0.72rem; color: rgba(244,241,232,0.6); line-height: 1.5; }
+        .op-whoop-mini-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+        .op-whoop-mini-metric { padding: 0.7rem 0.85rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(244,241,232,0.07); border-radius: 9px; }
+        .op-whoop-mm-val { font-family: 'Tulpen One', serif; font-size: 1.4rem; line-height: 1; color: #f4f1e8; margin-bottom: 0.15rem; }
+        .op-whoop-mm-label { font-size: 0.52rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(244,241,232,0.38); }
+        /* WHOOP strip in mock app */
+        .mock-whoop-strip { display: flex; align-items: center; padding: 0.5rem 1.6rem; background: rgba(166,200,94,0.04); border-bottom: 1px solid rgba(166,200,94,0.12); border-top: 1px solid rgba(244,241,232,0.05); }
+        .mock-whoop-brand-inner { display: flex; align-items: center; gap: 0.38rem; flex-shrink: 0; margin-right: 1.2rem; padding-right: 1.2rem; border-right: 1px solid rgba(244,241,232,0.08); }
+        .mock-whoop-brand-inner svg { color: rgba(244,241,232,0.6); }
+        .mock-whoop-brand-txt { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.18em; color: rgba(244,241,232,0.55); }
+        .mock-whoop-data { display: flex; align-items: center; gap: 0.85rem; flex: 1; }
+        .mock-whd-item { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+        .mock-whd-val { font-size: 0.68rem; font-weight: 700; color: #f4f1e8; line-height: 1; }
+        .mock-whd-green { color: #a6c85e; }
+        .mock-whd-label { font-size: 0.45rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(244,241,232,0.38); white-space: nowrap; }
+        .mock-whd-sep { width: 1px; height: 20px; background: rgba(244,241,232,0.07); flex-shrink: 0; }
     </style>
     <script>
     (function(){
@@ -721,7 +767,7 @@
             <p class="op-hero-eyebrow">Engagement Model · Online · No Physical Visits</p>
             <h1 class="op-hero-title">ONLINE<br><span>PROTOCOL</span></h1>
             <p class="op-hero-sub">Your training and nutrition protocol, designed every week and delivered to your device — wherever you are. No coach on site. No appointments. You execute, we manage everything else.</p>
-            <p class="op-hero-price"><strong>From AED 8,500</strong> &nbsp;/&nbsp; month</p>
+            <p class="op-hero-price"><strong>AED 13,500</strong> &nbsp;/&nbsp; 12 weeks</p>
         </section>
 
         <!-- ── HOW IT WORKS ── -->
@@ -734,7 +780,7 @@
                     <div class="op-pillar">
                         <div class="op-pillar-num">01</div>
                         <h3>Remote Weekly Review</h3>
-                        <p>Every Monday, both coaches assess your data: progress metrics, energy logs, and your upcoming schedule. Training and nutrition are redesigned from scratch. No template. No copy-paste. Delivered to your dashboard before you wake up.</p>
+                        <p>Every Monday, both coaches assess your data: progress metrics, WHOOP recovery trends, energy logs, and your upcoming schedule. Training and nutrition are redesigned from scratch. No template. No copy-paste. Delivered to your dashboard before you wake up.</p>
                     </div>
                     <div class="op-pillar">
                         <div class="op-pillar-num">02</div>
@@ -745,6 +791,96 @@
                         <div class="op-pillar-num">03</div>
                         <h3>Open. Read. Execute.</h3>
                         <p>You open your dashboard and your day is complete. Today's training — every exercise, set, rest period, and coaching note. Today's nutrition — every meal, every macro, every preparation step. Nothing to decide. Nothing to research. Just execute.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── WHOOP INTELLIGENCE ── -->
+        <section class="op-whoop">
+            <div class="op-whoop-inner">
+                <div class="op-whoop-copy">
+                    <p class="op-section-label">Included in every protocol</p>
+                    <div class="op-whoop-brand">
+                        <svg width="18" height="13" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1.5 L5.5 14.5 L11 6 L16.5 14.5 L21 1.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="op-whoop-brand-name">WHOOP</span>
+                        <span class="op-whoop-brand-tag">Peak · included</span>
+                    </div>
+                    <h2 class="op-whoop-title">RECOVERY<br><span>INTELLIGENCE</span></h2>
+                    <p class="op-whoop-sub">Every DARE client receives a WHOOP Peak band. Your coaches see your recovery score, HRV, and sleep quality every morning — and recalibrate your protocol the moment your body signals it needs it.</p>
+                    <div class="op-whoop-metrics">
+                        <div class="op-whoop-metric">
+                            <div class="op-whm-dot"></div>
+                            <div>
+                                <div class="op-whm-name">Recovery Score</div>
+                                <div class="op-whm-desc">Daily readiness quantified 0–100. Reviewed by your coaches before any training adjustment is made.</div>
+                            </div>
+                        </div>
+                        <div class="op-whoop-metric">
+                            <div class="op-whm-dot"></div>
+                            <div>
+                                <div class="op-whm-name">HRV &amp; Resting Heart Rate</div>
+                                <div class="op-whm-desc">The most honest markers of nervous system load — tracked nightly, interpreted alongside your training data every Monday.</div>
+                            </div>
+                        </div>
+                        <div class="op-whoop-metric">
+                            <div class="op-whm-dot"></div>
+                            <div>
+                                <div class="op-whm-name">Sleep Quality</div>
+                                <div class="op-whm-desc">Deep sleep, REM cycles, and latency scored every night while you rest. Sleep debt is part of your training brief.</div>
+                            </div>
+                        </div>
+                        <div class="op-whoop-metric">
+                            <div class="op-whm-dot"></div>
+                            <div>
+                                <div class="op-whm-name">Day Strain</div>
+                                <div class="op-whm-desc">Cumulative training load tracked continuously. Your coaches never push when your body is in active rebuild.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="op-whoop-visual">
+                    <div class="op-whoop-dash">
+                        <div class="op-whoop-dash-bar">
+                            <div class="device-dot device-dot-r"></div>
+                            <div class="device-dot device-dot-y"></div>
+                            <div class="device-dot device-dot-g"></div>
+                            <div class="device-url" style="font-size:0.6rem;">client.dare.ae · Recovery</div>
+                        </div>
+                        <div class="op-whoop-dash-body">
+                            <div class="op-whoop-ring-card">
+                                <div class="op-whoop-ring">
+                                    <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+                                        <circle cx="36" cy="36" r="30" stroke="rgba(166,200,94,0.12)" stroke-width="6"/>
+                                        <circle cx="36" cy="36" r="30" stroke="#a6c85e" stroke-width="6" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="57" transform="rotate(-90 36 36)"/>
+                                    </svg>
+                                    <div class="op-whoop-ring-val">
+                                        <span class="op-whoop-ring-num">79</span>
+                                        <span class="op-whoop-ring-pct">%</span>
+                                    </div>
+                                </div>
+                                <div class="op-whoop-ring-info">
+                                    <div class="op-whoop-ring-title">Recovery · Green</div>
+                                    <div class="op-whoop-ring-desc">Ready for high-intensity training. HRV trending above your 14-day baseline.</div>
+                                </div>
+                            </div>
+                            <div class="op-whoop-mini-metrics">
+                                <div class="op-whoop-mini-metric">
+                                    <div class="op-whoop-mm-val" style="color:#a6c85e">61<span style="font-size:0.65rem;font-family:'Manrope',sans-serif;font-weight:600">ms</span></div>
+                                    <div class="op-whoop-mm-label">HRV ↑</div>
+                                </div>
+                                <div class="op-whoop-mini-metric">
+                                    <div class="op-whoop-mm-val">7.8<span style="font-size:0.65rem;font-family:'Manrope',sans-serif;font-weight:600">h</span></div>
+                                    <div class="op-whoop-mm-label">Sleep</div>
+                                </div>
+                                <div class="op-whoop-mini-metric">
+                                    <div class="op-whoop-mm-val">52<span style="font-size:0.65rem;font-family:'Manrope',sans-serif;font-weight:600">bpm</span></div>
+                                    <div class="op-whoop-mm-label">RHR →</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -798,6 +934,37 @@
                             <div class="mock-chip"><span class="mock-chip-label">Fri</span><span class="mock-chip-dot dot-c"></span></div>
                             <div class="mock-chip"><span class="mock-chip-label">Sat</span><span class="mock-chip-dot dot-s"></span></div>
                             <div class="mock-chip"><span class="mock-chip-label">Sun</span><span class="mock-chip-dot dot-r"></span></div>
+                        </div>
+
+                        <!-- WHOOP recovery strip -->
+                        <div class="mock-whoop-strip">
+                            <div class="mock-whoop-brand-inner">
+                                <svg width="13" height="10" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 1.5 L5.5 14.5 L11 6 L16.5 14.5 L21 1.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="mock-whoop-brand-txt">WHOOP</span>
+                            </div>
+                            <div class="mock-whoop-data">
+                                <div class="mock-whd-item">
+                                    <span class="mock-whd-val mock-whd-green">79%</span>
+                                    <span class="mock-whd-label">Recovery</span>
+                                </div>
+                                <div class="mock-whd-sep"></div>
+                                <div class="mock-whd-item">
+                                    <span class="mock-whd-val">61ms ↑</span>
+                                    <span class="mock-whd-label">HRV</span>
+                                </div>
+                                <div class="mock-whd-sep"></div>
+                                <div class="mock-whd-item">
+                                    <span class="mock-whd-val">7.8h</span>
+                                    <span class="mock-whd-label">Sleep</span>
+                                </div>
+                                <div class="mock-whd-sep"></div>
+                                <div class="mock-whd-item">
+                                    <span class="mock-whd-val">9.2</span>
+                                    <span class="mock-whd-label">Strain</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Mock content grid -->
@@ -937,6 +1104,16 @@
                         <p class="callout-label">On-site visits required</p>
                         <p class="callout-desc">No trainer at your door. No chef in your kitchen. The entire system runs through your dashboard and direct coach messaging.</p>
                     </div>
+                    <div class="callout-item" style="border-color:rgba(166,200,94,0.22);">
+                        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem;">
+                            <svg width="20" height="15" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:#a6c85e;flex-shrink:0;">
+                                <path d="M1 1.5 L5.5 14.5 L11 6 L16.5 14.5 L21 1.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span style="font-family:'Tulpen One',serif;font-size:2.5rem;color:#a6c85e;line-height:1;">WHOOP</span>
+                        </div>
+                        <p class="callout-label">Peak band — included</p>
+                        <p class="callout-desc">Every client receives a WHOOP Peak band. Recovery, HRV, sleep quality, and day strain shared directly with your coaches for weekly recalibration.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -957,6 +1134,7 @@
                     <li>Location-independent design — works in Dubai, on business travel, or abroad. Your facilities and timezone are factored into every session.</li>
                     <li>Private client dashboard — accessible 24/7 from any device, anywhere in the world. Updated every Monday morning.</li>
                     <li>Direct coach messaging — questions answered by Erika or Daniel directly, not a support team. Typically within hours.</li>
+                    <li><span style="display:inline-flex;align-items:center;gap:0.45rem;vertical-align:middle;margin-right:0.15rem;"><svg width="13" height="10" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:var(--gold)"><path d="M1 1.5 L5.5 14.5 L11 6 L16.5 14.5 L21 1.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><strong style="color:#f4f1e8;font-size:0.78rem;letter-spacing:0.08em;">WHOOP Peak band included</strong></span> — biometric monitoring from day one. Recovery score, HRV, sleep quality, and day strain reviewed by your coaches every Monday alongside your progress metrics.</li>
                 </ul>
             </div>
         </section>
