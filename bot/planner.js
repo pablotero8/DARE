@@ -1,4 +1,5 @@
 import db from './db.js';
+import { archivePlanVersion } from './logs.js';
 
 // ── Save a plan half (training or nutrition) ──────────────────
 
@@ -8,6 +9,13 @@ export function savePlan(toolName, input) {
   // Load existing row or start fresh
   const row = db.prepare('SELECT plan_json FROM plans WHERE client_id = ? AND week_of = ?').get(clientId, weekOf);
   let plan = row ? JSON.parse(row.plan_json) : { clientId, weekOf, createdAt: new Date().toISOString() };
+
+  // Archive the previous version before overwriting
+  if (row) {
+    const planType = toolName === 'save_training_plan' ? 'training' : 'nutrition';
+    const previous = toolName === 'save_training_plan' ? plan.training : plan.nutrition;
+    if (previous) archivePlanVersion(clientId, weekOf, planType, previous);
+  }
 
   if (toolName === 'save_training_plan') {
     plan.training = input.days;

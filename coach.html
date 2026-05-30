@@ -391,12 +391,21 @@ function renderClients(list){
     const div = document.createElement('div');
     div.className = 'client-item' + (activeClient?.id === c.id ? ' active' : '');
     div.dataset.id = c.id;
+    // Adherence chip — show done/logged/days in last 7 days
+    const adh = c.adherence || {};
+    const adhDone  = adh.done  ?? 0;
+    const adhLogged= adh.logged?? 0;
+    const adhDays  = adh.days  ?? 7;
+    const adhPct   = adhDays ? Math.round(adhDone/adhDays*100) : null;
+    const adhColor = adhPct===null?'var(--muted2)':adhPct>=80?'var(--green)':adhPct>=50?'var(--gold)':'#e08080';
+    const adhText  = adhPct===null?'—':adhLogged===0?'No logs yet':`${adhDone}/${adhDays} done`;
     div.innerHTML = `
       <div class="ci-avatar">${(c.initials||'').slice(0,2)}</div>
       <div class="ci-info">
         <div class="ci-name">${c.name}</div>
         <div class="ci-sub">W${c.currentWeek} · ${c.goal}</div>
-      </div>`;
+      </div>
+      <div class="ci-adh" title="Training adherence last 7 days" style="font-size:.6rem;font-weight:700;color:${adhColor};white-space:nowrap;flex-shrink:0">${adhText}</div>`;
     div.addEventListener('click', () => selectClient(c));
     el.appendChild(div);
   });

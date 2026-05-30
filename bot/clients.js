@@ -81,15 +81,13 @@ export function getClientByEmail(email) {
 
 export function findClient(query) {
   const q = query.toLowerCase().trim();
-  const rows = db.prepare('SELECT * FROM clients').all();
-  const found = rows.find(
-    c =>
-      c.name.toLowerCase().includes(q) ||
-      q.includes(c.name.split(' ')[0].toLowerCase()) ||
-      c.id.includes(q) ||
-      c.email === q
-  );
-  return found ? toClient(found) : null;
+  // Try exact matches first with indexed columns, then fallback to name LIKE
+  const byEmail = db.prepare('SELECT * FROM clients WHERE email = ?').get(q);
+  if (byEmail) return toClient(byEmail);
+  const byId = db.prepare("SELECT * FROM clients WHERE id LIKE ? LIMIT 1").get(`%${q}%`);
+  if (byId) return toClient(byId);
+  const byName = db.prepare("SELECT * FROM clients WHERE LOWER(name) LIKE ? LIMIT 1").get(`%${q}%`);
+  return byName ? toClient(byName) : null;
 }
 
 export function listClients() {

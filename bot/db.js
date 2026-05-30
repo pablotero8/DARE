@@ -63,6 +63,46 @@ db.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS idx_plans_client ON plans(client_id);
+
+  -- Daily training / nutrition logs from clients
+  CREATE TABLE IF NOT EXISTS daily_logs (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id   TEXT NOT NULL,
+    log_date    TEXT NOT NULL,
+    type        TEXT NOT NULL CHECK(type IN ('training','nutrition')),
+    data_json   TEXT NOT NULL DEFAULT '{}',
+    created_at  TEXT DEFAULT (datetime('now')),
+    UNIQUE(client_id, log_date, type),
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_daily_logs_client ON daily_logs(client_id);
+  CREATE INDEX IF NOT EXISTS idx_daily_logs_date   ON daily_logs(client_id, log_date);
+
+  -- Weekly body-metrics check-ins
+  CREATE TABLE IF NOT EXISTS check_ins (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id     TEXT NOT NULL,
+    check_date    TEXT NOT NULL,
+    weight_kg     REAL,
+    body_fat_pct  REAL,
+    lean_mass_kg  REAL,
+    notes         TEXT,
+    created_at    TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_checkins_client ON check_ins(client_id);
+
+  -- Plan version history (archived before each overwrite)
+  CREATE TABLE IF NOT EXISTS plan_history (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id   TEXT NOT NULL,
+    week_of     TEXT NOT NULL,
+    plan_type   TEXT NOT NULL CHECK(plan_type IN ('training','nutrition')),
+    plan_json   TEXT NOT NULL,
+    saved_at    TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_plan_history_client ON plan_history(client_id, week_of);
 `);
 
 // ── Safe migrations for existing DBs ──────────────────────────
