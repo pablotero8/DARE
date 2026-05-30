@@ -53,6 +53,19 @@ export function revokeSession(token) {
   db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
 }
 
+// Returns true only if the token exists in the sessions table AND has not
+// expired. A revoked token (deleted on logout) fails this check even if its
+// JWT signature is still cryptographically valid.
+export function isSessionValid(token) {
+  const row = db.prepare('SELECT expires_at FROM sessions WHERE token = ?').get(token);
+  if (!row) return false;
+  if (new Date(row.expires_at).getTime() < Date.now()) {
+    db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
+    return false;
+  }
+  return true;
+}
+
 // ── Role detection from phone ─────────────────────────────────
 
 export function getRoleByPhone(phone) {

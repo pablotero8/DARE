@@ -1070,7 +1070,7 @@ if(new URLSearchParams(location.search).has('logout')){
     .then(me => {
       if(!me){ sessionStorage.clear(); return; }
       sessionStorage.setItem('dare_client', JSON.stringify(me));
-      if(me.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html?t=' + encodeURIComponent(t); }
+      if(me.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html'; }
       else { showDash(); }
     })
     .catch(() => null);
