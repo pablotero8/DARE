@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reset Password · DARE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Tulpen+One&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#07070a;--text:#f4f1e8;--muted:rgba(244,241,232,.45);--border:rgba(244,241,232,.08);--gold:#c9a24a;--green:#a6c85e}
+  body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;
+    background-image:radial-gradient(800px 500px at 20% 20%,rgba(201,162,74,.07),transparent 60%),radial-gradient(800px 500px at 80% 80%,rgba(166,200,94,.05),transparent 60%)}
+  .card{width:100%;max-width:400px;background:rgba(15,15,18,.9);border:1px solid var(--border);border-radius:18px;padding:2.4rem 2rem;backdrop-filter:blur(20px)}
+  .logo{font-family:'Tulpen One',serif;font-size:2rem;letter-spacing:.15em;background:linear-gradient(135deg,#d9d4c8,#c9a24a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.2rem}
+  .eyebrow{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:2rem}
+  h2{font-size:1.1rem;font-weight:700;margin-bottom:.4rem}
+  .subtitle{font-size:.78rem;color:var(--muted);margin-bottom:1.6rem;line-height:1.55}
+  label{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.3rem;font-weight:600}
+  input[type=email],input[type=password]{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;color:var(--text);font-family:'Manrope',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;margin-bottom:1rem}
+  input:focus{border-color:rgba(201,162,74,.5)}
+  input::placeholder{color:rgba(244,241,232,.2)}
+  .btn{width:100%;padding:.85rem;border:none;border-radius:999px;background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;font-family:'Manrope',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(201,162,74,.25)}
+  .btn:hover:not(:disabled){transform:scale(1.02);box-shadow:0 6px 24px rgba(201,162,74,.38)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .msg{margin-top:1rem;padding:.75rem 1rem;border-radius:10px;font-size:.78rem;line-height:1.5;display:none}
+  .msg.ok{background:rgba(166,200,94,.1);border:1px solid rgba(166,200,94,.25);color:var(--green);display:block}
+  .msg.err{background:rgba(200,80,80,.08);border:1px solid rgba(200,80,80,.2);color:#e08080;display:block}
+  .back{display:block;text-align:center;margin-top:1.2rem;font-size:.75rem;color:var(--muted);text-decoration:none;transition:color .2s}
+  .back:hover{color:var(--text)}
+  .strength-bar{height:3px;border-radius:999px;background:rgba(255,255,255,.07);margin-bottom:1rem;overflow:hidden}
+  .strength-fill{height:100%;width:0;border-radius:999px;transition:width .3s,background .3s}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">DARE</div>
+  <div class="eyebrow">Coaching Platform</div>
+
+  <!-- Step 1: request reset email -->
+  <div id="step-request">
+    <h2>Forgot your password?</h2>
+    <p class="subtitle">Enter your email and we'll send you a link to reset it.</p>
+    <label for="email">Email address</label>
+    <input type="email" id="email" placeholder="you@email.com" autocomplete="email">
+    <button class="btn" id="req-btn">Send reset link</button>
+    <div class="msg" id="req-msg"></div>
+    <a class="back" href="/client.html">← Back to login</a>
+  </div>
+
+  <!-- Step 2: set new password (shown when ?token= present) -->
+  <div id="step-reset" style="display:none">
+    <h2>Choose a new password</h2>
+    <p class="subtitle">Your link is valid for 15 minutes. Pick something strong.</p>
+    <label for="pw1">New password</label>
+    <input type="password" id="pw1" placeholder="Minimum 8 characters" autocomplete="new-password">
+    <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+    <label for="pw2">Confirm password</label>
+    <input type="password" id="pw2" placeholder="Repeat password" autocomplete="new-password">
+    <button class="btn" id="reset-btn">Set new password</button>
+    <div class="msg" id="reset-msg"></div>
+    <a class="back" href="/client.html">← Back to login</a>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+const token = new URLSearchParams(location.search).get('token');
+
+// Show correct step
+if (token) {
+  document.getElementById('step-request').style.display = 'none';
+  document.getElementById('step-reset').style.display   = '';
+}
+
+// ── Step 1: request email ──────────────────────────────────────
+document.getElementById('req-btn').addEventListener('click', async () => {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const btn = document.getElementById('req-btn');
+  const msg = document.getElementById('req-msg');
+  if (!email) { showMsg(msg, 'err', 'Please enter your email.'); return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    await fetch(API + '/api/auth/forgot-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    // Always show success — never reveal whether email exists
+    showMsg(msg, 'ok', '✓ If that email is registered, you\'ll receive a link in a moment. Check your inbox (and spam).');
+    btn.textContent = 'Sent ✓';
+  } catch {
+    showMsg(msg, 'err', 'Connection error. Please try again.');
+    btn.disabled = false; btn.textContent = 'Send reset link';
+  }
+});
+
+// ── Step 2: set new password ───────────────────────────────────
+document.getElementById('pw1').addEventListener('input', e => {
+  const pw = e.target.value;
+  const score = Math.min(4, [pw.length>=8, /[A-Z]/.test(pw), /[0-9]/.test(pw), /[^a-zA-Z0-9]/.test(pw)].filter(Boolean).length);
+  const colors = ['#e08080','#c9a24a','#c9a24a','#a6c85e','#a6c85e'];
+  const fill = document.getElementById('strength-fill');
+  fill.style.width = (score * 25) + '%';
+  fill.style.background = colors[score];
+});
+
+document.getElementById('reset-btn').addEventListener('click', async () => {
+  const pw1 = document.getElementById('pw1').value;
+  const pw2 = document.getElementById('pw2').value;
+  const btn = document.getElementById('reset-btn');
+  const msg = document.getElementById('reset-msg');
+  if (pw1.length < 8) { showMsg(msg, 'err', 'Password must be at least 8 characters.'); return; }
+  if (pw1 !== pw2)    { showMsg(msg, 'err', 'Passwords do not match.'); return; }
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const r = await fetch(API + '/api/auth/reset-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, password: pw1 }),
+    });
+    const data = await r.json();
+    if (r.ok) {
+      showMsg(msg, 'ok', '✓ Password updated! Redirecting to login…');
+      btn.textContent = 'Done ✓';
+      setTimeout(() => { location.href = '/client.html'; }, 2000);
+    } else {
+      showMsg(msg, 'err', data.error || 'Something went wrong.');
+      btn.disabled = false; btn.textContent = 'Set new password';
+    }
+  } catch {
+    showMsg(msg, 'err', 'Connection error. Please try again.');
+    btn.disabled = false; btn.textContent = 'Set new password';
+  }
+});
+
+function showMsg(el, type, text) {
+  el.className = 'msg ' + type;
+  el.textContent = text;
+}
+</script>
+</body>
+</html>
