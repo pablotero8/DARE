@@ -12,6 +12,8 @@ import {
 import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
+import { sendPasswordReset } from './mailer.js';
+import { randomBytes } from 'crypto';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT  = join(__dir, '..');
@@ -79,6 +81,58 @@ function requireCoach(req, res, next) {
 }
 
 // ── Auth routes ───────────────────────────────────────────────
+
+// ── Password reset ────────────────────────────────────────────
+
+app.post('/api/auth/forgot-password', loginLimiter, async (req, res) => {
+  const { email } = req.body || {};
+  // Always respond 200 — never reveal whether email exists
+  res.json({ ok: true, message: 'If that email exists, a reset link has been sent.' });
+  if (!email) return;
+  try {
+    const client = getClientByEmail(email);
+    if (!client) return; // silent — don't leak existence
+    // Generate secure token, store with 15-min expiry
+    const token   = randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    const db = (await import('./db.js')).default;
+    db.prepare('INSERT INTO password_reset_tokens (token, client_id, expires_at) VALUES (?,?,?)').run(token, client.id, expires);
+    const baseUrl  = process.env.APP_URL || 'https://dare-production-2636.up.railway.app';
+    const resetUrl = `${baseUrl}/reset.html?token=${token}`;
+    await sendPasswordReset(client.email, client.name, resetUrl);
+    console.log(`[reset] Sent password reset to ${client.email}`);
+  } catch (err) {
+    console.error('[forgot-password]', err.message);
+  }
+});
+
+app.post('/api/auth/reset-password', async (req, res) => {
+  const { token, password } = req.body || {};
+  if (!token || !password || password.length < 8) {
+    return res.status(400).json({ error: 'Token and password (min 8 chars) are required.' });
+  }
+  try {
+    const db = (await import('./db.js')).default;
+    const row = db.prepare('SELECT * FROM password_reset_tokens WHERE token = ?').get(token);
+    if (!row) return res.status(400).json({ error: 'Invalid or expired link.' });
+    if (row.used) return res.status(400).json({ error: 'This link has already been used.' });
+    if (new Date(row.expires_at).getTime() < Date.now()) {
+      return res.status(400).json({ error: 'This link has expired. Request a new one.' });
+    }
+    // Mark token as used
+    db.prepare('UPDATE password_reset_tokens SET used = 1 WHERE token = ?').run(token);
+    // Update password
+    const { hashPassword } = await import('./auth.js');
+    const hash = await hashPassword(password);
+    db.prepare('UPDATE clients SET password_hash = ? WHERE id = ?').run(hash, row.client_id);
+    // Revoke all active sessions for this client (force re-login)
+    db.prepare('DELETE FROM sessions WHERE client_id = ?').run(row.client_id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[reset-password]', err);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
 
 app.post('/api/auth/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body || {};

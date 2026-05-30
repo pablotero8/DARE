@@ -103,6 +103,16 @@ db.exec(`
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
   );
   CREATE INDEX IF NOT EXISTS idx_plan_history_client ON plan_history(client_id, week_of);
+
+  -- Password reset tokens
+  CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    token       TEXT PRIMARY KEY,
+    client_id   TEXT NOT NULL,
+    expires_at  TEXT NOT NULL,
+    used        INTEGER DEFAULT 0,
+    created_at  TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
 `);
 
 // ── Safe migrations for existing DBs ──────────────────────────
