@@ -338,10 +338,9 @@ function logout(){ sessionStorage.clear(); location.href = BASE + '/client.html?
 
 document.getElementById('logout-btn').addEventListener('click', logout);
 
-// Pick up token from URL (?t=...) for cross-domain redirects, then clean URL
-const _urlToken = new URLSearchParams(location.search).get('t');
-if(_urlToken){ sessionStorage.setItem('dare_token', _urlToken); window.history.replaceState(null,'','/coach.html'); }
-
+// Token is read from sessionStorage (same-origin, persists across navigation).
+// We intentionally do NOT accept tokens via URL (?t=) so they can't leak into
+// browser history, server logs, or Referer headers.
 let me = null; // set after async init
 
 async function initAuth(){

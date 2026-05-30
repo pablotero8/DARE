@@ -1,5 +1,6 @@
 import './env.js';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import OpenAI from 'openai';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -8,17 +9,38 @@ import {
   verifyClientPassword, getClientById, getClientByEmail,
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
-import { signToken, verifyToken, persistSession, revokeSession } from './auth.js';
+import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT  = join(__dir, '..');
 
 const app    = express();
+// Railway terminates TLS at a single proxy hop in front of the app; trust it
+// so rate limiters and req.ip see the real client address (X-Forwarded-For).
+app.set('trust proxy', 1);
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: false, limit: '256kb' }));
+app.use(express.json({ limit: '256kb' }));
+
+// ── Rate limiters ─────────────────────────────────────────────
+// Protect brute-force on login and cap expensive OpenAI-backed endpoints.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,        // 15 min
+  max: 10,                          // 10 login attempts per IP per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiados intentos de acceso. Inténtalo más tarde.' },
+});
+
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000,              // 1 min
+  max: 15,                          // 15 AI calls per IP per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas peticiones. Espera unos segundos.' },
+});
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -39,8 +61,11 @@ function requireAuth(req, res, next) {
   if (!token) return res.status(401).json({ error: 'No autenticado' });
   const payload = verifyToken(token);
   if (!payload?.sub) return res.status(401).json({ error: 'Token inválido o expirado' });
+  // Verify the token is still an active (non-revoked, non-expired) session in the DB.
+  if (!isSessionValid(token)) return res.status(401).json({ error: 'Sesión expirada o revocada' });
   const client = getClientById(payload.sub);
   if (!client) return res.status(401).json({ error: 'Usuario no encontrado' });
+  req.token = token;
   req.client = client;
   next();
 }
@@ -54,7 +79,7 @@ function requireCoach(req, res, next) {
 
 // ── Auth routes ───────────────────────────────────────────────
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email y contraseña requeridos' });
   const client = await verifyClientPassword(email, password);
@@ -125,7 +150,7 @@ app.get('/api/coach/clients', requireCoach, (req, res) => {
   })));
 });
 
-app.post('/api/coach/chat', requireCoach, async (req, res) => {
+app.post('/api/coach/chat', aiLimiter, requireCoach, async (req, res) => {
   const { messages = [] } = req.body;
   const coach = req.client;
 
@@ -135,7 +160,7 @@ app.post('/api/coach/chat', requireCoach, async (req, res) => {
   const nextMon = nextMondayStr();
   const clientList = listClients()
     .filter(c => c.role === 'client')
-    .map((c, i) => `${i + 1}. ${c.name} (id: ${c.id}) — ${c.goal}, Semana ${c.currentWeek}/${c.totalWeeks}`)
+    .map((c, i) => `${i + 1}. ${sanitizeForPrompt(c.name, 60)} (id: ${c.id}) — ${sanitizeForPrompt(c.goal, 60)}, Semana ${c.currentWeek}/${c.totalWeeks}`)
     .join('\n') || '(Sin clientes todavía)';
 
   const specialtyLabel = coach.specialty === 'training' ? 'entrenamiento' : 'nutrición';
@@ -265,7 +290,17 @@ OTRAS FUNCIONES:
 
 // ── Save plan from table ──────────────────────────────────────
 
-app.post('/api/coach/save-plan-table', requireCoach, async (req, res) => {
+// Strip characters that could break out of the JSON/prompt structure we build
+// for the OpenAI calls (defends against prompt injection via coach input).
+function sanitizeForPrompt(value, maxLen = 300) {
+  return String(value ?? '')
+    .replace(/[{}"\\\n\r\t]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLen);
+}
+
+app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res) => {
   try {
     const { specialty, clientId, weekOf, days } = req.body;
     if (!specialty || !clientId || !weekOf || !Array.isArray(days)) {
@@ -277,12 +312,17 @@ app.post('/api/coach/save-plan-table', requireCoach, async (req, res) => {
       const daysForAI = [];
       days.forEach((d, di) => {
         const meals = (d.meals || []).filter(m => m.dishes).map((m, mi) => ({
-          id: mi, name: m.name, time: m.time, dishes: m.dishes
+          id: mi,
+          name: sanitizeForPrompt(m.name, 60),
+          time: sanitizeForPrompt(m.time, 10),
+          dishes: sanitizeForPrompt(m.dishes, 300),
         }));
         if (meals.length > 0) {
           daysForAI.push({
-            dayId: di, label: d.label, kcal: Number(d.kcal)||0, protein: Number(d.protein)||0,
-            carbs: Number(d.carbs)||0, fat: Number(d.fat)||0, meals, note: d.note || ''
+            dayId: di, label: sanitizeForPrompt(d.label, 40),
+            kcal: Number(d.kcal)||0, protein: Number(d.protein)||0,
+            carbs: Number(d.carbs)||0, fat: Number(d.fat)||0,
+            meals, note: sanitizeForPrompt(d.note, 500),
           });
         }
       });
@@ -391,10 +431,17 @@ Return ONLY this JSON structure:
       const exsForAI = [];
       days.forEach((d, di) => {
         (d.exercises || []).forEach((e, ei) => {
-          if (e.name) exsForAI.push({ id: `${di}-${ei}`, name: e.name, setsReps: e.setsReps||'', notes: e.notes||'' });
+          if (e.name) exsForAI.push({
+            id: `${di}-${ei}`,
+            name: sanitizeForPrompt(e.name, 80),
+            setsReps: sanitizeForPrompt(e.setsReps, 40),
+            notes: sanitizeForPrompt(e.notes, 200),
+          });
         });
       });
-      const notesForAI = days.map((d, di) => ({ id: di, raw: d.note || '' })).filter(n => n.raw);
+      const notesForAI = days
+        .map((d, di) => ({ id: di, raw: sanitizeForPrompt(d.note, 500) }))
+        .filter(n => n.raw);
 
       let aiResult = { exercises: [], notes: {} };
       if (exsForAI.length > 0 || notesForAI.length > 0) {
@@ -483,8 +530,8 @@ function currentMondayStr() {
 
 async function seedCoaches() {
   const coaches = [
-    { name: 'Erika Silva', email: 'silvaepao@gmail.com', password: process.env.ERIKA_PASSWORD || 'erika2026', specialty: 'training' },
-    { name: 'Dani Otero',  email: 'daniotero15@gmail.com', password: process.env.DANI_PASSWORD  || 'dani2026',  specialty: 'nutrition' },
+    { name: 'Erika Silva', email: process.env.ERIKA_EMAIL || 'silvaepao@gmail.com',  password: process.env.ERIKA_PASSWORD, specialty: 'training' },
+    { name: 'Dani Otero',  email: process.env.DANI_EMAIL  || 'daniotero15@gmail.com', password: process.env.DANI_PASSWORD,  specialty: 'nutrition' },
   ];
   for (const c of coaches) {
     const existing = getClientByEmail(c.email);
@@ -495,8 +542,18 @@ async function seedCoaches() {
       }
       continue;
     }
-    await createClient({ ...c, goal: 'Coach', totalWeeks: 99, role: 'coach' });
-    console.log(`[seed] Coach created — ${c.email}`);
+    // No literal fallback: if the password env var is missing, createClient
+    // generates a strong random one which we log once so it can be rotated.
+    const { generatedPassword } = await createClient({
+      name: c.name, email: c.email, specialty: c.specialty,
+      password: c.password || undefined,
+      goal: 'Coach', totalWeeks: 99, role: 'coach',
+    });
+    if (c.password) {
+      console.log(`[seed] Coach created — ${c.email}`);
+    } else {
+      console.warn(`[seed] Coach created — ${c.email}. No password env set; temporary password: ${generatedPassword}`);
+    }
   }
 }
 
