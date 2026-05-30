@@ -284,6 +284,33 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   .pp-metrics{grid-template-columns:1fr 1fr}
 }
 
+/* ─── DAILY LOG ─── */
+.log-section{margin-top:1.4rem;border-top:1px solid var(--border);padding-top:1.1rem}
+.log-title{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.8rem}
+.log-done-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.28rem .75rem;border-radius:999px;font-size:.68rem;font-weight:600;background:rgba(166,200,94,.13);border:1px solid rgba(166,200,94,.3);color:var(--green)}
+.log-btn-row{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:.65rem}
+.log-btn{background:none;border:1px solid var(--border2);border-radius:10px;padding:.5rem 1rem;font-family:'Manrope',sans-serif;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s}
+.log-btn:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.log-btn.active{background:rgba(166,200,94,.12);border-color:rgba(166,200,94,.35);color:var(--green)}
+.log-btn.skip{background:rgba(201,162,74,.07);border-color:rgba(201,162,74,.28);color:var(--gold)}
+.log-btn.missed{background:rgba(200,80,80,.08);border-color:rgba(200,80,80,.25);color:#e08080}
+.log-note{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:'Manrope',sans-serif;font-size:.74rem;resize:none;outline:none;transition:border-color .18s;margin-bottom:.65rem}
+.log-note:focus{border-color:rgba(201,162,74,.4)}
+.log-save-btn{background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;border:none;border-radius:10px;padding:.48rem 1.2rem;font-family:'Manrope',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 3px 12px rgba(201,162,74,.25)}
+.log-save-btn:hover{transform:scale(1.04);box-shadow:0 5px 18px rgba(201,162,74,.4)}
+.log-save-btn:disabled{opacity:.4;cursor:default}
+.log-status{font-size:.72rem;color:var(--muted);margin-left:.5rem}
+.log-status.ok{color:var(--green)}
+
+/* ─── CHECK-IN PANEL ─── */
+.checkin-section{margin-top:1.8rem;padding:1.2rem 1.4rem;background:rgba(201,162,74,.04);border:1px solid rgba(201,162,74,.14);border-radius:14px}
+.checkin-title{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.9rem}
+.checkin-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem;margin-bottom:.75rem}
+.checkin-field{display:flex;flex-direction:column;gap:.22rem}
+.checkin-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted2);font-weight:600}
+.checkin-input{background:rgba(255,255,255,.05);border:1px solid rgba(244,241,232,.1);border-radius:7px;padding:.38rem .55rem;color:var(--text);font-family:'Manrope',sans-serif;font-size:.8rem;outline:none;transition:border-color .18s;width:100%}
+.checkin-input:focus{border-color:rgba(201,162,74,.5)}
+
 /* ─── NO PLAN / WELCOME STATE ─── */
 #no-plan-screen{
   display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;
@@ -520,12 +547,33 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
         <h3 class="pp-chart-title">BODY COMPOSITION</h3>
         <div class="pp-chart-wrap" style="height:170px"><canvas id="donutChart"></canvas></div>
         <div class="donut-legend">
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(166,200,94,.8)"></span>Muscle Mass<span class="donut-pct">42.2%</span></div>
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(201,162,74,.75)"></span>Body Fat<span class="donut-pct">18.8%</span></div>
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(100,160,220,.65)"></span>Water<span class="donut-pct">29.0%</span></div>
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(180,170,155,.5)"></span>Bone &amp; Other<span class="donut-pct">10.0%</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(166,200,94,.8)"></span>Muscle Mass<span class="donut-pct" id="donut-lean">—</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(201,162,74,.75)"></span>Body Fat<span class="donut-pct" id="donut-fat">—</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(100,160,220,.65)"></span>Water<span class="donut-pct">~29%</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(180,170,155,.5)"></span>Bone &amp; Other<span class="donut-pct">~10%</span></div>
         </div>
       </div>
+    </div>
+
+    <!-- Weekly check-in -->
+    <div class="checkin-section">
+      <div class="checkin-title">📊 Weekly Check-In — Log your measurements</div>
+      <div class="checkin-grid">
+        <div class="checkin-field">
+          <label class="checkin-label">Weight (kg)</label>
+          <input id="ci-weight" type="number" step="0.1" class="checkin-input" placeholder="82.5">
+        </div>
+        <div class="checkin-field">
+          <label class="checkin-label">Body Fat (%)</label>
+          <input id="ci-fat" type="number" step="0.1" class="checkin-input" placeholder="18.5">
+        </div>
+        <div class="checkin-field">
+          <label class="checkin-label">Notes (optional)</label>
+          <input id="ci-notes" type="text" class="checkin-input" placeholder="Feeling good…">
+        </div>
+      </div>
+      <button class="log-save-btn" id="ci-save-btn">Save check-in</button>
+      <span class="log-status" id="ci-status"></span>
     </div>
   </div>
 </div>
@@ -787,10 +835,11 @@ const WEEK = [
 
 /* ═══ STATE ═══ */
 let ACTIVE_WEEK     = null;   // 7-day array currently rendered (null = no plan yet)
+let ACTIVE_WEEK_OF  = null;   // ISO weekOf of the week being displayed
 let currentDay      = 0;
 let chartsInit      = false;
 let WEEK_LIST       = [];     // [{weekOf:'YYYY-MM-DD'}, …] from API
-let CURRENT_WEEK_OF = null;   // weekOf of the week being displayed
+let CURRENT_WEEK_OF = null;   // weekOf of the week being displayed (same as ACTIVE_WEEK_OF)
 
 /* ═══ DATE HELPERS ═══ */
 function currentMondayISO(){
@@ -872,6 +921,7 @@ async function switchToWeek(weekOf){
 
   ACTIVE_WEEK=plan.week;
   CURRENT_WEEK_OF=weekOf;
+  ACTIVE_WEEK_OF=weekOf;
   currentDay=todayIndex(plan.week);
 
   buildWeekSelector(WEEK_LIST,weekOf);
@@ -966,6 +1016,7 @@ async function showDash(){
     if(plan && plan.week && plan.week.length===7){
       ACTIVE_WEEK     = plan.week;
       CURRENT_WEEK_OF = defaultWeekOf;
+      ACTIVE_WEEK_OF  = defaultWeekOf;
       currentDay      = todayIndex(plan.week);
       planLoaded      = true;
     }
@@ -977,6 +1028,7 @@ async function showDash(){
     if(livePlan && livePlan.week && livePlan.week.length===7){
       ACTIVE_WEEK     = livePlan.week;
       CURRENT_WEEK_OF = livePlan.weekOf || null;
+      ACTIVE_WEEK_OF  = livePlan.weekOf || null;
       currentDay      = todayIndex(livePlan.week);
       // Build a minimal week list so the selector can show something
       if(CURRENT_WEEK_OF && !WEEK_LIST.some(w=>w.weekOf===CURRENT_WEEK_OF)){
@@ -1221,9 +1273,23 @@ document.getElementById('prev-day').addEventListener('click',()=>{ if(currentDay
 document.getElementById('next-day').addEventListener('click',()=>{ if(currentDay<6) goToDay(currentDay+1); });
 
 /* ═══ RENDER ═══ */
+// Compute YYYY-MM-DD from a weekOf ISO string + offset index
+function logDateFor(weekOf, dayIdx){
+  const d=new Date(weekOf+'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate()+dayIdx);
+  return d.toISOString().split('T')[0];
+}
+
+// Current active day index (set in renderDay)
+let CURRENT_DAY_IDX=0;
+let CURRENT_LOG_DATE='';
+
 function renderDay(idx){
   if(!ACTIVE_WEEK) return;
+  CURRENT_DAY_IDX=idx;
   const d=ACTIVE_WEEK[idx];
+  // Derive the ISO log date from current weekOf + index
+  CURRENT_LOG_DATE = ACTIVE_WEEK_OF ? logDateFor(ACTIVE_WEEK_OF,idx) : '';
   document.getElementById('prev-day').disabled=idx===0;
   document.getElementById('next-day').disabled=idx===6;
   const badge=document.getElementById('day-badge');
@@ -1234,17 +1300,11 @@ function renderDay(idx){
   const planLabel=document.getElementById('cs-plan-label');
   if(planLabel){
     const now=new Date();
-    const todayStr=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-    // Build a comparable date string from d.fullDate (e.g. "Tuesday, 26 May")
-    const dayName=d.fullDate.split(',')[0].trim();
-    const datePart=d.fullDate.split(',')[1]?.trim()||'';
-    // Reconstruct full label date: "Tuesday, 26 May"
     const todayNormalized=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
     const tomorrowDate=new Date(now); tomorrowDate.setDate(now.getDate()+1);
     const tomorrowNormalized=tomorrowDate.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
     const yesterdayDate=new Date(now); yesterdayDate.setDate(now.getDate()-1);
     const yesterdayNormalized=yesterdayDate.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-    // d.fullDate format: "Tuesday, 26 May" — normalize for comparison
     const dFull=d.fullDate.replace(',','').split(' ');
     const dNorm=[dFull[0],dFull[1]+' '+dFull[2]].join(' ');
     const tNorm=todayNormalized.replace(',','');
@@ -1260,6 +1320,8 @@ function renderDay(idx){
   document.getElementById('training-content').innerHTML=renderTraining(d.training,d.type);
   document.getElementById('nutrition-content').innerHTML=renderNutrition(d.nutrition);
   setupAccordions();
+  // Load existing log state for this day
+  if(CURRENT_LOG_DATE) loadDayLogs(CURRENT_LOG_DATE, d.training, d.type);
 }
 
 function renderTraining(t,type){
@@ -1328,52 +1390,203 @@ function setupAccordions(){
   });
 }
 
+/* ═══ DAILY LOG ═══ */
+
+function renderLogSection(containerId, type, logDate, existingLog){
+  const c=document.getElementById(containerId);
+  if(!c) return;
+  const client=getAuthClient();
+  if(!client) return;
+
+  const div=document.createElement('div'); div.className='log-section';
+  const title=document.createElement('div'); title.className='log-title'; title.textContent=type==='training'?'Log this session':'Log nutrition';
+  div.appendChild(title);
+
+  if(existingLog){
+    // Show done badge
+    const isDone=existingLog.data?.done!==false;
+    const badge=document.createElement('span'); badge.className='log-done-badge';
+    badge.textContent= type==='training'
+      ? (isDone?'✓ Session logged':'✗ Skipped')
+      : ({full:'✓ Full adherence',partial:'~ Partial',none:'✗ Off plan'}[existingLog.data?.adherence]||'✓ Logged');
+    div.appendChild(badge);
+    c.appendChild(div); return;
+  }
+
+  if(type==='training'){
+    const row=document.createElement('div'); row.className='log-btn-row';
+    const btnDone=document.createElement('button'); btnDone.className='log-btn active'; btnDone.dataset.val='done'; btnDone.textContent='✓ Done';
+    const btnSkip=document.createElement('button'); btnSkip.className='log-btn skip'; btnSkip.dataset.val='partial'; btnSkip.textContent='~ Partial';
+    const btnMiss=document.createElement('button'); btnMiss.className='log-btn missed'; btnMiss.dataset.val='missed'; btnMiss.textContent='✗ Skipped';
+    let selected='done';
+    [btnDone,btnSkip,btnMiss].forEach(b=>{ b.addEventListener('click',()=>{ selected=b.dataset.val; [btnDone,btnSkip,btnMiss].forEach(x=>x.style.opacity='0.45'); b.style.opacity='1'; }); });
+    row.appendChild(btnDone); row.appendChild(btnSkip); row.appendChild(btnMiss);
+    div.appendChild(row);
+    const note=document.createElement('textarea'); note.className='log-note'; note.placeholder='How did it go? (optional)'; note.rows=2;
+    div.appendChild(note);
+    const saveRow=document.createElement('div'); saveRow.style.display='flex'; saveRow.style.alignItems='center';
+    const saveBtn=document.createElement('button'); saveBtn.className='log-save-btn'; saveBtn.textContent='Save log';
+    const status=document.createElement('span'); status.className='log-status';
+    saveRow.appendChild(saveBtn); saveRow.appendChild(status); div.appendChild(saveRow);
+    saveBtn.addEventListener('click',async()=>{
+      saveBtn.disabled=true; status.textContent='Saving…';
+      try{
+        const r=await fetch(`${window.DARE_API_URL}/api/logs/${client.id}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getAuthToken()},body:JSON.stringify({type:'training',logDate,done:selected==='done',adherence:selected,note:note.value.trim()})});
+        if(r.ok){status.textContent='Saved ✓'; status.className='log-status ok'; saveBtn.textContent='Saved'; title.textContent=''; div.innerHTML=''; const b=document.createElement('span'); b.className='log-done-badge'; b.textContent=selected==='done'?'✓ Session logged':selected==='partial'?'~ Partial':'✗ Skipped'; div.appendChild(b);}
+        else{status.textContent='Error'; saveBtn.disabled=false;}
+      }catch{status.textContent='Error'; saveBtn.disabled=false;}
+    });
+  } else {
+    // Nutrition log
+    const row=document.createElement('div'); row.className='log-btn-row';
+    const opts=[['full','✓ On plan'],['partial','~ Partial'],['none','✗ Off plan']];
+    let selected='full';
+    opts.forEach(([val,label])=>{
+      const b=document.createElement('button'); b.className='log-btn'+(val==='full'?' active':''); b.dataset.val=val; b.textContent=label;
+      b.addEventListener('click',()=>{ selected=val; row.querySelectorAll('.log-btn').forEach(x=>x.style.opacity='0.45'); b.style.opacity='1'; });
+      row.appendChild(b);
+    });
+    div.appendChild(row);
+    const note=document.createElement('textarea'); note.className='log-note'; note.placeholder='Any notes on your nutrition today? (optional)'; note.rows=2;
+    div.appendChild(note);
+    const saveRow=document.createElement('div'); saveRow.style.display='flex'; saveRow.style.alignItems='center';
+    const saveBtn=document.createElement('button'); saveBtn.className='log-save-btn'; saveBtn.textContent='Save log';
+    const status=document.createElement('span'); status.className='log-status';
+    saveRow.appendChild(saveBtn); saveRow.appendChild(status); div.appendChild(saveRow);
+    saveBtn.addEventListener('click',async()=>{
+      saveBtn.disabled=true; status.textContent='Saving…';
+      try{
+        const r=await fetch(`${window.DARE_API_URL}/api/logs/${client.id}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getAuthToken()},body:JSON.stringify({type:'nutrition',logDate,adherence:selected,note:note.value.trim()})});
+        if(r.ok){status.textContent='Saved ✓'; status.className='log-status ok'; saveBtn.textContent='Saved'; div.innerHTML='<div class="log-done-badge">✓ Nutrition logged</div>';}
+        else{status.textContent='Error'; saveBtn.disabled=false;}
+      }catch{status.textContent='Error'; saveBtn.disabled=false;}
+    });
+  }
+  c.appendChild(div);
+}
+
+async function loadDayLogs(logDate, training, dayType){
+  const client=getAuthClient();
+  if(!client||!logDate) return;
+  const token=getAuthToken();
+  const apiUrl=window.DARE_API_URL;
+  try{
+    const [trainLog, nutLog]=await Promise.all([
+      fetch(`${apiUrl}/api/logs/${client.id}/${logDate}/training`,{headers:{Authorization:'Bearer '+token}}).then(r=>r.ok?r.json():null),
+      fetch(`${apiUrl}/api/logs/${client.id}/${logDate}/nutrition`,{headers:{Authorization:'Bearer '+token}}).then(r=>r.ok?r.json():null),
+    ]);
+    // Training log section
+    const tCont=document.getElementById('training-content');
+    if(tCont) renderLogSection('training-content','training',logDate,trainLog);
+    const nCont=document.getElementById('nutrition-content');
+    if(nCont) renderLogSection('nutrition-content','nutrition',logDate,nutLog);
+  }catch(e){}
+}
+
 /* ═══ PROFILE PANEL ═══ */
 const profilePanel=document.getElementById('profile-panel');
-document.getElementById('profile-btn').addEventListener('click',()=>{ profilePanel.classList.add('open'); if(!chartsInit){ initProfileCharts(); chartsInit=true; } });
+document.getElementById('profile-btn').addEventListener('click',async ()=>{
+  profilePanel.classList.add('open');
+  const client=getAuthClient();
+  if(!chartsInit && client){
+    const checkIns = await fetch(`${window.DARE_API_URL}/api/checkins/${client.id}`,{headers:{Authorization:'Bearer '+getAuthToken()}}).then(r=>r.ok?r.json():[]).catch(()=>[]);
+    initProfileCharts(checkIns);
+    chartsInit=true;
+  }
+});
 document.getElementById('close-profile').addEventListener('click',()=>profilePanel.classList.remove('open'));
 
+// Check-in save
+document.getElementById('ci-save-btn').addEventListener('click',async()=>{
+  const client=getAuthClient();
+  if(!client) return;
+  const w=document.getElementById('ci-weight').value.trim();
+  const f=document.getElementById('ci-fat').value.trim();
+  const n=document.getElementById('ci-notes').value.trim();
+  if(!w&&!f){document.getElementById('ci-status').textContent='Enter at least weight or body fat.'; return;}
+  const btn=document.getElementById('ci-save-btn'); btn.disabled=true;
+  document.getElementById('ci-status').textContent='Saving…';
+  const today=new Date().toISOString().split('T')[0];
+  try{
+    const r=await fetch(`${window.DARE_API_URL}/api/checkins/${client.id}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getAuthToken()},body:JSON.stringify({checkDate:today,weightKg:w?Number(w):null,bodyFatPct:f?Number(f):null,notes:n||null})});
+    if(r.ok){
+      document.getElementById('ci-status').textContent='✓ Check-in saved!'; document.getElementById('ci-status').className='log-status ok';
+      // Update profile metrics live
+      if(w){ const el=document.getElementById('pp-met-wt'); if(el) el.innerHTML=`${w}<sup>kg</sup>`; }
+      if(f){ const el=document.getElementById('pp-met-fat'); if(el) el.innerHTML=`${f}<sup>%</sup>`; }
+      // Update sessionStorage so header shows new values
+      const me=getAuthClient(); if(me){ if(w) me.weight=Number(w); if(f) me.bodyFat=Number(f); sessionStorage.setItem('dare_client',JSON.stringify(me)); }
+    }else{ document.getElementById('ci-status').textContent='Error saving.'; btn.disabled=false; }
+  }catch{ document.getElementById('ci-status').textContent='Connection error.'; btn.disabled=false; }
+});
+
 /* ═══ PROFILE CHARTS ═══ */
-function initProfileCharts(){
+function initProfileCharts(checkIns){
   if(typeof Chart==='undefined') return;
   Chart.defaults.color='rgba(244,241,232,.42)';
   Chart.defaults.font.family="'Manrope',system-ui,sans-serif";
   Chart.defaults.font.size=11;
   const tt={backgroundColor:'rgba(5,5,7,.94)',borderColor:'rgba(244,241,232,.12)',borderWidth:1,padding:{x:14,y:10},titleColor:'rgba(244,241,232,.48)',bodyColor:'rgba(244,241,232,.88)',cornerRadius:10};
-  const wks=['W0','W2','W4','W6','W8','W10','W12'];
 
-  /* 12-week progress chart */
+  // Build labels + data from real check-ins (or fall back to client profile point)
+  const client=getAuthClient();
+  let labels=[],wData=[],bfData=[];
+  if(checkIns && checkIns.length>0){
+    checkIns.forEach(ci=>{
+      const d=new Date(ci.date+'T12:00:00');
+      labels.push(d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+      wData.push(ci.weight||null);
+      bfData.push(ci.bodyFat||null);
+    });
+  } else if(client){
+    labels=['Start']; wData=[client.weight||null]; bfData=[client.bodyFat||null];
+  }
+
+  const allWeights=wData.filter(v=>v!==null);
+  const allBF=bfData.filter(v=>v!==null);
+  const minW=allWeights.length?Math.floor(Math.min(...allWeights))-2:70;
+  const maxW=allWeights.length?Math.ceil(Math.max(...allWeights))+2:100;
+  const minBF=allBF.length?Math.floor(Math.min(...allBF))-2:10;
+  const maxBF=allBF.length?Math.ceil(Math.max(...allBF))+2:30;
+
   new Chart(document.getElementById('progressChart'),{
     type:'line',
     data:{
-      labels:wks,
+      labels,
       datasets:[
-        {label:'Weight (kg)',data:[88.0,87.0,85.8,84.2,82.8,null,null],borderColor:'rgba(201,162,74,.92)',backgroundColor:'rgba(201,162,74,.07)',tension:.42,fill:true,spanGaps:false,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'rgba(201,162,74,.92)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:2,yAxisID:'yW'},
-        {label:'Weight projection',data:[null,null,null,null,82.8,81.5,80.2],borderColor:'rgba(201,162,74,.4)',borderDash:[5,5],borderWidth:1.5,tension:.42,fill:false,spanGaps:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'rgba(201,162,74,.4)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:1,yAxisID:'yW',showLine:true},
-        {label:'Body Fat %',data:[22.4,21.6,20.7,19.8,18.8,null,null],borderColor:'rgba(166,200,94,.92)',backgroundColor:'rgba(166,200,94,.06)',tension:.42,fill:true,spanGaps:false,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'rgba(166,200,94,.92)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:2,yAxisID:'yBF'},
-        {label:'BF% projection',data:[null,null,null,null,18.8,17.8,16.9],borderColor:'rgba(166,200,94,.38)',borderDash:[5,5],borderWidth:1.5,tension:.42,fill:false,spanGaps:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'rgba(166,200,94,.38)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:1,yAxisID:'yBF',showLine:true},
+        {label:'Weight (kg)',data:wData,borderColor:'rgba(201,162,74,.92)',backgroundColor:'rgba(201,162,74,.07)',tension:.42,fill:true,spanGaps:false,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'rgba(201,162,74,.92)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:2,yAxisID:'yW'},
+        {label:'Body Fat %',data:bfData,borderColor:'rgba(166,200,94,.92)',backgroundColor:'rgba(166,200,94,.06)',tension:.42,fill:true,spanGaps:false,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'rgba(166,200,94,.92)',pointBorderColor:'rgba(5,5,7,1)',pointBorderWidth:2,yAxisID:'yBF'},
       ],
     },
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
       animation:{duration:1200,easing:'easeInOutQuart'},
-      plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>{if(ctx.dataset.label.includes('projection')) return null; return `  ${ctx.dataset.label}: ${ctx.raw}`;}}}},
+      plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>`  ${ctx.dataset.label}: ${ctx.raw}`}}},
       scales:{
         x:{grid:{color:'rgba(244,241,232,.04)'},border:{display:false},ticks:{color:'rgba(244,241,232,.35)',font:{size:10}}},
-        yW:{type:'linear',position:'left',min:79,max:90,grid:{color:'rgba(244,241,232,.05)'},border:{display:false},ticks:{color:'rgba(201,162,74,.65)',callback:v=>v+' kg',font:{size:10}}},
-        yBF:{type:'linear',position:'right',min:15,max:24,grid:{display:false},border:{display:false},ticks:{color:'rgba(166,200,94,.65)',callback:v=>v+'%',font:{size:10}}},
+        yW:{type:'linear',position:'left',min:minW,max:maxW,grid:{color:'rgba(244,241,232,.05)'},border:{display:false},ticks:{color:'rgba(201,162,74,.65)',callback:v=>v+' kg',font:{size:10}}},
+        yBF:{type:'linear',position:'right',min:minBF,max:maxBF,grid:{display:false},border:{display:false},ticks:{color:'rgba(166,200,94,.65)',callback:v=>v+'%',font:{size:10}}},
       },
     },
   });
 
-  /* Body composition donut */
+  // Donut — use latest check-in or client profile
+  const latestW = allWeights.length?allWeights[allWeights.length-1]:client?.weight;
+  const latestBF= allBF.length?allBF[allBF.length-1]:client?.bodyFat;
+  const fatPct = latestBF || 20;
+  const musclePct = latestW&&latestBF ? +(latestW*(1-latestBF/100)/latestW*100).toFixed(1) : 42;
+  const waterPct=29, bonePct=10;
+  const restPct=Math.max(0,100-fatPct-musclePct-waterPct-bonePct);
+  if(document.getElementById('donut-fat')) document.getElementById('donut-fat').textContent=fatPct+'%';
+  if(document.getElementById('donut-lean')) document.getElementById('donut-lean').textContent=musclePct.toFixed(1)+'%';
+
   new Chart(document.getElementById('donutChart'),{
     type:'doughnut',
     data:{
       labels:['Muscle Mass','Body Fat','Water','Bone & Other'],
       datasets:[{
-        data:[42.2,18.8,29.0,10.0],
+        data:[musclePct,fatPct,waterPct,bonePct],
         backgroundColor:['rgba(166,200,94,.72)','rgba(201,162,74,.68)','rgba(100,160,220,.58)','rgba(180,170,155,.46)'],
         borderColor:['rgba(166,200,94,.9)','rgba(201,162,74,.88)','rgba(100,160,220,.75)','rgba(180,170,155,.62)'],
         borderWidth:1.5,hoverOffset:10,
@@ -1382,10 +1595,7 @@ function initProfileCharts(){
     options:{
       responsive:true,maintainAspectRatio:false,cutout:'70%',
       animation:{duration:1200,easing:'easeInOutQuart'},
-      plugins:{
-        legend:{display:false},
-        tooltip:{...tt,callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.raw}%`}},
-      },
+      plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.raw.toFixed(1)}%`}}},
     },
   });
 }

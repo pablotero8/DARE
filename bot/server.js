@@ -11,6 +11,7 @@ import {
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
+import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT  = join(__dir, '..');
@@ -140,6 +141,64 @@ app.get('/api/plans/:clientId/weeks', requireAuth, (req, res) => {
   res.json(listPlanWeeks(req.params.clientId));
 });
 
+// ── Daily logs ────────────────────────────────────────────────
+
+// Client saves their own training or nutrition log for a date
+app.post('/api/logs/:clientId', requireAuth, (req, res) => {
+  const { clientId } = req.params;
+  if (req.client.id !== clientId && req.client.role !== 'coach') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  const { type, logDate, ...data } = req.body;
+  if (!type || !logDate || !['training', 'nutrition'].includes(type)) {
+    return res.status(400).json({ error: 'type (training|nutrition) y logDate son obligatorios' });
+  }
+  // Verify clientId belongs to a real client (not a coach)
+  const target = getClientById(clientId);
+  if (!target || target.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  saveLog(clientId, logDate, type, data);
+  res.json({ ok: true });
+});
+
+// Get logs for a client (client sees own; coach sees any)
+app.get('/api/logs/:clientId', requireAuth, (req, res) => {
+  const { clientId } = req.params;
+  if (req.client.id !== clientId && req.client.role !== 'coach') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  const days = Math.min(Number(req.query.days) || 30, 365);
+  res.json(getRecentLogs(clientId, days));
+});
+
+// Get a single log entry
+app.get('/api/logs/:clientId/:date/:type', requireAuth, (req, res) => {
+  const { clientId, date, type } = req.params;
+  if (req.client.id !== clientId && req.client.role !== 'coach') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  const log = getLog(clientId, date, type);
+  res.json(log || null);
+});
+
+// ── Body-metrics check-ins ────────────────────────────────────
+
+app.post('/api/checkins/:clientId', requireAuth, (req, res) => {
+  const { clientId } = req.params;
+  if (req.client.id !== clientId) return res.status(403).json({ error: 'Solo el cliente puede registrar sus métricas' });
+  const { checkDate, weightKg, bodyFatPct, leanMassKg, notes } = req.body;
+  if (!checkDate) return res.status(400).json({ error: 'checkDate es obligatorio' });
+  saveCheckIn(clientId, checkDate, { weightKg, bodyFatPct, leanMassKg, notes });
+  res.json({ ok: true });
+});
+
+app.get('/api/checkins/:clientId', requireAuth, (req, res) => {
+  const { clientId } = req.params;
+  if (req.client.id !== clientId && req.client.role !== 'coach') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  res.json(getCheckIns(clientId));
+});
+
 // ── Coach API ─────────────────────────────────────────────────
 
 app.get('/api/coach/clients', requireCoach, (req, res) => {
@@ -147,6 +206,7 @@ app.get('/api/coach/clients', requireCoach, (req, res) => {
   res.json(clients.map(c => ({
     id: c.id, name: c.name, initials: c.initials, email: c.email,
     goal: c.goal, currentWeek: c.currentWeek, totalWeeks: c.totalWeeks,
+    adherence: getAdherenceSummary(c.id, 7),
   })));
 });
 
@@ -305,6 +365,12 @@ app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res)
     const { specialty, clientId, weekOf, days } = req.body;
     if (!specialty || !clientId || !weekOf || !Array.isArray(days)) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Ensure clientId is a real client (not a coach or non-existent user)
+    const targetClient = getClientById(clientId);
+    if (!targetClient || targetClient.role !== 'client') {
+      return res.status(400).json({ error: 'Invalid clientId' });
     }
 
     if (specialty === 'nutrition') {
