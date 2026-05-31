@@ -13,7 +13,7 @@ import { signToken, verifyToken, persistSession, revokeSession, isSessionValid }
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { sendPasswordReset } from './mailer.js';
-import { sendWelcomeNotifications, scheduleDailyReminders } from './notifier.js';
+import { sendWelcomeNotifications, scheduleDailyReminders, sendDailyReminders } from './notifier.js';
 import { randomBytes } from 'crypto';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -263,6 +263,17 @@ app.get('/api/coach/clients', requireCoach, (req, res) => {
     goal: c.goal, currentWeek: c.currentWeek, totalWeeks: c.totalWeeks,
     adherence: getAdherenceSummary(c.id, 7),
   })));
+});
+
+// Manually trigger the daily reminder emails (for testing — coach only)
+app.post('/api/coach/test-reminders', requireCoach, async (req, res) => {
+  try {
+    await sendDailyReminders();
+    res.json({ ok: true, message: 'Reminder emails sent.' });
+  } catch (err) {
+    console.error('[test-reminders]', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Full client profile (for coach profile panel)

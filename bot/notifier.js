@@ -109,7 +109,7 @@ async function sendDailyReminderEmail(client) {
   if (error) throw new Error('Reminder email failed: ' + JSON.stringify(error));
 }
 
-async function sendDailyReminders() {
+export async function sendDailyReminders() {
   const clients = listClients().filter(c => c.role === 'client' && c.email);
   console.log(`[notifier] sending daily reminder emails to ${clients.length} client(s)`);
   for (const c of clients) {
