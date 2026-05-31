@@ -13,7 +13,7 @@ import { signToken, verifyToken, persistSession, revokeSession, isSessionValid }
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { sendPasswordReset } from './mailer.js';
-import { sendWelcomeNotifications, scheduleDailyReminders, sendDailyReminders } from './notifier.js';
+import { sendWelcomeNotifications, scheduleDailyReminders, sendDailyReminders, sendTestEmail } from './notifier.js';
 import { randomBytes } from 'crypto';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -263,6 +263,18 @@ app.get('/api/coach/clients', requireCoach, (req, res) => {
     goal: c.goal, currentWeek: c.currentWeek, totalWeeks: c.totalWeeks,
     adherence: getAdherenceSummary(c.id, 7),
   })));
+});
+
+// Send a single diagnostic email and return Resend's raw response (coach only)
+app.post('/api/coach/test-email', requireCoach, async (req, res) => {
+  const to = req.body?.to || req.client.email;
+  try {
+    const result = await sendTestEmail(to);
+    res.json({ ok: true, result });
+  } catch (err) {
+    console.error('[test-email]', err.message);
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 // Manually trigger the daily reminder emails (for testing — coach only)

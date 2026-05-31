@@ -10,6 +10,18 @@ function resendClient() {
   return new Resend(process.env.RESEND_API_KEY);
 }
 
+// Diagnostic: send a plain test email and return the raw Resend response.
+export async function sendTestEmail(to) {
+  const resend = resendClient();
+  const result = await resend.emails.send({
+    from: FROM,
+    to,
+    subject: 'DARE test email',
+    html: '<p>If you can read this, DARE email sending works ✅</p>',
+  });
+  return { from: FROM, to, ...result };
+}
+
 // Shared email shell — header + body + footer in DARE styling
 function emailShell({ eyebrow, title, bodyHtml }) {
   return `
