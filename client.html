@@ -582,8 +582,9 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 <script>
 (function(){
 
-// Bot API URL — uses same origin as the page (localhost in dev, your domain in production)
-window.DARE_API_URL = window.location.origin;
+// Bot API URL — localhost in dev, Railway in production
+const _isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+window.DARE_API_URL = _isLocal ? window.location.origin : 'https://dare-production-2636.up.railway.app';
 /* ═══ DYNAMIC PLAN LOADING ═══
  * Reads ?client=<clientId> from the URL.
  * Tries to fetch the plan from the bot API (window.DARE_API_URL).
