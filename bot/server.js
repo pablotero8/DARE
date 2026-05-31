@@ -264,6 +264,13 @@ app.get('/api/coach/clients', requireCoach, (req, res) => {
   })));
 });
 
+// Full client profile (for coach profile panel)
+app.get('/api/coach/clients/:clientId', requireCoach, (req, res) => {
+  const client = getClientById(req.params.clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  res.json(client);
+});
+
 app.post('/api/coach/chat', aiLimiter, requireCoach, async (req, res) => {
   const { messages = [] } = req.body;
   const coach = req.client;

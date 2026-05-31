@@ -268,6 +268,46 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 }
 .send-btn:hover:not(:disabled){transform:scale(1.07);box-shadow:0 6px 20px rgba(201,162,74,.45)}
 .send-btn:disabled{opacity:.4;cursor:default}
+
+/* ── CLIENT PROFILE PANEL ── */
+.profile-panel{position:absolute;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column;overflow:hidden}
+.profile-panel.open{display:flex}
+.pp-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1.25rem;border-bottom:1px solid var(--border);background:rgba(5,5,7,.95);flex-shrink:0}
+.pp-client{display:flex;align-items:center;gap:.75rem}
+.pp-av{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,rgba(201,162,74,.4),rgba(166,200,94,.3));border:1.5px solid rgba(201,162,74,.35);display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;color:var(--gold)}
+.pp-cname{font-family:'Tulpen One',serif;font-size:1.6rem;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.pp-csub{font-size:.68rem;color:var(--muted);margin-top:3px}
+.pp-head-btns{display:flex;align-items:center;gap:.55rem}
+.pp-chat-btn{display:flex;align-items:center;gap:.4rem;padding:.38rem .85rem;border:1px solid rgba(201,162,74,.4);border-radius:8px;background:rgba(201,162,74,.07);color:var(--gold);font-family:'Manrope',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .18s}
+.pp-chat-btn:hover{background:rgba(201,162,74,.15);border-color:rgba(201,162,74,.6)}
+.pp-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.pp-close:hover{background:rgba(255,255,255,.07);color:var(--text)}
+.pp-body{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.5rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.pp-sec-label{font-size:.62rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
+.pp-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem}
+.pp-metric{padding:.9rem 1rem;border-radius:12px;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border)}
+.pp-metric-label{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);margin-bottom:.3rem}
+.pp-metric-val{font-family:'Tulpen One',serif;font-size:1.9rem;line-height:1;letter-spacing:.04em}
+.pp-metric-val sup{font-size:.72rem;vertical-align:super}
+.pp-metric-empty{color:var(--muted2)}
+.pp-adh-wrap{display:flex;flex-direction:column;gap:.5rem}
+.pp-adh-row{display:flex;align-items:center;gap:.75rem}
+.pp-adh-track{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+.pp-adh-fill{height:100%;border-radius:999px;transition:width .5s ease}
+.pp-adh-label{font-size:.72rem;font-weight:700;white-space:nowrap;min-width:110px;text-align:right}
+.pp-log-grid{display:flex;flex-direction:column;gap:.35rem}
+.pp-log-day{display:grid;grid-template-columns:120px 1fr 1fr;gap:.6rem;align-items:center;padding:.5rem .75rem;background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px}
+.pp-log-date{font-size:.7rem;font-weight:600;color:var(--muted)}
+.pp-log-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:6px;font-size:.63rem;font-weight:600;border:1px solid transparent}
+.pp-log-done{background:rgba(166,200,94,.1);border-color:rgba(166,200,94,.25);color:var(--green)}
+.pp-log-logged{background:rgba(201,162,74,.08);border-color:rgba(201,162,74,.2);color:var(--gold)}
+.pp-log-empty{background:rgba(255,255,255,.03);border-color:var(--border);color:var(--muted2)}
+.pp-checkin-row{display:flex;gap:.7rem;flex-wrap:wrap;align-items:stretch}
+.pp-checkin-tile{padding:.7rem .9rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);min-width:90px;text-align:center}
+.pp-checkin-val{font-family:'Tulpen One',serif;font-size:1.5rem;line-height:1;color:var(--text)}
+.pp-checkin-lbl{font-size:.57rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-top:.2rem}
+.pp-note-tile{padding:.65rem .85rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);flex:1;min-width:140px;font-size:.75rem;color:var(--muted);display:flex;align-items:center;font-style:italic}
+.pp-empty{font-size:.75rem;color:var(--muted2);padding:.3rem 0}
 </style>
 </head>
 <body>
@@ -305,6 +345,27 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 
   <!-- CHAT -->
   <main class="chat-area">
+
+    <!-- CLIENT PROFILE PANEL -->
+    <div class="profile-panel" id="profile-panel">
+      <div class="pp-head">
+        <div class="pp-client">
+          <div class="pp-av" id="pp-av">?</div>
+          <div>
+            <div class="pp-cname" id="pp-cname">—</div>
+            <div class="pp-csub" id="pp-csub">—</div>
+          </div>
+        </div>
+        <div class="pp-head-btns">
+          <button class="pp-chat-btn" id="pp-chat-btn">✦ Seleccionar para chat</button>
+          <button class="pp-close" id="pp-close">✕</button>
+        </div>
+      </div>
+      <div class="pp-body" id="pp-body">
+        <div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.8rem">Cargando perfil…</div>
+      </div>
+    </div>
+
     <div class="chat-context" id="chat-context">
       <div class="ctx-avatar" id="ctx-avatar"></div>
       <span class="ctx-label">Para: <strong class="ctx-name" id="ctx-name"></strong></span>
@@ -406,7 +467,7 @@ function renderClients(list){
         <div class="ci-sub">W${c.currentWeek} · ${c.goal}</div>
       </div>
       <div class="ci-adh" title="Training adherence last 7 days" style="font-size:.6rem;font-weight:700;color:${adhColor};white-space:nowrap;flex-shrink:0">${adhText}</div>`;
-    div.addEventListener('click', () => selectClient(c));
+    div.addEventListener('click', () => openProfile(c));
     el.appendChild(div);
   });
 }
@@ -776,6 +837,158 @@ inputEl.addEventListener('keydown', e => {
 inputEl.addEventListener('input', () => {
   inputEl.style.height = 'auto';
   inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
+});
+
+// ── Client Profile Panel ──────────────────────────────────────
+let profileClient = null;
+
+async function openProfile(c){
+  profileClient = c;
+  document.getElementById('pp-av').textContent    = (c.initials||'').slice(0,2);
+  document.getElementById('pp-cname').textContent = c.name;
+  document.getElementById('pp-csub').textContent  = `${c.goal} · Semana ${c.currentWeek} de ${c.totalWeeks}`;
+  document.getElementById('pp-body').innerHTML    = '<div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.8rem">Cargando perfil…</div>';
+  document.getElementById('profile-panel').classList.add('open');
+
+  const token = storedToken();
+  const [clientRes, logsRes, checkinsRes] = await Promise.all([
+    fetch(`${BASE}/api/coach/clients/${c.id}`,  { headers:{ Authorization:`Bearer ${token}` } }),
+    fetch(`${BASE}/api/logs/${c.id}?days=14`,   { headers:{ Authorization:`Bearer ${token}` } }),
+    fetch(`${BASE}/api/checkins/${c.id}`,        { headers:{ Authorization:`Bearer ${token}` } }),
+  ]);
+
+  const fullClient = clientRes.ok   ? await clientRes.json()   : c;
+  const logs       = logsRes.ok     ? await logsRes.json()     : [];
+  const checkins   = checkinsRes.ok ? await checkinsRes.json() : [];
+  renderProfile(fullClient, logs, checkins);
+}
+
+function closeProfile(){
+  document.getElementById('profile-panel').classList.remove('open');
+  profileClient = null;
+}
+
+function renderProfile(client, logs, checkins){
+  const body = document.getElementById('pp-body');
+
+  // Build date→logs map
+  const logMap = {};
+  logs.forEach(l => { logMap[`${l.logDate}-${l.type}`] = l.data; });
+
+  // Last 14 days
+  const days = [];
+  for(let i=0;i<14;i++){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+
+  const bmi = (client.weight && client.height)
+    ? (client.weight / ((client.height/100)**2)).toFixed(1)
+    : null;
+  const lastCI = checkins.length ? checkins[checkins.length-1] : null;
+
+  body.innerHTML = '';
+
+  // ── Métricas corporales ──────────────────────────────────────
+  const metSec = document.createElement('div');
+  metSec.innerHTML = '<div class="pp-sec-label">Métricas corporales</div>';
+  const metGrid = document.createElement('div'); metGrid.className='pp-metrics';
+  [
+    { label:'Peso',       val: client.weight  ? `${client.weight}<sup>kg</sup>`  : null },
+    { label:'Grasa corp.',val: client.bodyFat ? `${client.bodyFat}<sup>%</sup>`  : null },
+    { label:'Masa magra', val: client.lean    ? `${client.lean}<sup>kg</sup>`    : null },
+    { label:'BMI',        val: bmi            ? bmi                               : null },
+  ].forEach(({label,val})=>{
+    const m=document.createElement('div'); m.className='pp-metric';
+    m.innerHTML=`<div class="pp-metric-label">${label}</div>
+      <div class="pp-metric-val">${val||'<span class="pp-metric-empty">—</span>'}</div>`;
+    metGrid.appendChild(m);
+  });
+  metSec.appendChild(metGrid);
+  body.appendChild(metSec);
+
+  // ── Último check-in ──────────────────────────────────────────
+  if(lastCI){
+    const ciSec = document.createElement('div');
+    const ciDate = new Date(lastCI.date+'T12:00:00')
+      .toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});
+    ciSec.innerHTML=`<div class="pp-sec-label">Último check-in · ${ciDate}</div>`;
+    const ciRow=document.createElement('div'); ciRow.className='pp-checkin-row';
+    [
+      {v:lastCI.weight  ?`${lastCI.weight}kg` :null, l:'Peso'},
+      {v:lastCI.bodyFat ?`${lastCI.bodyFat}%` :null, l:'Grasa'},
+      {v:lastCI.lean    ?`${lastCI.lean}kg`   :null, l:'Masa magra'},
+    ].filter(x=>x.v).forEach(({v,l})=>{
+      const t=document.createElement('div'); t.className='pp-checkin-tile';
+      t.innerHTML=`<div class="pp-checkin-val">${v}</div><div class="pp-checkin-lbl">${l}</div>`;
+      ciRow.appendChild(t);
+    });
+    if(lastCI.notes){
+      const n=document.createElement('div'); n.className='pp-note-tile';
+      n.textContent=`"${lastCI.notes}"`;
+      ciRow.appendChild(n);
+    }
+    ciSec.appendChild(ciRow);
+    body.appendChild(ciSec);
+  }
+
+  // ── Adherencia 14 días ───────────────────────────────────────
+  const adhSec = document.createElement('div');
+  const tLogs  = logs.filter(l=>l.type==='training');
+  const tDone  = tLogs.filter(l=>l.data&&l.data.done===true).length;
+  const nLogs  = logs.filter(l=>l.type==='nutrition');
+  const tPct   = Math.round(tDone/14*100);
+  const nPct   = Math.round(nLogs.length/14*100);
+  const pctColor = p => p>=80?'var(--green)':p>=50?'var(--gold)':'#e08080';
+  adhSec.innerHTML=`<div class="pp-sec-label">Adherencia · últimos 14 días</div>
+    <div class="pp-adh-wrap">
+      <div class="pp-adh-row">
+        <span style="font-size:.65rem;color:var(--muted);width:80px;flex-shrink:0">Training</span>
+        <div class="pp-adh-track"><div class="pp-adh-fill" style="width:${tPct}%;background:${pctColor(tPct)}"></div></div>
+        <div class="pp-adh-label" style="color:${pctColor(tPct)}">${tDone}/14 completados</div>
+      </div>
+      <div class="pp-adh-row">
+        <span style="font-size:.65rem;color:var(--muted);width:80px;flex-shrink:0">Nutrición</span>
+        <div class="pp-adh-track"><div class="pp-adh-fill" style="width:${nPct}%;background:${pctColor(nPct)}"></div></div>
+        <div class="pp-adh-label" style="color:${pctColor(nPct)}">${nLogs.length}/14 registrados</div>
+      </div>
+    </div>`;
+  body.appendChild(adhSec);
+
+  // ── Registros diarios ────────────────────────────────────────
+  const logSec  = document.createElement('div');
+  logSec.innerHTML='<div class="pp-sec-label">Registros diarios</div>';
+  const logGrid = document.createElement('div'); logGrid.className='pp-log-grid';
+
+  const chipFor = (data, label) => {
+    if(!data) return `<span class="pp-log-chip pp-log-empty">— ${label}</span>`;
+    if(data.done===true) return `<span class="pp-log-chip pp-log-done">✓ ${label}</span>`;
+    return `<span class="pp-log-chip pp-log-logged">· ${label}</span>`;
+  };
+
+  days.forEach(ds => {
+    const tLog = logMap[`${ds}-training`];
+    const nLog = logMap[`${ds}-nutrition`];
+    if(!tLog && !nLog) return;
+    const d = new Date(ds+'T12:00:00');
+    const lbl = d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});
+    const row = document.createElement('div'); row.className='pp-log-day';
+    row.innerHTML=`<span class="pp-log-date">${lbl}</span>${chipFor(tLog,'Training')}${chipFor(nLog,'Nutrition')}`;
+    logGrid.appendChild(row);
+  });
+
+  if(!logGrid.children.length){
+    logGrid.innerHTML='<div class="pp-empty">Sin registros en los últimos 14 días.</div>';
+  }
+  logSec.appendChild(logGrid);
+  body.appendChild(logSec);
+}
+
+document.getElementById('pp-close').addEventListener('click', closeProfile);
+document.getElementById('pp-chat-btn').addEventListener('click', ()=>{
+  if(!profileClient) return;
+  selectClient(profileClient);
+  closeProfile();
 });
 
 async function main(){
