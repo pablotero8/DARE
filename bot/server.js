@@ -13,6 +13,7 @@ import { signToken, verifyToken, persistSession, revokeSession, isSessionValid }
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { sendPasswordReset } from './mailer.js';
+import { sendWelcomeNotifications, scheduleDailyReminders } from './notifier.js';
 import { randomBytes } from 'crypto';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -373,6 +374,9 @@ OTRAS FUNCIONES:
       const { client, generatedPassword } = await createClient(toolInput);
       action = { type: 'client_created', client, password: generatedPassword };
       toolResultContent = JSON.stringify({ success: true, name: client.name, email: client.email, password: generatedPassword });
+      sendWelcomeNotifications(client, generatedPassword).catch(err =>
+        console.error('[notifier] welcome notifications failed:', err.message)
+      );
     } else if (toolName === 'reset_client_password') {
       const newPwd = await resetClientPassword(toolInput.clientId);
       if (!newPwd) {
@@ -751,4 +755,5 @@ app.listen(PORT, async () => {
   await seedCoaches();
   await seedDemoClient();
   await seedDemoPlan();
+  scheduleDailyReminders();
 });
