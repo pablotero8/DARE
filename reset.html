@@ -64,7 +64,8 @@
 </div>
 
 <script>
-const API = window.location.origin;
+const _isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API = _isLocal ? window.location.origin : 'https://dare-production-2636.up.railway.app';
 const token = new URLSearchParams(location.search).get('token');
 
 // Show correct step
