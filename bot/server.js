@@ -295,6 +295,16 @@ app.get('/api/coach/clients/:clientId', requireCoach, (req, res) => {
   res.json(client);
 });
 
+// Delete a client (coach only — clients only, never another coach)
+app.delete('/api/coach/clients/:clientId', requireCoach, (req, res) => {
+  const client = getClientById(req.params.clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  const ok = deleteClient(client.id);
+  if (!ok) return res.status(500).json({ error: 'No se pudo eliminar el cliente' });
+  console.log(`[coach] ${req.client.email} deleted client ${client.email}`);
+  res.json({ ok: true });
+});
+
 app.post('/api/coach/chat', aiLimiter, requireCoach, async (req, res) => {
   const { messages = [] } = req.body;
   const coach = req.client;
