@@ -393,21 +393,28 @@
                     <div class="p-accord-arrows-wrap" aria-hidden="true">
                         <svg class="p-accord-arrows-svg" viewBox="0 0 1000 80" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- Ghost paths (always visible, dim) -->
-                            <path d="M 175 10 C 310 10 390 65 500 65" stroke="rgba(166,200,94,0.18)" stroke-width="1.5" stroke-linecap="round"/>
-                            <path d="M 825 10 C 690 10 610 65 500 65" stroke="rgba(201,162,74,0.18)" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M 175 10 C 310 10 390 65 500 65" stroke="rgba(166,200,94,0.18)" stroke-width="2.8" stroke-linecap="round"/>
+                            <path d="M 825 10 C 690 10 610 65 500 65" stroke="rgba(201,162,74,0.18)" stroke-width="2.8" stroke-linecap="round"/>
                             <!-- Animated traveling paths -->
-                            <path class="p-arr-path p-arr-path--l" d="M 175 10 C 310 10 390 65 500 65" stroke="#a6c85e" stroke-width="2.5" stroke-linecap="round"/>
-                            <path class="p-arr-path p-arr-path--r" d="M 825 10 C 690 10 610 65 500 65" stroke="#d8b25c" stroke-width="2.5" stroke-linecap="round"/>
+                            <path class="p-arr-path p-arr-path--l" d="M 175 10 C 310 10 390 65 500 65" stroke="#a6c85e" stroke-width="3.2" stroke-linecap="round"/>
+                            <path class="p-arr-path p-arr-path--r" d="M 825 10 C 690 10 610 65 500 65" stroke="#d8b25c" stroke-width="3.2" stroke-linecap="round"/>
+                            <!-- Labels at origins -->
+                            <text x="175" y="28" font-family="Manrope, sans-serif" font-size="11" letter-spacing="0.1em" text-anchor="middle" fill="rgba(166,200,94,0.7)" font-weight="700">TRAINING</text>
+                            <text x="825" y="28" font-family="Manrope, sans-serif" font-size="11" letter-spacing="0.1em" text-anchor="middle" fill="rgba(201,162,74,0.7)" font-weight="700">NUTRITION</text>
+                            <!-- Plus symbol in middle -->
+                            <text x="500" y="42" font-family="Tulpen One, serif" font-size="20" text-anchor="middle" fill="rgba(244,241,232,0.4)">+</text>
                             <!-- Arrowheads + convergence point -->
                             <g class="p-arr-tips">
-                                <path d="M 486 57 L 500 65 L 484 73" stroke="#a6c85e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                <path d="M 514 57 L 500 65 L 516 73" stroke="#d8b25c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                <circle cx="500" cy="65" r="6" fill="rgba(244,241,232,0.06)" stroke="rgba(244,241,232,0.22)" stroke-width="1"/>
-                                <circle cx="500" cy="65" r="2.5" fill="rgba(244,241,232,0.7)"/>
+                                <path d="M 482 52 L 500 65 L 480 76" stroke="#a6c85e" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <path d="M 518 52 L 500 65 L 520 76" stroke="#d8b25c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <circle cx="500" cy="65" r="7.5" fill="rgba(244,241,232,0.08)" stroke="rgba(244,241,232,0.28)" stroke-width="1.5"/>
+                                <circle cx="500" cy="65" r="3.5" fill="rgba(244,241,232,0.9)"/>
                             </g>
+                            <!-- = ONE SYSTEM text at convergence -->
+                            <text x="500" y="82" font-family="Manrope, sans-serif" font-size="13" letter-spacing="0.12em" text-anchor="middle" fill="rgba(244,241,232,0.6)" font-weight="700">=  ONE SYSTEM</text>
                             <!-- Pulse rings at convergence -->
-                            <circle class="p-arr-ring-1" cx="500" cy="65" r="14" stroke="rgba(244,241,232,0.22)" stroke-width="1" fill="none"/>
-                            <circle class="p-arr-ring-2" cx="500" cy="65" r="22" stroke="rgba(244,241,232,0.1)" stroke-width="1" fill="none"/>
+                            <circle class="p-arr-ring-1" cx="500" cy="65" r="18" stroke="rgba(244,241,232,0.22)" stroke-width="1.2" fill="none"/>
+                            <circle class="p-arr-ring-2" cx="500" cy="65" r="28" stroke="rgba(244,241,232,0.1)" stroke-width="1.2" fill="none"/>
                         </svg>
                     </div>
 
