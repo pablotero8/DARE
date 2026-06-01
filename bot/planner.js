@@ -1,7 +1,7 @@
 import db from './db.js';
 import { archivePlanVersion } from './logs.js';
 import { validatePlan, validateTrainingDay, validateNutritionDay, isValidWeekOf, PlanValidationError } from './validators.js';
-import { buildWeeklyShoppingList } from './shopping.js';
+import { shoppingListForPlan } from './shopping.js';
 
 const PLAN_TYPE_FOR = { save_training_plan: 'training', save_nutrition_plan: 'nutrition' };
 
@@ -15,7 +15,7 @@ function loadPlan(clientId, weekOf) {
 // any mutation. Keeps the stored object internally consistent.
 function refreshDerived(plan) {
   plan.week = buildWeek(plan.weekOf, plan.training, plan.nutrition);
-  plan.shoppingList = plan.nutrition ? buildWeeklyShoppingList(plan.nutrition) : null;
+  plan.shoppingList = shoppingListForPlan(plan);
   plan.publishedAt = plan.trainingReady && plan.nutritionReady
     ? (plan.publishedAt || new Date().toISOString())
     : null;
@@ -111,9 +111,9 @@ export function appendPlanNote(clientId, weekOf, text, author = 'coach') {
 
 // ── Seed a pre-built plan directly (used for demo seeding) ────
 
-export function seedPlan(clientId, weekOf, week) {
+export function seedPlan(clientId, weekOf, week, { force = false } = {}) {
   const existing = db.prepare('SELECT client_id FROM plans WHERE client_id = ? AND week_of = ?').get(clientId, weekOf);
-  if (existing) return false; // already seeded
+  if (existing && !force) return false; // already seeded
 
   const plan = {
     clientId,
@@ -124,9 +124,10 @@ export function seedPlan(clientId, weekOf, week) {
     publishedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
   };
+  plan.shoppingList = shoppingListForPlan(plan);
 
   upsertPlan(clientId, weekOf, plan);
-  console.log(`[planner] seeded demo plan for ${clientId} week ${weekOf}`);
+  console.log(`[planner] ${force ? 're-seeded' : 'seeded'} demo plan for ${clientId} week ${weekOf}`);
   return true;
 }
 

@@ -6,7 +6,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan, savePlan, updatePlanDay, appendPlanNote } from './planner.js';
 import { PlanValidationError } from './validators.js';
-import { buildWeeklyShoppingList } from './shopping.js';
+import { shoppingListForPlan } from './shopping.js';
 import {
   verifyClientPassword, getClientById, getClientByEmail,
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
@@ -179,6 +179,7 @@ app.get('/api/plans/:clientId', requireAuth, (req, res) => {
   }
   const plan = getLatestPlan(req.params.clientId);
   if (!plan) return res.status(404).json({ error: 'Sin planes todavía' });
+  if (!plan.shoppingList) plan.shoppingList = shoppingListForPlan(plan); // legacy plans
   res.json(plan);
 });
 
@@ -188,6 +189,7 @@ app.get('/api/plans/:clientId/week/:weekOf', requireAuth, (req, res) => {
   }
   const plan = getPlanByWeek(req.params.clientId, req.params.weekOf);
   if (!plan) return res.status(404).json({ error: 'Semana no encontrada' });
+  if (!plan.shoppingList) plan.shoppingList = shoppingListForPlan(plan); // legacy plans
   res.json(plan);
 });
 
@@ -778,7 +780,7 @@ app.get('/api/plans/:clientId/week/:weekOf/shopping', requireAuth, (req, res) =>
   }
   const plan = getPlanByWeek(req.params.clientId, req.params.weekOf);
   if (!plan) return res.status(404).json({ error: 'Semana no encontrada' });
-  const shoppingList = plan.shoppingList || (plan.nutrition ? buildWeeklyShoppingList(plan.nutrition) : null);
+  const shoppingList = plan.shoppingList || shoppingListForPlan(plan);
   if (!shoppingList) return res.status(404).json({ error: 'Sin lista de la compra para esta semana' });
   res.json(shoppingList);
 });
@@ -869,9 +871,12 @@ function buildDemoWeek(weekOf) {
       nutrition: {
         kcal: 2100, protein: 175, carbs: 180, fat: 55,
         meals: [
-          { time: '08:00', name: 'Breakfast', desc: 'Eggs & oats', kcal: 450, steps: ['Cook oats', 'Scramble eggs'] },
-          { time: '13:00', name: 'Lunch',     desc: 'Chicken & rice', kcal: 680, steps: ['Grill chicken', 'Cook rice'] },
-          { time: '20:00', name: 'Dinner',    desc: 'Salmon & veg', kcal: 560, steps: ['Pan-fry salmon', 'Steam veg'] },
+          { time: '08:00', name: 'Breakfast', desc: 'Eggs & oats', kcal: 450, steps: ['Cook oats', 'Scramble eggs'],
+            ingredients: [{ item: 'Eggs', qty: 3, unit: 'unit' }, { item: 'Oats', qty: 60, unit: 'g' }, { item: 'Milk', qty: 200, unit: 'ml' }] },
+          { time: '13:00', name: 'Lunch',     desc: 'Chicken & rice', kcal: 680, steps: ['Grill chicken', 'Cook rice'],
+            ingredients: [{ item: 'Chicken breast', qty: 200, unit: 'g' }, { item: 'Brown rice', qty: 80, unit: 'g' }, { item: 'Broccoli', qty: 150, unit: 'g' }] },
+          { time: '20:00', name: 'Dinner',    desc: 'Salmon & veg', kcal: 560, steps: ['Pan-fry salmon', 'Steam veg'],
+            ingredients: [{ item: 'Salmon fillet', qty: 180, unit: 'g' }, { item: 'Asparagus', qty: 120, unit: 'g' }, { item: 'Olive oil', qty: 10, unit: 'ml' }] },
         ],
         note: `Demo nutrition note for ${label}.`,
       },
@@ -883,8 +888,13 @@ async function seedDemoPlan() {
   const clientId = 'alex-hammond';
   for (const weekOf of [currentMondayStr(), nextMondayStr()]) {
     try {
-      const seeded = seedPlan(clientId, weekOf, buildDemoWeek(weekOf));
-      console.log(seeded ? `[seed] Plan seeded — ${weekOf}` : `[seed] Plan exists — ${weekOf}`);
+      // Refresh stale demo seeds that predate the shopping-list feature (no
+      // derivable ingredient data), but never clobber a real saved plan.
+      const existing = getPlanByWeek(clientId, weekOf);
+      const isStaleSeed = existing && !shoppingListForPlan(existing);
+      if (existing && !isStaleSeed) { console.log(`[seed] Plan exists — ${weekOf}`); continue; }
+      seedPlan(clientId, weekOf, buildDemoWeek(weekOf), { force: isStaleSeed });
+      console.log(`[seed] Plan ${isStaleSeed ? 're-seeded' : 'seeded'} — ${weekOf}`);
     } catch (err) {
       console.error('[seed] Plan error:', err.message);
     }
