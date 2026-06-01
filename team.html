@@ -238,10 +238,10 @@
         }
         .tm-bio {
             font-family: 'Manrope', sans-serif;
-            font-size: .85rem;
-            line-height: 1.85;
-            color: var(--muted, rgba(244,241,232,.5));
-            max-width: 52ch;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--muted, rgba(244,241,232,.6));
+            max-width: 72ch;
             margin: 0 0 2.4rem;
         }
 
@@ -288,23 +288,35 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: flex-start;
-            gap: .4rem;
+            gap: .5rem;
             margin-bottom: 2.2rem;
         }
         .tm-tag {
             font-family: 'Manrope', sans-serif;
-            font-size: .58rem;
+            font-size: .62rem;
             letter-spacing: .12em;
             text-transform: uppercase;
-            color: rgba(244,241,232,.55);
-            border: 1px solid rgba(244,241,232,.1);
-            padding: .28rem .65rem;
-            border-radius: 3px;
-            transition: color .25s, border-color .25s;
+            color: rgba(201,162,74,.9);
+            background: rgba(201,162,74,.09);
+            border: 1px solid rgba(201,162,74,.22);
+            padding: .38rem .85rem;
+            border-radius: 4px;
+            transition: color .25s, border-color .25s, background .25s;
+        }
+        .tm-tag:nth-child(2n) {
+            color: rgba(166,200,94,.9);
+            background: rgba(166,200,94,.08);
+            border-color: rgba(166,200,94,.22);
         }
         .tm-tag:hover {
-            color: var(--gold, #c9a24a);
-            border-color: rgba(201,162,74,.3);
+            color: #c9a24a;
+            background: rgba(201,162,74,.15);
+            border-color: rgba(201,162,74,.4);
+        }
+        .tm-tag:nth-child(2n):hover {
+            color: #a6c85e;
+            background: rgba(166,200,94,.14);
+            border-color: rgba(166,200,94,.4);
         }
 
         /* ── LinkedIn ─────────────────────────────────────── */
