@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 28" width="130" height="28" role="img" aria-label="WHOOP">
+  <!--
+    PLACEHOLDER — Replace this file with the official WHOOP logo asset.
+    Download from: developer.whoop.com → Branding Guidelines → Logo (White)
+    Save as: /images/whoop-logo-white.svg
+    Keep the same filename so all badge locations update automatically.
+  -->
+  <title>WHOOP</title>
+
+  <!--
+    W — two V-shapes, geometric, even stroke weight
+    Approximating WHOOP's distinctive angular W
+  -->
+  <path d="M2,3 L8.5,24 L14,10 L19.5,24 L26,3" fill="none" stroke="white" stroke-width="3.4" stroke-linecap="square" stroke-linejoin="miter"/>
+
+  <!-- H -->
+  <line x1="31" y1="3" x2="31" y2="24" stroke="white" stroke-width="3.2"/>
+  <line x1="39" y1="3" x2="39" y2="24" stroke="white" stroke-width="3.2"/>
+  <line x1="31" y1="13.5" x2="39" y2="13.5" stroke="white" stroke-width="3"/>
+
+  <!-- O (first) -->
+  <rect x="44.5" y="3" width="13" height="21" rx="6.5" ry="6.5" fill="none" stroke="white" stroke-width="3.2"/>
+
+  <!-- O (second) -->
+  <rect x="62.5" y="3" width="13" height="21" rx="6.5" ry="6.5" fill="none" stroke="white" stroke-width="3.2"/>
+
+  <!-- P -->
+  <line x1="81" y1="3" x2="81" y2="24" stroke="white" stroke-width="3.2"/>
+  <path d="M81,3 Q94,3 94,10.5 Q94,18 81,18" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- ® -->
+  <circle cx="101" cy="7" r="4.5" fill="none" stroke="white" stroke-width="1"/>
+  <text x="101" y="10" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="5.5" fill="white" font-weight="500">R</text>
+</svg>
