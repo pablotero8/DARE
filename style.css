@@ -3134,26 +3134,26 @@ body {
 .p-stat-text {
     display: flex;
     flex-direction: column;
-    gap: 0.18rem;
-    padding-top: 0.12rem;
+    gap: 0.4rem;
+    padding-top: 0.15rem;
 }
 
 .p-stat-key {
     font-family: 'Manrope', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.22em;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(244,241,232,0.72);
+    color: rgba(244,241,232,0.92);
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.3;
 }
 
 .p-stat-desc {
     font-family: 'Manrope', sans-serif;
-    font-size: 0.76rem;
-    letter-spacing: 0.02em;
-    color: rgba(244,241,232,0.28);
-    line-height: 1.5;
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
+    color: rgba(244,241,232,0.58);
+    line-height: 1.55;
 }
 
 .p-philosophy-art {
@@ -4035,9 +4035,9 @@ main > section:not(.p-hero) {
 }
 
 /* ─ Philosophy section ─ */
-[data-theme="light"] .p-stat-key { color: rgba(24, 21, 14, 0.55); }
+[data-theme="light"] .p-stat-key { color: rgba(24, 21, 14, 0.85); }
 [data-theme="light"] .p-stat-val { color: rgba(176, 136, 40, 0.88); }
-[data-theme="light"] .p-stat-desc { color: rgba(24, 21, 14, 0.35); }
+[data-theme="light"] .p-stat-desc { color: rgba(24, 21, 14, 0.62); }
 [data-theme="light"] .p-philosophy-stat { border-color: rgba(176,136,40,0.18); background: rgba(0,0,0,0.025); }
 [data-theme="light"] .p-philosophy-divider { background: linear-gradient(90deg, rgba(176,136,40,0.45), rgba(136,180,50,0.25), transparent); }
 [data-theme="light"] .p-philosophy-cells-kicker { color: rgba(176,136,40,0.65); }
