@@ -2629,7 +2629,7 @@ body {
     filter: saturate(1.04) contrast(1.02);
 }
 .p-accord-panel--training  .p-accord-bg { background-image: url('./images/rackslide.jpg'); }
-.p-accord-panel--system    .p-accord-bg { background-image: url('./images/method1.jpg'); background-position: 50% 30%; }
+.p-accord-panel--system    .p-accord-bg { background-image: url('./images/playa.png'); background-position: center; }
 .p-accord-panel--nutrition .p-accord-bg { background-image: url('./images/foodslide.jpg'); }
 .p-accord-panel.is-active  .p-accord-bg { transform: scale(1.06); }
 
