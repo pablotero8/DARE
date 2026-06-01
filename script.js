@@ -658,19 +658,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* "How we build your program" — cinematic per-item unfold */
+  /* "How we build your program" — fast, snappy staggered unfold.
+     Parent opacity handles the fade so the gradient number + SVG art
+     never get stuck hidden; clearProps restores CSS (incl. hover). */
   if (document.querySelector(".p-process-list") && window.ScrollTrigger && window.gsap) {
-    gsap.utils.toArray(".p-process-item").forEach(function (item) {
-      var num  = item.querySelector(".p-process-num");
-      var body = item.querySelector(".p-process-body");
-      var art  = item.querySelector(".p-process-art");
-      var tl = gsap.timeline({
-        scrollTrigger: { trigger: item, start: "top 86%", toggleActions: "play none none reverse" },
-      });
-      tl.from(item, { opacity: 0, y: 56, duration: 0.95, ease: "power3.out" })
-        .from(num, { x: -48, opacity: 0, scale: 0.66, filter: "blur(8px)", duration: 0.85, ease: "power3.out", clearProps: "filter" }, "-=0.65")
-        .from(body ? body.children : [], { y: 26, opacity: 0, duration: 0.7, stagger: 0.1, ease: "power3.out" }, "-=0.55")
-        .from(art, { scale: 0.45, opacity: 0, rotate: -14, duration: 0.95, ease: "back.out(1.7)" }, "-=0.75");
+    var procTrig = { trigger: ".p-process-list", start: "top 84%", toggleActions: "play none none none" };
+    gsap.from(".p-process-item", {
+      scrollTrigger: procTrig,
+      opacity: 0, y: 34,
+      duration: 0.5, stagger: 0.12, ease: "power3.out",
+      clearProps: "opacity,transform",
+    });
+    gsap.from(".p-process-num", {
+      scrollTrigger: procTrig,
+      x: -32, scale: 0.72,
+      duration: 0.55, stagger: 0.12, ease: "back.out(1.7)",
+      clearProps: "transform",
+    });
+    gsap.from(".p-process-art", {
+      scrollTrigger: procTrig,
+      scale: 0.6, rotate: -10,
+      duration: 0.6, stagger: 0.12, ease: "back.out(1.7)",
+      clearProps: "transform",
     });
   }
 
