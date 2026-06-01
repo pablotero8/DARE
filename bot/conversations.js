@@ -6,6 +6,7 @@ import { formatClientsForPrompt, listClientsShort, createClient, deleteClient, f
 import { TRAINING_TOOL, NUTRITION_TOOL } from './tools.js';
 import { sendMessage } from './whatsapp.js';
 import { savePlan } from './planner.js';
+import { PlanValidationError } from './validators.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const STATE_DIR = join(__dir, 'state');
@@ -103,9 +104,10 @@ FLUJO GENERAL:
 Cuando el usuario dice "plan para [cliente]":
 1. Confirma cliente y semana ("Perfecto — plan para [cliente] semana ${nextMon}.")
 2. Haz UNA sola pregunta con todos los datos que necesitas (usar bullets).
-3. Cuando recibas la respuesta, escribe "[LISTO PARA GENERAR]" — el sistema genera automáticamente.
-4. Confirma el resultado o pide ajustes.
-5. Listo. Te avisaré cuando ${user.name === 'Erika' ? 'Dani' : 'Erika'} suba su parte.
+3. VERIFICA antes de generar: si hay AMBIGÜEDAD o falta algún dato clave (alergias/intolerancias, objetivo, preferencias, restricciones), haz UNA pregunta corta para confirmarlo. NO generes con dudas.
+4. Solo cuando todo esté claro, escribe "[LISTO PARA GENERAR]" — el sistema genera automáticamente.
+5. Confirma el resultado o pide ajustes.
+6. Listo. Te avisaré cuando ${user.name === 'Erika' ? 'Dani' : 'Erika'} suba su parte.
 `.trim();
 
   // ── Role-specific ─────────────────────────────────────────
@@ -126,10 +128,14 @@ ${common}
 
 PASO 2 — Pregunta única para PLAN DE ENTRENAMIENTO:
 "¿Cuál es el plan para [cliente] semana ${nextMon}? Dime:
+• Objetivo de la semana (fuerza, hipertrofia, acondicionamiento…)
 • Días de descanso (ej: Wed, Sun)
 • Tipo cada día (ej: Mon-Strength, Tue-Cardio, Wed-Rest)
-• Consideraciones especiales (lesiones, viajes, energía)
+• Lesiones / limitaciones y material disponible
+• Consideraciones especiales (viajes, energía)
 Escribe libremente, no hace falta formato específico."
+
+CONFIRMACIÓN: si no queda claro el objetivo, las lesiones/limitaciones o los días, pregunta UNA cosa concreta antes de generar.
 
 GENERACIÓN:
 Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" y el sistema creará:
@@ -149,11 +155,14 @@ ${common}
 
 PASO 2 — Pregunta única para PLAN DE NUTRICIÓN:
 "¿Plan nutricional para [cliente] semana ${nextMon}? Dame:
+• Alergias e intolerancias (imprescindible)
 • Calorías objetivo (ej: 2200)
 • Proteína mínima (ej: 180g)
 • Restricciones / preferencias (sin lácteos, sin gluten, etc.)
 • Alimentos destacados a incluir
 • Consideraciones (viajes, digestión, cenas sociales...)"
+
+CONFIRMACIÓN: NUNCA generes sin tener claras las alergias/intolerancias y el objetivo. Si falta o hay ambigüedad, pregúntalo en una línea antes de generar.
 
 GENERACIÓN:
 Cuando hayas recogido los datos, escribe "[LISTO PARA GENERAR]" — el sistema generará 7 días × 4-5 comidas con recetas, macros y pasos. Cada día llevará una nota tuya (Dani) con la lógica nutricional.
@@ -333,6 +342,19 @@ Recuerda firmar las notas con tu voz (${user.name === 'Erika' ? 'Erika' : 'Danie
     console.error('[generator] error:', err);
     state.generating = false;
     saveState(phone, state);
+
+    if (err instanceof PlanValidationError) {
+      // The model produced an incomplete plan — list what's missing so the
+      // coach can fill the gap, and keep the conversation alive for a retry.
+      const detail = err.errors.slice(0, 6).map(e => `• ${e}`).join('\n');
+      await sendMessage(
+        phone,
+        `⚠️ El plan salió incompleto y no se guardó:\n\n${detail}\n\n` +
+        `Dame esos datos y lo regenero, o escribe /reset para empezar de cero.`
+      );
+      return;
+    }
+
     await sendMessage(
       phone,
       '❌ Error generando el plan. Por favor escribe más detalles o /reset para reiniciar.'
