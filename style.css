@@ -325,7 +325,7 @@ p {
     border: 1px solid rgba(170, 140, 44, 0.35);
     padding: 0.7rem 1rem;
     font-family: 'Manrope', sans-serif;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     background: rgba(255,255,255,0.85);
     outline: none;
     color: #151515;
@@ -424,7 +424,7 @@ p {
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-top: 1rem;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
 }
 
 /* CONTENEDOR GRID */
@@ -1737,7 +1737,7 @@ body {
     margin-bottom: 0.35rem;
 }
 .p-os-meta {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: var(--muted);
     line-height: 1.45;
 }
@@ -2214,7 +2214,7 @@ body {
 }
 
 .p-chart-note {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: var(--muted-2);
     line-height: 1.55;
 }
@@ -3150,9 +3150,9 @@ body {
 
 .p-stat-desc {
     font-family: 'Manrope', sans-serif;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     letter-spacing: 0.01em;
-    color: rgba(244,241,232,0.58);
+    color: rgba(244,241,232,0.68);
     line-height: 1.55;
 }
 
@@ -4037,7 +4037,7 @@ main > section:not(.p-hero) {
 /* ─ Philosophy section ─ */
 [data-theme="light"] .p-stat-key { color: rgba(24, 21, 14, 0.85); }
 [data-theme="light"] .p-stat-val { color: rgba(176, 136, 40, 0.88); }
-[data-theme="light"] .p-stat-desc { color: rgba(24, 21, 14, 0.62); }
+[data-theme="light"] .p-stat-desc { color: rgba(24, 21, 14, 0.72); }
 [data-theme="light"] .p-philosophy-stat { border-color: rgba(176,136,40,0.18); background: rgba(0,0,0,0.025); }
 [data-theme="light"] .p-philosophy-divider { background: linear-gradient(90deg, rgba(176,136,40,0.45), rgba(136,180,50,0.25), transparent); }
 [data-theme="light"] .p-philosophy-cells-kicker { color: rgba(176,136,40,0.65); }
@@ -4479,7 +4479,7 @@ main > section:not(.p-hero) {
 [data-theme="light"] .tm-hero-title em {
     -webkit-text-stroke: 1.5px rgba(24, 21, 14, 0.42);
 }
-[data-theme="light"] .tm-hero-sub { color: rgba(24, 21, 14, 0.62); }
+[data-theme="light"] .tm-hero-sub { color: rgba(24, 21, 14, 0.72); }
 [data-theme="light"] .tm-bio { color: rgba(24, 21, 14, 0.70); }
 [data-theme="light"] .tm-card {
     background: linear-gradient(160deg, rgba(255,255,255,0.68), rgba(255,255,255,0.45));
@@ -4526,7 +4526,7 @@ main > section:not(.p-hero) {
 [data-theme="light"] .fq-item summary:hover { color: #18150e; }
 [data-theme="light"] .fq-item summary::after { color: #4a3318; }
 [data-theme="light"] .fq-item[open] summary::after { color: #3c2a10; }
-[data-theme="light"] .fq-answer { color: rgba(24, 21, 14, 0.62); }
+[data-theme="light"] .fq-answer { color: rgba(24, 21, 14, 0.72); }
 [data-theme="light"] .fq-answer strong { color: rgba(24, 21, 14, 0.84); }
 [data-theme="light"] .fq-cta-strip { border-top-color: rgba(74, 46, 24, 0.16); }
 
