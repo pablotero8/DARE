@@ -399,8 +399,8 @@
                             <path class="p-arr-path p-arr-path--l" d="M 175 10 C 310 10 390 65 500 65" stroke="#a6c85e" stroke-width="3.2" stroke-linecap="round"/>
                             <path class="p-arr-path p-arr-path--r" d="M 825 10 C 690 10 610 65 500 65" stroke="#d8b25c" stroke-width="3.2" stroke-linecap="round"/>
                             <!-- Labels at origins -->
-                            <text x="175" y="28" font-family="Manrope, sans-serif" font-size="11" letter-spacing="0.1em" text-anchor="middle" fill="rgba(166,200,94,0.7)" font-weight="700">TRAINING</text>
-                            <text x="825" y="28" font-family="Manrope, sans-serif" font-size="11" letter-spacing="0.1em" text-anchor="middle" fill="rgba(201,162,74,0.7)" font-weight="700">NUTRITION</text>
+                            <text x="175" y="30" font-family="Tulpen One, serif" font-size="20" letter-spacing="0.12em" text-anchor="middle" fill="rgba(166,200,94,0.78)">TRAINING</text>
+                            <text x="825" y="30" font-family="Tulpen One, serif" font-size="20" letter-spacing="0.12em" text-anchor="middle" fill="rgba(201,162,74,0.78)">NUTRITION</text>
                             <!-- Plus symbol in middle -->
                             <text x="500" y="42" font-family="Tulpen One, serif" font-size="20" text-anchor="middle" fill="rgba(244,241,232,0.4)">+</text>
                             <!-- Arrowheads + convergence point -->
@@ -411,7 +411,7 @@
                                 <circle cx="500" cy="65" r="3.5" fill="rgba(244,241,232,0.9)"/>
                             </g>
                             <!-- = ONE SYSTEM text at convergence -->
-                            <text x="500" y="82" font-family="Manrope, sans-serif" font-size="13" letter-spacing="0.12em" text-anchor="middle" fill="rgba(244,241,232,0.6)" font-weight="700">=  ONE SYSTEM</text>
+                            <text x="500" y="86" font-family="Tulpen One, serif" font-size="24" letter-spacing="0.14em" text-anchor="middle" fill="rgba(244,241,232,0.72)">=  ONE SYSTEM</text>
                             <!-- Pulse rings at convergence -->
                             <circle class="p-arr-ring-1" cx="500" cy="65" r="18" stroke="rgba(244,241,232,0.22)" stroke-width="1.2" fill="none"/>
                             <circle class="p-arr-ring-2" cx="500" cy="65" r="28" stroke="rgba(244,241,232,0.1)" stroke-width="1.2" fill="none"/>
@@ -1042,7 +1042,7 @@
         if (!accord) return;
         var panels  = accord.querySelectorAll('.p-accord-panel');
         var system  = accord.querySelector('.p-accord-panel--system');
-        var defaults = { training: 1, system: 2.6, nutrition: 1 };
+        var defaults = { training: 1, system: 2.2, nutrition: 1 };
 
         function getType(p) {
             if (p.classList.contains('p-accord-panel--training'))  return 'training';
@@ -1058,7 +1058,9 @@
                     flex = t === 'training' ? 1.9 : t === 'system' ? 1.9 : 1;
                 } else if (hovered === 'nutrition') {
                     flex = t === 'nutrition' ? 1.9 : t === 'system' ? 1.9 : 1;
-                } else { // system or reset
+                } else if (hovered === 'system') {
+                    flex = t === 'system' ? 3 : 1;
+                } else { // reset
                     flex = defaults[t];
                 }
                 p.style.flex = flex;
