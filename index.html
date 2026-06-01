@@ -391,30 +391,30 @@
                 <div class="p-accord-outer">
                     <!-- Fusion arrows — animated paths converging to One System -->
                     <div class="p-accord-arrows-wrap" aria-hidden="true">
-                        <svg class="p-accord-arrows-svg" viewBox="0 0 1000 80" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="p-accord-arrows-svg" viewBox="0 0 1000 150" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Top labels: TRAINING  +  NUTRITION -->
+                            <text x="175" y="22" font-family="Tulpen One, serif" font-size="22" letter-spacing="0.12em" text-anchor="middle" fill="rgba(166,200,94,0.82)">TRAINING</text>
+                            <text x="500" y="24" font-family="Tulpen One, serif" font-size="26" text-anchor="middle" fill="rgba(244,241,232,0.5)">+</text>
+                            <text x="825" y="22" font-family="Tulpen One, serif" font-size="22" letter-spacing="0.12em" text-anchor="middle" fill="rgba(201,162,74,0.82)">NUTRITION</text>
                             <!-- Ghost paths (always visible, dim) -->
-                            <path d="M 175 10 C 310 10 390 65 500 65" stroke="rgba(166,200,94,0.18)" stroke-width="2.8" stroke-linecap="round"/>
-                            <path d="M 825 10 C 690 10 610 65 500 65" stroke="rgba(201,162,74,0.18)" stroke-width="2.8" stroke-linecap="round"/>
+                            <path d="M 175 48 C 320 48 380 100 484 100" stroke="rgba(166,200,94,0.16)" stroke-width="2.6" stroke-linecap="round"/>
+                            <path d="M 825 48 C 680 48 620 100 516 100" stroke="rgba(201,162,74,0.16)" stroke-width="2.6" stroke-linecap="round"/>
                             <!-- Animated traveling paths -->
-                            <path class="p-arr-path p-arr-path--l" d="M 175 10 C 310 10 390 65 500 65" stroke="#a6c85e" stroke-width="3.2" stroke-linecap="round"/>
-                            <path class="p-arr-path p-arr-path--r" d="M 825 10 C 690 10 610 65 500 65" stroke="#d8b25c" stroke-width="3.2" stroke-linecap="round"/>
-                            <!-- Labels at origins -->
-                            <text x="175" y="30" font-family="Tulpen One, serif" font-size="20" letter-spacing="0.12em" text-anchor="middle" fill="rgba(166,200,94,0.78)">TRAINING</text>
-                            <text x="825" y="30" font-family="Tulpen One, serif" font-size="20" letter-spacing="0.12em" text-anchor="middle" fill="rgba(201,162,74,0.78)">NUTRITION</text>
-                            <!-- Plus symbol in middle -->
-                            <text x="500" y="42" font-family="Tulpen One, serif" font-size="20" text-anchor="middle" fill="rgba(244,241,232,0.4)">+</text>
-                            <!-- Arrowheads + convergence point -->
+                            <path class="p-arr-path p-arr-path--l" d="M 175 48 C 320 48 380 100 484 100" stroke="#a6c85e" stroke-width="3" stroke-linecap="round"/>
+                            <path class="p-arr-path p-arr-path--r" d="M 825 48 C 680 48 620 100 516 100" stroke="#d8b25c" stroke-width="3" stroke-linecap="round"/>
+                            <!-- Arrowheads pointing inward toward the central node -->
                             <g class="p-arr-tips">
-                                <path d="M 482 52 L 500 65 L 480 76" stroke="#a6c85e" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                <path d="M 518 52 L 500 65 L 520 76" stroke="#d8b25c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                <circle cx="500" cy="65" r="7.5" fill="rgba(244,241,232,0.08)" stroke="rgba(244,241,232,0.28)" stroke-width="1.5"/>
-                                <circle cx="500" cy="65" r="3.5" fill="rgba(244,241,232,0.9)"/>
+                                <path d="M 474 93 L 484 100 L 474 107" stroke="#a6c85e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <path d="M 526 93 L 516 100 L 526 107" stroke="#d8b25c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <!-- Convergence node -->
+                                <circle cx="500" cy="100" r="6" fill="rgba(244,241,232,0.1)" stroke="rgba(244,241,232,0.3)" stroke-width="1.4"/>
+                                <circle cx="500" cy="100" r="3" fill="rgba(244,241,232,0.92)"/>
                             </g>
-                            <!-- = ONE SYSTEM text at convergence -->
-                            <text x="500" y="86" font-family="Tulpen One, serif" font-size="24" letter-spacing="0.14em" text-anchor="middle" fill="rgba(244,241,232,0.72)">=  ONE SYSTEM</text>
                             <!-- Pulse rings at convergence -->
-                            <circle class="p-arr-ring-1" cx="500" cy="65" r="18" stroke="rgba(244,241,232,0.22)" stroke-width="1.2" fill="none"/>
-                            <circle class="p-arr-ring-2" cx="500" cy="65" r="28" stroke="rgba(244,241,232,0.1)" stroke-width="1.2" fill="none"/>
+                            <circle class="p-arr-ring-1" cx="500" cy="100" r="14" stroke="rgba(244,241,232,0.2)" stroke-width="1.2" fill="none"/>
+                            <circle class="p-arr-ring-2" cx="500" cy="100" r="22" stroke="rgba(244,241,232,0.1)" stroke-width="1.2" fill="none"/>
+                            <!-- = ONE SYSTEM — clearly separated below the node -->
+                            <text x="500" y="140" font-family="Tulpen One, serif" font-size="26" letter-spacing="0.14em" text-anchor="middle" fill="rgba(244,241,232,0.78)">= ONE SYSTEM</text>
                         </svg>
                     </div>
 
@@ -755,72 +755,6 @@
                             <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-carbs"></span>Carbohydrates</span>
                             <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-fat"></span>Fat</span>
                             <span class="p-wl-item"><span class="p-wl-line-sample"></span>Training Load</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-<section class="p-section p-section-tight" id="onboarding" aria-label="Your first 7 days">
-            <div class="p-shell">
-                <div class="p-section-head">
-                    <h2 class="p-title p-split" data-split="lines">Your first 7 days</h2>
-                    <p class="p-sub">From first contact to full execution — no friction.</p>
-                </div>
-                <div class="p-timeline">
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 1</span>
-                            <span class="p-timeline-line"></span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Private consultation</h3>
-                            <ul class="p-timeline-list">
-                                <li>Direct call with Erika &amp; Daniel</li>
-                                <li>No forms, no assistants</li>
-                                <li>Your goals and standard, defined</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 2–3</span>
-                            <span class="p-timeline-line"></span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Full baseline assessment</h3>
-                            <ul class="p-timeline-list">
-                                <li>Movement &amp; metabolic screening</li>
-                                <li>Schedule mapped to your week</li>
-                                <li><a href="https://www.whoop.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">WHOOP</a> Peak band ships</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 4–5</span>
-                            <span class="p-timeline-line"></span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Program delivered</h3>
-                            <ul class="p-timeline-list">
-                                <li>Training + nutrition protocol</li>
-                                <li>Built to your biology &amp; calendar</li>
-                                <li>Reviewed together, line by line</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="p-timeline-item">
-                        <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 7</span>
-                        </div>
-                        <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Execution begins</h3>
-                            <ul class="p-timeline-list">
-                                <li>First session. First meals.</li>
-                                <li>Full system live</li>
-                                <li>No ramp-up — you're on protocol</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
