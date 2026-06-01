@@ -588,6 +588,89 @@
             margin-top: 0.15rem;
         }
 
+        /* ── FIRST 7 DAYS — minimalist journey ── */
+        .op-journey {
+            padding: 12vh 6vw;
+            background: #0a0a0c;
+            color: #f4f1e8;
+        }
+        .op-journey-inner { max-width: 1200px; margin: 0 auto; }
+        .op-journey-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            margin-bottom: 6rem;
+        }
+        .op-journey-title span { color: var(--gold); }
+
+        .op-journey-track { position: relative; }
+        .op-journey-line {
+            position: absolute;
+            top: 7px; left: 4px; right: 4px; height: 1px;
+            background: rgba(244,241,232,0.12);
+            overflow: hidden;
+        }
+        .op-journey-line-fill {
+            position: absolute; inset: 0;
+            transform: scaleX(0); transform-origin: left center;
+            background: linear-gradient(90deg, var(--green), var(--gold));
+            transition: transform 1.9s cubic-bezier(.4,0,.2,1);
+        }
+        .op-journey-track.is-in .op-journey-line-fill { transform: scaleX(1); }
+
+        .op-journey-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.5rem;
+            position: relative;
+        }
+        .op-step { position: relative; padding-right: 1.2rem; }
+        .op-step-dot {
+            width: 15px; height: 15px; border-radius: 50%;
+            border: 1px solid rgba(244,241,232,0.3);
+            background: #0a0a0c;
+            position: relative; z-index: 1;
+            margin-bottom: 1.9rem;
+            transition: border-color .6s ease, box-shadow .6s ease;
+        }
+        .op-step-dot::after {
+            content: ''; position: absolute; inset: 4px; border-radius: 50%;
+            background: var(--gold); transform: scale(0); transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+        }
+        .op-journey-track.is-in .op-step-dot { border-color: var(--gold); }
+        .op-journey-track.is-in .op-step-dot::after { transform: scale(1); }
+        .op-step--final .op-step-dot::after { background: var(--green); }
+        .op-journey-track.is-in .op-step--final .op-step-dot {
+            border-color: var(--green);
+            box-shadow: 0 0 0 4px rgba(166,200,94,0.12);
+        }
+
+        .op-step-day {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase;
+            color: var(--gold); font-weight: 700; margin-bottom: 0.85rem;
+        }
+        .op-step--final .op-step-day { color: var(--green); }
+        .op-step-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.08rem; font-weight: 700; color: #f4f1e8;
+            margin-bottom: 0.55rem; line-height: 1.2; letter-spacing: -0.01em;
+        }
+        .op-step-desc {
+            font-size: 0.86rem; color: rgba(244,241,232,0.5); line-height: 1.55;
+        }
+
+        @media (max-width: 720px) {
+            .op-journey-title { margin-bottom: 3.5rem; }
+            .op-journey-line { top: 4px; bottom: 4px; left: 7px; right: auto; width: 1px; height: auto; }
+            .op-journey-line-fill { transform: scaleY(0); transform-origin: center top; }
+            .op-journey-track.is-in .op-journey-line-fill { transform: scaleY(1); }
+            .op-journey-steps { grid-template-columns: 1fr; gap: 2.6rem; padding-left: 2.2rem; }
+            .op-step { padding-right: 0; }
+            .op-step-dot { margin-bottom: 1rem; margin-left: -2.2rem; }
+        }
+
         /* ── CTA ── */
         .op-cta {
             padding: 10vh 6vw;
@@ -1132,6 +1215,43 @@
                     <li>Direct coach messaging — questions answered by Erika or Daniel directly, not a support team. Typically within hours.</li>
                     <li><span style="display:inline-flex;align-items:center;gap:0.45rem;vertical-align:middle;margin-right:0.15rem;"><img src="images/whoop-circle-white.svg" alt="WHOOP" width="14" height="14" style="opacity:0.75;vertical-align:middle;" onerror="this.style.display='none'"><strong style="color:#f4f1e8;font-size:0.78rem;letter-spacing:0.08em;">WHOOP Peak band included</strong></span> — biometric monitoring from day one. Recovery score, HRV, sleep quality, and day strain reviewed by your coaches every Monday alongside your progress metrics.</li>
                 </ul>
+            </div>
+        </section>
+
+        <!-- ── FIRST 7 DAYS ── -->
+        <section class="op-journey">
+            <div class="op-journey-inner">
+                <p class="op-section-label">From enquiry to execution</p>
+                <h2 class="op-journey-title">YOUR FIRST<br><span>7 DAYS</span></h2>
+                <div class="op-journey-track">
+                    <div class="op-journey-line" aria-hidden="true"><span class="op-journey-line-fill"></span></div>
+                    <div class="op-journey-steps">
+                        <div class="op-step">
+                            <div class="op-step-dot" aria-hidden="true"></div>
+                            <div class="op-step-day">Day 1</div>
+                            <h3 class="op-step-title">Private consultation</h3>
+                            <p class="op-step-desc">Direct call with Erika &amp; Daniel.</p>
+                        </div>
+                        <div class="op-step">
+                            <div class="op-step-dot" aria-hidden="true"></div>
+                            <div class="op-step-day">Day 2–3</div>
+                            <h3 class="op-step-title">Baseline &amp; WHOOP</h3>
+                            <p class="op-step-desc">Screening complete. Band ships.</p>
+                        </div>
+                        <div class="op-step">
+                            <div class="op-step-dot" aria-hidden="true"></div>
+                            <div class="op-step-day">Day 4–5</div>
+                            <h3 class="op-step-title">Protocol delivered</h3>
+                            <p class="op-step-desc">Training + nutrition, built to you.</p>
+                        </div>
+                        <div class="op-step op-step--final">
+                            <div class="op-step-dot" aria-hidden="true"></div>
+                            <div class="op-step-day">Day 7</div>
+                            <h3 class="op-step-title">Execution begins</h3>
+                            <p class="op-step-desc">Full system live. No ramp-up.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 

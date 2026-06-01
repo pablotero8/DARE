@@ -658,6 +658,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* "How we build your program" — cinematic per-item unfold */
+  if (document.querySelector(".p-process-list") && window.ScrollTrigger && window.gsap) {
+    gsap.utils.toArray(".p-process-item").forEach(function (item) {
+      var num  = item.querySelector(".p-process-num");
+      var body = item.querySelector(".p-process-body");
+      var art  = item.querySelector(".p-process-art");
+      var tl = gsap.timeline({
+        scrollTrigger: { trigger: item, start: "top 86%", toggleActions: "play none none reverse" },
+      });
+      tl.from(item, { opacity: 0, y: 56, duration: 0.95, ease: "power3.out" })
+        .from(num, { x: -48, opacity: 0, scale: 0.66, filter: "blur(8px)", duration: 0.85, ease: "power3.out", clearProps: "filter" }, "-=0.65")
+        .from(body ? body.children : [], { y: 26, opacity: 0, duration: 0.7, stagger: 0.1, ease: "power3.out" }, "-=0.55")
+        .from(art, { scale: 0.45, opacity: 0, rotate: -14, duration: 0.95, ease: "back.out(1.7)" }, "-=0.75");
+    });
+  }
+
+  /* Online protocol — "Your first 7 days" journey reveal */
+  var jtrack = document.querySelector(".op-journey-track");
+  if (jtrack) {
+    if (window.ScrollTrigger && window.gsap) {
+      ScrollTrigger.create({
+        trigger: jtrack,
+        start: "top 80%",
+        onEnter: function () { jtrack.classList.add("is-in"); },
+        onLeaveBack: function () { jtrack.classList.remove("is-in"); },
+      });
+      gsap.from(".op-step", {
+        scrollTrigger: { trigger: jtrack, start: "top 80%", toggleActions: "play none none reverse" },
+        opacity: 0,
+        y: 32,
+        duration: 0.8,
+        stagger: 0.16,
+        ease: "power3.out",
+      });
+    } else {
+      jtrack.classList.add("is-in");
+    }
+  }
+
   /* Init charts — Chart.js may already be loaded or load async */
   if (typeof Chart !== "undefined") {
     initDareCharts();
