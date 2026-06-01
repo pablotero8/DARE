@@ -2538,271 +2538,191 @@ body {
 }
 
 /* =========================================
-   OUR METHOD — TRIO PILLARS
+   OUR METHOD — TWO PILLARS (photo, bold)
+   Training + Nutrition are the heroes.
+   One System = a quiet connector beneath.
    ========================================= */
-/* --- Method 3-line typographic header ------------------------------- */
-.p-method-lines {
+.p-fuse {
+    margin-top: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    margin-top: 0.5rem;
-    margin-bottom: 2.2rem;
-}
-.p-method-line {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-.p-ml-kw {
-    font-family: 'Tulpen One', serif;
-    font-size: clamp(2rem, 3.2vw, 3rem);
-    line-height: 1;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    flex-shrink: 0;
-}
-.p-ml-kw--training    { color: rgba(166,200,94,0.92); }
-.p-ml-kw--nutrition   { color: rgba(201,162,74,0.92); }
-.p-ml-kw--integration { color: rgba(244,241,232,0.80); }
-.p-ml-sep {
-    flex: 0 0 48px;
-    height: 1px;
-    background: linear-gradient(to right, rgba(244,241,232,0.15), transparent);
-}
-.p-ml-desc {
-    font-family: 'Manrope', sans-serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(244,241,232,0.38);
-    white-space: nowrap;
+    align-items: stretch;
 }
 
-/* --- Method trio ---------------------------------------------------- */
-.p-method-trio {
-    display: flex;
-    border-radius: 24px;
-    overflow: hidden;
-    height: 68vh;
-    min-height: 480px;
-    max-height: 700px;
-    margin-top: 1.5rem;
-    border: 1px solid rgba(244,241,232,0.10);
+/* --- The two hero pillars --- */
+.p-fuse-pillars {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    gap: 1.1rem;
 }
 
-.p-method-pillar {
-    flex: 1;
+.p-fuse-card {
     position: relative;
+    display: block;
     overflow: hidden;
+    border-radius: 18px;
+    min-height: clamp(380px, 46vh, 520px);
     text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-    transition: flex 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+    border: 1px solid rgba(244,241,232,0.10);
+    isolation: isolate;
+    transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), border-color 0.4s ease;
 }
+.p-fuse-card:hover { transform: translateY(-4px); }
+.p-fuse-card--training:hover  { border-color: rgba(166,200,94,0.55); }
+.p-fuse-card--nutrition:hover { border-color: rgba(201,162,74,0.55); }
 
-/* Center card wider at rest */
-.p-pillar-system { flex: 1.8; }
-
-/* On trio hover: sides shrink, center stays proportionally wider */
-.p-method-trio:hover .p-method-pillar { flex: 0.6; }
-.p-method-trio:hover .p-pillar-system  { flex: 1.2; }
-
-/* Direct hover on any card: that card expands fully */
-.p-method-pillar:hover { flex: 1.9 !important; }
-
-.p-method-pillar:not(:last-child) {
-    border-right: 1px solid rgba(244,241,232,0.08);
-}
-
-.p-method-pillar-bg {
+/* photographic background */
+.p-fuse-card-bg {
     position: absolute;
     inset: 0;
+    z-index: 0;
     background-size: cover;
     background-position: center;
-    transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+    transform: scale(1.01);
+    transition: transform 0.8s cubic-bezier(0.22,1,0.36,1), filter 0.5s ease;
+    filter: saturate(1.05) contrast(1.02);
 }
+.p-fuse-card--training .p-fuse-card-bg  { background-image: url('./images/rackslide.jpg'); }
+.p-fuse-card--nutrition .p-fuse-card-bg { background-image: url('./images/foodslide.jpg'); }
+.p-fuse-card:hover .p-fuse-card-bg { transform: scale(1.08); }
 
-.p-method-pillar:hover .p-method-pillar-bg { transform: scale(1.05); }
-
-.p-pillar-training .p-method-pillar-bg { background-image: url('./images/rackslide.jpg'); }
-.p-pillar-nutrition .p-method-pillar-bg { background-image: url('./images/foodslide.jpg'); }
-.p-pillar-system .p-method-pillar-bg {
-    background-image: url('./images/playa.png');
-    background-position: center 30%;
-}
-
-.p-method-pillar-overlay {
+/* dark shade for legibility + accent wash */
+.p-fuse-card-shade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(5,5,7,0.20) 0%, rgba(5,5,7,0.88) 100%);
     z-index: 1;
-    transition: background 0.45s ease;
+    background: linear-gradient(180deg,
+        rgba(5,5,7,0.10) 0%,
+        rgba(5,5,7,0.45) 42%,
+        rgba(5,5,7,0.94) 100%);
+    transition: background 0.4s ease;
 }
+.p-fuse-card--training .p-fuse-card-shade  { background-image: linear-gradient(180deg, rgba(5,5,7,0.10) 0%, rgba(5,5,7,0.45) 42%, rgba(5,5,7,0.94) 100%), linear-gradient(120deg, rgba(166,200,94,0.16), transparent 55%); }
+.p-fuse-card--nutrition .p-fuse-card-shade { background-image: linear-gradient(180deg, rgba(5,5,7,0.10) 0%, rgba(5,5,7,0.45) 42%, rgba(5,5,7,0.94) 100%), linear-gradient(240deg, rgba(201,162,74,0.16), transparent 55%); }
 
-.p-method-pillar:hover .p-method-pillar-overlay {
-    background: linear-gradient(180deg, rgba(5,5,7,0.15) 0%, rgba(5,5,7,0.82) 100%);
-}
-
-/* Training: subtle gold glow bleeding right toward center */
-.p-pillar-training .p-method-pillar-overlay {
-    background:
-        linear-gradient(180deg, rgba(5,5,7,0.18) 0%, rgba(5,5,7,0.88) 100%),
-        linear-gradient(to right, transparent 60%, rgba(201,162,74,0.09) 100%);
-}
-
-/* "+" connector badge at inner edge of Training card */
-.p-pillar-training::after {
-    content: '+';
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Manrope', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 300;
-    color: rgba(201,162,74,0.45);
-    z-index: 6;
-    pointer-events: none;
-    transition: color 0.4s ease, opacity 0.4s ease;
-}
-.p-pillar-training:hover::after { opacity: 0; }
-
-/* Nutrition: subtle gold glow bleeding left toward center */
-.p-pillar-nutrition .p-method-pillar-overlay {
-    background:
-        linear-gradient(180deg, rgba(5,5,7,0.18) 0%, rgba(5,5,7,0.88) 100%),
-        linear-gradient(to left, transparent 60%, rgba(201,162,74,0.09) 100%);
-}
-
-/* "+" connector badge at inner edge of Nutrition card */
-.p-pillar-nutrition::before {
-    content: '+';
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Manrope', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 300;
-    color: rgba(201,162,74,0.45);
-    z-index: 6;
-    pointer-events: none;
-    transition: color 0.4s ease, opacity 0.4s ease;
-}
-.p-pillar-nutrition:hover::before { opacity: 0; }
-
-/* One System: gold result bar at top + brighter overlay */
-.p-pillar-system::before {
+/* bold accent bar across the top — aggressive edge */
+.p-fuse-card::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg,
-        rgba(201,162,74,0)    0%,
-        rgba(201,162,74,0.9) 25%,
-        rgba(166,200,94,0.8) 75%,
-        rgba(201,162,74,0)   100%);
-    z-index: 4;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    z-index: 3;
+    transform-origin: left;
+    transition: height 0.35s ease;
 }
-.p-pillar-system .p-method-pillar-overlay {
-    background: linear-gradient(180deg, rgba(5,5,7,0.08) 0%, rgba(5,5,7,0.78) 100%);
-}
+.p-fuse-card--training::after  { background: linear-gradient(90deg, #a6c85e 0%, rgba(166,200,94,0) 85%); }
+.p-fuse-card--nutrition::after { background: linear-gradient(270deg, #c9a24a 0%, rgba(201,162,74,0) 85%); }
+.p-fuse-card:hover::after { height: 7px; }
 
-.p-method-pillar-content {
-    position: relative;
+.p-fuse-card-inner {
+    position: absolute;
+    inset: 0;
     z-index: 2;
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 2rem 1.85rem 2.2rem;
+    padding: 2.2rem 2rem;
 }
-
-.p-pillar-index {
-    display: block;
+.p-fuse-index {
     font-family: 'Manrope', sans-serif;
-    font-size: 0.62rem;
-    letter-spacing: 0.32em;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(244,241,232,0.30);
-    margin-bottom: 0.8rem;
-    transition: color 0.3s ease;
+    color: rgba(244,241,232,0.62);
+    margin-bottom: 0.6rem;
 }
-
-.p-method-pillar:hover .p-pillar-index { color: rgba(244,241,232,0.55); }
-
-.p-pillar-body { display: grid; gap: 0.55rem; }
-
-.p-pillar-label {
+.p-fuse-label {
     font-family: 'Tulpen One', serif;
-    font-size: clamp(5rem, 8vw, 9rem);
-    letter-spacing: 0.03em;
+    font-size: clamp(3rem, 6.5vw, 5.2rem);
+    line-height: 0.82;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
-    line-height: 0.85;
-    font-weight: 400;
+    text-shadow: 0 8px 40px rgba(0,0,0,0.5);
 }
-
-.p-pillar-training .p-pillar-label { color: rgba(166,200,94,0.95); font-size: clamp(2rem, 3.2vw, 3.8rem); }
-.p-pillar-nutrition .p-pillar-label { color: rgba(201,162,74,0.95); font-size: clamp(2rem, 3.2vw, 3.8rem); }
-.p-pillar-system .p-pillar-label   { color: rgba(244,241,232,0.90); }
-
-.p-pillar-title {
+.p-fuse-card--training .p-fuse-label  { color: #b4d56a; }
+.p-fuse-card--nutrition .p-fuse-label { color: #d8b25c; }
+.p-fuse-role {
     font-family: 'Manrope', sans-serif;
-    font-size: clamp(0.72rem, 1vw, 0.9rem);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: rgba(244,241,232,0.50);
-    line-height: 1.4;
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-top: 0.5rem;
+    color: #f4f1e8;
+    margin-top: 0.75rem;
 }
-
-.p-pillar-copy {
-    font-size: 0.9rem;
-    color: var(--muted);
-    line-height: 1.6;
-    max-width: 30ch;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.35s ease 0.05s, transform 0.35s ease 0.05s;
-    margin-top: 0.2rem;
+.p-fuse-copy {
+    font-size: 1.04rem;
+    line-height: 1.5;
+    color: rgba(244,241,232,0.74);
+    margin-top: 0.45rem;
+    max-width: 34ch;
 }
-
-.p-method-pillar:hover .p-pillar-copy {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.p-pillar-cta {
-    display: inline-block;
-    font-size: 0.72rem;
-    letter-spacing: 0.22em;
+.p-fuse-link {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    margin-top: 0.55rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+    margin-top: 1.3rem;
+    transition: letter-spacing 0.3s ease;
+}
+.p-fuse-card--training .p-fuse-link  { color: #b4d56a; }
+.p-fuse-card--nutrition .p-fuse-link { color: #d8b25c; }
+.p-fuse-card:hover .p-fuse-link { letter-spacing: 0.24em; }
+
+/* "+" between the two pillars */
+.p-fuse-plus {
+    align-self: center;
+    justify-self: center;
+    padding: 0 0.3rem;
+    font-family: 'Tulpen One', serif;
+    font-size: clamp(2.2rem, 3vw, 3rem);
+    line-height: 1;
+    color: rgba(244,241,232,0.55);
 }
 
-.p-pillar-training .p-pillar-cta { color: rgba(166,200,94,0.95); }
-.p-pillar-nutrition .p-pillar-cta { color: rgba(201,162,74,0.95); }
-.p-pillar-system .p-pillar-cta { color: rgba(244,241,232,0.75); }
-
-.p-method-pillar:hover .p-pillar-cta {
-    opacity: 1;
-    transform: translateY(0);
+/* --- One System — quiet connector, intentionally minor --- */
+.p-fuse-system {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+    margin-top: 1.5rem;
+    text-decoration: none;
+    transition: opacity 0.25s ease;
+}
+.p-fuse-system:hover { opacity: 0.8; }
+.p-fuse-system-line {
+    height: 1px;
+    flex: 1;
+    max-width: 110px;
+    background: linear-gradient(90deg, transparent, rgba(201,162,74,0.45));
+}
+.p-fuse-system-line + .p-fuse-system-line,
+.p-fuse-system-text + .p-fuse-system-line {
+    background: linear-gradient(90deg, rgba(201,162,74,0.45), transparent);
+}
+.p-fuse-system-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(244,241,232,0.5);
+    white-space: nowrap;
+}
+.p-fuse-system-text strong {
+    color: rgba(201,162,74,0.9);
+    font-weight: 700;
 }
 
-@media (max-width: 860px) {
-    .p-method-trio {
-        flex-direction: column;
-        height: auto;
-        max-height: none;
-    }
-    .p-method-pillar { min-height: 240px; flex: none; }
-    .p-method-trio:hover .p-method-pillar { flex: none; }
-    .p-method-pillar:hover { flex: none !important; }
-    .p-pillar-copy { opacity: 1; transform: none; }
-    .p-pillar-cta { opacity: 1; transform: none; }
+/* --- Responsive --- */
+@media (max-width: 760px) {
+    .p-fuse-pillars { grid-template-columns: 1fr; gap: 0; }
+    .p-fuse-plus { padding: 0.85rem 0; }
+    .p-fuse-card { min-height: clamp(340px, 56vh, 440px); }
+    .p-fuse-system-text { white-space: normal; text-align: center; }
+    .p-fuse-system-line { max-width: 36px; }
 }
 
 /* =========================================
@@ -3048,8 +2968,8 @@ body {
    ========================================= */
 .p-philosophy {
     display: flex;
-    align-items: center;
-    padding: 10vh 0;
+    flex-direction: column;
+    padding: 10vh 0 0;
     position: relative;
     overflow: hidden;
     gap: 0;
@@ -3065,75 +2985,175 @@ body {
     pointer-events: none;
 }
 
-.p-philosophy-text {
+/* ── Upper: 2-column grid (cells | chart) ── */
+.p-philosophy-upper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding-bottom: 5vh;
+}
+
+.p-philosophy-cells {
     flex: 0 0 50%;
     padding-left: clamp(1.5rem, 4vw, 4rem);
     padding-right: clamp(1rem, 3vw, 3rem);
     position: relative;
     z-index: 1;
-    font-family: 'Tulpen One', serif;
-    font-size: clamp(4.5rem, 7.5vw, 10rem);
-    line-height: .86;
-    letter-spacing: .03em;
-    text-transform: uppercase;
 }
 
-.p-philosophy-outline {
-    display: block;
-    -webkit-text-stroke: 1px rgba(244,241,232,.22);
-    color: transparent;
-}
-
-.p-philosophy-solid {
-    display: block;
-    color: var(--text-color);
-}
-
-.p-philosophy-sub {
+.p-philosophy-cells-kicker {
     display: block;
     font-family: 'Manrope', sans-serif;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: var(--muted-2);
-    margin-top: 2rem;
-    -webkit-text-stroke: 0;
-    color: rgba(244,241,232,.35);
+    color: rgba(201,162,74,0.55);
+    font-weight: 700;
+    margin-bottom: 0.85rem;
 }
 
+.p-philosophy-cells-lead {
+    font-family: 'Tulpen One', serif;
+    font-size: clamp(2.6rem, 4.2vw, 5rem);
+    line-height: 0.88;
+    text-transform: uppercase;
+    color: var(--text-color);
+    letter-spacing: 0.04em;
+    margin-bottom: 0;
+}
+
+/* ── Marquee slogan ── */
+.p-philosophy-marquee {
+    overflow: hidden;
+    border-top: 1px solid rgba(244,241,232,0.07);
+    padding: 2rem 0;
+    position: relative;
+}
+
+.p-philosophy-marquee::before,
+.p-philosophy-marquee::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 8vw;
+    z-index: 2;
+    pointer-events: none;
+}
+.p-philosophy-marquee::before {
+    left: 0;
+    background: linear-gradient(90deg, var(--bg-color), transparent);
+}
+.p-philosophy-marquee::after {
+    right: 0;
+    background: linear-gradient(270deg, var(--bg-color), transparent);
+}
+
+.p-philosophy-marquee-track {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    white-space: nowrap;
+    font-family: 'Tulpen One', serif;
+    font-size: clamp(1.9rem, 3vw, 3.6rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(244,241,232,0.52);
+    animation: philo-marquee 32s linear infinite;
+    will-change: transform;
+    gap: 1.4rem;
+}
+
+.p-philosophy-marquee-track span { display: inline-block; }
+
+.p-marquee-dot {
+    color: rgba(201,162,74,0.55) !important;
+    font-size: 0.65em;
+    vertical-align: middle;
+    padding: 0 0.6rem;
+}
+
+@keyframes philo-marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-33.333%); }
+}
+
+/* kept for light-theme overrides */
+.p-philosophy-outline { display: none; }
+.p-philosophy-solid   { display: none; }
+.p-philosophy-sub     { display: none; }
+
 .p-philosophy-divider {
-    width: 36px;
+    width: 100%;
     height: 1px;
-    background: rgba(201,162,74,0.35);
-    margin: 2.5rem 0 1.8rem;
+    background: linear-gradient(90deg, rgba(201,162,74,0.30), rgba(166,200,94,0.18), transparent);
+    margin: 2rem 0 1.4rem;
 }
 
 .p-philosophy-stats {
     display: flex;
-    gap: 2.5rem;
+    flex-direction: column;
+    gap: 0.55rem;
 }
 
 .p-philosophy-stat {
     display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 1.2rem 1.1rem 1.2rem 1.4rem;
+    border: 1px solid rgba(201,162,74,0.11);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.022);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.p-philosophy-stat:hover {
+    border-color: rgba(201,162,74,0.22);
+    background: rgba(255,255,255,0.034);
+}
+
+.p-philosophy-stat::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(201,162,74,0.72), rgba(166,200,94,0.46));
 }
 
 .p-stat-val {
     font-family: 'Tulpen One', serif;
-    font-size: clamp(2rem, 3.5vw, 3.2rem);
-    color: rgba(201,162,74,0.85);
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    color: rgba(201,162,74,0.88);
     line-height: 1;
     letter-spacing: .02em;
+    flex-shrink: 0;
+    min-width: 3.8rem;
+}
+
+.p-stat-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    padding-top: 0.12rem;
 }
 
 .p-stat-key {
     font-family: 'Manrope', sans-serif;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: rgba(244,241,232,.32);
-    line-height: 1.65;
+    color: rgba(244,241,232,0.72);
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.p-stat-desc {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.76rem;
+    letter-spacing: 0.02em;
+    color: rgba(244,241,232,0.28);
+    line-height: 1.5;
 }
 
 .p-philosophy-art {
@@ -3153,21 +3173,24 @@ body {
 }
 
 @media (max-width: 900px) {
-    .p-philosophy {
+    .p-philosophy { padding-top: 8vh; }
+    .p-philosophy-upper {
         flex-direction: column;
-        padding: 8vh 2rem;
+        padding-bottom: 3vh;
     }
-    .p-philosophy-text {
+    .p-philosophy-cells {
         flex: none;
         width: 100%;
-        padding-left: 0;
-        padding-right: 0;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
     }
     .p-philosophy-art {
         flex: none;
         width: min(85vw, 340px);
-        padding: 0;
+        padding: 1.5rem 0 0;
     }
+    .p-philosophy-marquee { padding: 1.5rem 0; }
+    .p-philosophy-marquee-track { font-size: clamp(1.5rem, 5vw, 2rem); }
 }
 
 /* =========================================
@@ -3307,6 +3330,31 @@ body {
     line-height: 1.68;
 }
 
+.p-timeline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+}
+.p-timeline-list li {
+    position: relative;
+    padding-left: 1.15rem;
+    font-size: 1.06rem;
+    line-height: 1.4;
+    color: var(--muted);
+}
+.p-timeline-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.58em;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(201,162,74,0.95), rgba(166,200,94,0.85));
+}
+
 @media (max-width: 900px) {
     .p-timeline {
         grid-template-columns: minmax(0, 1fr);
@@ -3348,38 +3396,48 @@ body {
 }
 
 /* =========================================
-   LEGIBILITY — BUMP SMALL TEXT SIZES
+   LEGIBILITY — READABILITY PASS (body ≥ 18px)
    ========================================= */
 /* Section subtitles */
-.p-sub { font-size: 1.12rem; }
+.p-sub { font-size: clamp(1.18rem, 1.6vw, 1.3rem); line-height: 1.6; }
 
 /* Kicker labels (section category chips) */
 .p-chart-kicker,
 .p-bento-kicker,
 .p-os-k,
 .p-bridge-intro-k,
-.p-method-page-kicker { font-size: 0.78rem; }
+.p-method-page-kicker { font-size: 0.82rem; }
 
-/* Pillar index & copy (label size controlled above) */
-.p-pillar-index { font-size: 0.62rem; }
-.p-pillar-copy { font-size: 0.88rem; }
+/* Method pillars */
+.p-pillar-index { font-size: 0.7rem; }
+.p-pillar-title { font-size: clamp(0.88rem, 1.1vw, 1.02rem); }
+.p-pillar-copy { font-size: 1.12rem; line-height: 1.6; max-width: 32ch; }
 
-/* Process list copy */
-.p-process-copy { font-size: 1.05rem; }
+/* Process list */
+.p-process-title { font-size: clamp(1.4rem, 2.1vw, 1.65rem); }
+.p-process-copy  { font-size: 1.18rem; line-height: 1.65; }
 
 /* Chart notes */
-.p-chart-note { font-size: 0.95rem; }
+.p-chart-note { font-size: 1.05rem; line-height: 1.55; }
 
-/* Founders bio */
-.p-founders-unified-bio { font-size: clamp(1.06rem, 1.7vw, 1.2rem); }
+/* WHOOP recovery section */
+.p-whoop-hl-sub { font-size: 1.1rem !important; line-height: 1.6 !important; }
+
+/* Onboarding timeline */
+.p-timeline-title { font-size: 1.24rem; }
+.p-timeline-copy  { font-size: 1.12rem; line-height: 1.62; }
+
+/* Founders */
+.p-founders-unified-bio { font-size: clamp(1.2rem, 1.7vw, 1.34rem); }
+.p-founders-quote-text  { font-size: clamp(2.3rem, 3.2vw, 2.9rem); }
 
 /* Carousel */
-.p-carousel-logo-item { font-size: 0.80rem; }
+.p-carousel-logo-item { font-size: 0.84rem; }
 
 /* Footer */
 .p-footer-nav a,
-.p-footer-wa { font-size: 0.88rem; }
-.p-footer-bottom span { font-size: 0.80rem; }
+.p-footer-wa { font-size: 0.95rem; }
+.p-footer-bottom span { font-size: 0.84rem; }
 
 /* =========================================
    FOUNDERS SLOGAN
@@ -3977,14 +4035,18 @@ main > section:not(.p-hero) {
 }
 
 /* ─ Philosophy section ─ */
-[data-theme="light"] .p-philosophy-outline {
-    -webkit-text-stroke: 1.5px rgba(24, 21, 14, 0.32);
-}
-[data-theme="light"] .p-philosophy-solid { color: var(--text-color); }
-[data-theme="light"] .p-philosophy-sub { color: rgba(24, 21, 14, 0.42); }
-[data-theme="light"] .p-stat-key { color: rgba(24, 21, 14, 0.40); }
+[data-theme="light"] .p-stat-key { color: rgba(24, 21, 14, 0.55); }
 [data-theme="light"] .p-stat-val { color: rgba(176, 136, 40, 0.88); }
-[data-theme="light"] .p-philosophy-divider { background: rgba(176, 136, 40, 0.55); }
+[data-theme="light"] .p-stat-desc { color: rgba(24, 21, 14, 0.35); }
+[data-theme="light"] .p-philosophy-stat { border-color: rgba(176,136,40,0.18); background: rgba(0,0,0,0.025); }
+[data-theme="light"] .p-philosophy-divider { background: linear-gradient(90deg, rgba(176,136,40,0.45), rgba(136,180,50,0.25), transparent); }
+[data-theme="light"] .p-philosophy-cells-kicker { color: rgba(176,136,40,0.65); }
+[data-theme="light"] .p-philosophy-cells-lead { color: rgba(24,21,14,0.92); }
+[data-theme="light"] .p-philosophy-marquee { border-top-color: rgba(24,21,14,0.08); }
+[data-theme="light"] .p-philosophy-marquee-track { color: rgba(24,21,14,0.45); }
+[data-theme="light"] .p-marquee-dot { color: rgba(176,136,40,0.55) !important; }
+[data-theme="light"] .p-philosophy-marquee::before { background: linear-gradient(90deg, var(--bg-color, #f8f8d9), transparent); }
+[data-theme="light"] .p-philosophy-marquee::after { background: linear-gradient(270deg, var(--bg-color, #f8f8d9), transparent); }
 
 /* ─ Process section (How we build your program) ─ */
 [data-theme="light"] .p-process-item {
