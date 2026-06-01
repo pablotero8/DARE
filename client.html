@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Client Area | DARE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tulpen+One&family=Manrope:wght@300;400;600;700&display=swap">
@@ -419,7 +420,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 <!-- ═══ LOGIN ═══ -->
 <div id="login-screen">
   <div class="login-card glass">
-    <div class="login-logo">DARE</div>
+    <div class="login-logo" translate="no">DARE</div>
     <p class="login-sub">Private Health OS &mdash; Client Portal</p>
     <div class="lf"><label for="email">Email</label><input type="email" id="email" placeholder="your@email.com" autocomplete="email"></div>
     <div class="lf"><label for="pw">Password</label><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
@@ -433,7 +434,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 <!-- ═══ APP ═══ -->
 <div id="app">
   <header class="ch">
-    <a href="index.html" class="ch-logo">DARE</a>
+    <a href="index.html" class="ch-logo" translate="no">DARE</a>
     <div class="ch-daynav">
       <button class="nav-arrow" id="prev-day">&#8592;</button>
       <div class="day-center">
@@ -483,7 +484,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   <div id="no-plan-screen">
     <div class="np-title">WELCOME<br>TO DARE</div>
     <div class="np-name" id="np-client-name"></div>
-    <div class="np-sub">Tu plan personalizado estará listo en breve.<br>Tu coach lo preparará para ti.</div>
+    <div class="np-sub">Your personalised plan will be ready soon.<br>Your coach will prepare it for you.</div>
   </div>
 
   <div id="day-plans">
@@ -623,7 +624,7 @@ async function fetchLivePlan(){
 
 async function apiLogin(email, password){
   const apiUrl = window.DARE_API_URL;
-  if(!apiUrl) return { error: 'API no disponible' };
+  if(!apiUrl) return { error: 'API not available' };
   try{
     const r = await fetch(`${apiUrl}/api/auth/login`, {
       method:'POST',
@@ -631,10 +632,10 @@ async function apiLogin(email, password){
       body: JSON.stringify({ email, password })
     });
     const data = await r.json();
-    if(!r.ok) return { error: data.error || 'Credenciales incorrectas' };
+    if(!r.ok) return { error: data.error || 'Incorrect credentials' };
     return data;
   }catch(err){
-    return { error: 'No se pudo conectar al servidor' };
+    return { error: 'Could not connect to the server' };
   }
 }
 
@@ -1134,7 +1135,7 @@ document.getElementById('login-btn').addEventListener('click', async ()=>{
   const btn = document.getElementById('login-btn');
   const e = document.getElementById('email').value.trim().toLowerCase();
   const p = document.getElementById('pw').value;
-  if(!e || !p){ loginError.textContent='Introduce email y contraseña.'; loginError.classList.add('visible'); return; }
+  if(!e || !p){ loginError.textContent='Please enter your email and password.'; loginError.classList.add('visible'); return; }
   btn.disabled = true; const oldText = btn.textContent; btn.textContent = 'Entering…';
   const result = await apiLogin(e, p);
   btn.disabled = false; btn.textContent = oldText;

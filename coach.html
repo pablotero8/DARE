@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coach | DARE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tulpen+One&family=Manrope:wght@300;400;600;700&display=swap">
@@ -317,7 +318,7 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 
 <!-- HEADER -->
 <header class="header">
-  <span class="header-logo">DARE</span>
+  <span class="header-logo" translate="no">DARE</span>
   <div class="header-right">
     <div class="coach-badge">
       <div class="coach-avatar" id="coach-avatar">?</div>
@@ -326,7 +327,7 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
         <div class="coach-role" id="coach-role">—</div>
       </div>
     </div>
-    <button class="logout-btn" id="logout-btn">Salir</button>
+    <button class="logout-btn" id="logout-btn">Log out</button>
   </div>
 </header>
 
@@ -335,13 +336,13 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-head">
-      <div class="sidebar-title">Clientes</div>
-      <input class="sidebar-search" id="search" placeholder="Buscar…" autocomplete="off">
+      <div class="sidebar-title">Clients</div>
+      <input class="sidebar-search" id="search" placeholder="Search…" autocomplete="off">
     </div>
     <div class="client-list" id="client-list"></div>
     <div class="sidebar-footer">
       <button class="new-client-btn" id="new-client-btn">
-        <span>+</span> Nuevo cliente
+        <span>+</span> New client
       </button>
     </div>
   </aside>
@@ -360,31 +361,31 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
           </div>
         </div>
         <div class="pp-head-btns">
-          <button class="pp-chat-btn" id="pp-chat-btn">✦ Seleccionar para chat</button>
-          <button class="pp-del-btn" id="pp-del-btn">🗑 Eliminar</button>
+          <button class="pp-chat-btn" id="pp-chat-btn">✦ Select for chat</button>
+          <button class="pp-del-btn" id="pp-del-btn">🗑 Delete</button>
           <button class="pp-close" id="pp-close">✕</button>
         </div>
       </div>
       <div class="pp-body" id="pp-body">
-        <div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.8rem">Cargando perfil…</div>
+        <div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.8rem">Loading profile…</div>
       </div>
     </div>
 
     <div class="chat-context" id="chat-context">
       <div class="ctx-avatar" id="ctx-avatar"></div>
-      <span class="ctx-label">Para: <strong class="ctx-name" id="ctx-name"></strong></span>
-      <button class="ctx-clear" id="ctx-clear" title="Quitar selección">✕</button>
+      <span class="ctx-label">For: <strong class="ctx-name" id="ctx-name"></strong></span>
+      <button class="ctx-clear" id="ctx-clear" title="Clear selection">✕</button>
     </div>
 
     <div class="messages" id="messages">
       <div class="welcome" id="welcome">
-        <h2 id="welcome-name">Hola</h2>
-        <p>Selecciona un cliente en la barra lateral y escríbeme qué plan necesitas, o pídeme que dé de alta un cliente nuevo.</p>
+        <h2 id="welcome-name">Hello</h2>
+        <p>Select a client from the sidebar and tell me what plan you need, or ask me to create a new client.</p>
       </div>
     </div>
 
     <div class="chat-input-area">
-      <textarea class="chat-textarea" id="chat-input" placeholder="Escribe aquí…" rows="1"></textarea>
+      <textarea class="chat-textarea" id="chat-input" placeholder="Type here…" rows="1"></textarea>
       <button class="send-btn" id="send-btn" title="Enviar">›</button>
     </div>
   </main>
@@ -429,8 +430,8 @@ function initUI(){
   initials = (me.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('coach-avatar').textContent = initials;
   document.getElementById('coach-name').textContent   = me.name;
-  document.getElementById('coach-role').textContent   = me.specialty === 'training' ? 'Entrenamiento' : 'Nutrición';
-  document.getElementById('welcome-name').textContent = `Hola, ${me.name.split(' ')[0]}`;
+  document.getElementById('coach-role').textContent   = me.specialty === 'training' ? 'Training' : 'Nutrition';
+  document.getElementById('welcome-name').textContent = `Hi, ${me.name.split(' ')[0]}`;
 }
 
 // ── Client list ───────────────────────────────────────────────
@@ -450,7 +451,7 @@ function renderClients(list){
   const el = document.getElementById('client-list');
   el.innerHTML = '';
   if(!list.length){
-    el.innerHTML = '<p style="padding:1rem;font-size:.75rem;color:var(--muted2);text-align:center">Sin clientes todavía</p>';
+    el.innerHTML = '<p style="padding:1rem;font-size:.75rem;color:var(--muted2);text-align:center">No clients yet</p>';
     return;
   }
   list.forEach(c => {
@@ -482,14 +483,14 @@ function selectClient(c){
   document.getElementById('ctx-avatar').textContent = (c.initials||'').slice(0,2);
   document.getElementById('ctx-name').textContent   = c.name;
   document.getElementById('chat-context').classList.add('visible');
-  document.getElementById('chat-input').placeholder = `Plan para ${c.name.split(' ')[0]}…`;
+  document.getElementById('chat-input').placeholder = `Plan for ${c.name.split(' ')[0]}…`;
   renderClients(filterClients(document.getElementById('search').value));
 }
 
 document.getElementById('ctx-clear').addEventListener('click', () => {
   activeClient = null;
   document.getElementById('chat-context').classList.remove('visible');
-  document.getElementById('chat-input').placeholder = 'Escribe aquí…';
+  document.getElementById('chat-input').placeholder = 'Type here…';
   renderClients(filterClients(document.getElementById('search').value));
 });
 
@@ -506,8 +507,8 @@ function filterClients(q){
 document.getElementById('new-client-btn').addEventListener('click', () => {
   activeClient = null;
   document.getElementById('chat-context').classList.remove('visible');
-  document.getElementById('chat-input').placeholder = 'Escribe aquí…';
-  document.getElementById('chat-input').value = 'Quiero dar de alta un nuevo cliente';
+  document.getElementById('chat-input').placeholder = 'Type here…';
+  document.getElementById('chat-input').value = 'I want to add a new client';
   document.getElementById('chat-input').focus();
   renderClients(filterClients(''));
 });
@@ -542,10 +543,10 @@ function appendMsg(role, content, action){
     const card = document.createElement('div');
     card.className = 'action-card';
     card.innerHTML = `
-      <div class="ac-head"><span class="ac-icon">✅</span><span class="ac-title">Plan guardado en el portal</span></div>
-      <div class="ac-row"><strong>Cliente:</strong> ${action.clientId}</div>
-      <div class="ac-row"><strong>Semana del:</strong> ${action.weekOf}</div>
-      <div class="ac-row"><strong>Tipo:</strong> ${action.toolName === 'save_training_plan' ? 'Entrenamiento' : 'Nutrición'}</div>`;
+      <div class="ac-head"><span class="ac-icon">✅</span><span class="ac-title">Plan saved to portal</span></div>
+      <div class="ac-row"><strong>Client:</strong> ${action.clientId}</div>
+      <div class="ac-row"><strong>Week of:</strong> ${action.weekOf}</div>
+      <div class="ac-row"><strong>Type:</strong> ${action.toolName === 'save_training_plan' ? 'Training' : 'Nutrition'}</div>`;
     bubble.appendChild(card);
   }
 
@@ -553,9 +554,9 @@ function appendMsg(role, content, action){
     const card = document.createElement('div');
     card.className = 'action-card gold';
     card.innerHTML = `
-      <div class="ac-head"><span class="ac-icon">🔑</span><span class="ac-title">Contraseña reseteada</span></div>
-      <div class="ac-row"><strong>Cliente:</strong> ${action.clientName}</div>
-      <div class="ac-row">Nueva contraseña temporal:</div>
+      <div class="ac-head"><span class="ac-icon">🔑</span><span class="ac-title">Password reset</span></div>
+      <div class="ac-row"><strong>Client:</strong> ${action.clientName}</div>
+      <div class="ac-row">Temporary password:</div>
       <div class="ac-pwd">${action.password}</div>`;
     bubble.appendChild(card);
   }
@@ -565,11 +566,11 @@ function appendMsg(role, content, action){
     const card = document.createElement('div');
     card.className = 'action-card gold';
     card.innerHTML = `
-      <div class="ac-head"><span class="ac-icon">🆕</span><span class="ac-title">Cliente creado</span></div>
-      <div class="ac-row"><strong>Nombre:</strong> ${c.name}</div>
+      <div class="ac-head"><span class="ac-icon">🆕</span><span class="ac-title">Client created</span></div>
+      <div class="ac-row"><strong>Name:</strong> ${c.name}</div>
       <div class="ac-row"><strong>Email:</strong> ${c.email}</div>
-      <div class="ac-row"><strong>Protocolo:</strong> ${c.goal}</div>
-      <div class="ac-row">Contraseña inicial:</div>
+      <div class="ac-row"><strong>Goal:</strong> ${c.goal}</div>
+      <div class="ac-row">Initial password:</div>
       <div class="ac-pwd">${action.password}</div>`;
     bubble.appendChild(card);
     loadClients(); // refresh sidebar
@@ -801,7 +802,7 @@ async function send(){
 
   // Inject selected client context into message
   let contextNote = '';
-  if(activeClient) contextNote = ` [Cliente seleccionado: ${activeClient.name} (id: ${activeClient.id})]`;
+  if(activeClient) contextNote = ` [Selected client: ${activeClient.name} (id: ${activeClient.id})]`;
   const fullText = text + contextNote;
 
   appendMsg('user', text);
@@ -817,7 +818,7 @@ async function send(){
     });
     typing.remove();
 
-    if(!r.ok){ appendMsg('assistant','Error al conectar con el servidor.'); return; }
+    if(!r.ok){ appendMsg('assistant','Error connecting to the server.'); return; }
     const data = await r.json();
     const reply = data.reply || '…';
 
@@ -825,7 +826,7 @@ async function send(){
     chatHistory.push({ role:'assistant', content: reply });
   }catch(err){
     if(typing) typing.remove();
-    appendMsg('assistant','No se pudo conectar con el servidor.');
+    appendMsg('assistant','Could not connect to the server.');
     chatHistory.pop();
   }finally{
     sendEl.disabled = false;
@@ -851,10 +852,10 @@ async function openProfile(c){
   profileClient = c;
   document.getElementById('pp-av').textContent    = (c.initials||'').slice(0,2);
   document.getElementById('pp-cname').textContent = c.name;
-  document.getElementById('pp-csub').textContent  = `${c.goal} · Semana ${c.currentWeek} de ${c.totalWeeks}`;
+  document.getElementById('pp-csub').textContent  = `${c.goal} · Week ${c.currentWeek} of ${c.totalWeeks}`;
   const delBtn = document.getElementById('pp-del-btn');
-  delBtn.disabled = false; delBtn.textContent = '🗑 Eliminar';
-  document.getElementById('pp-body').innerHTML    = '<div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.8rem">Cargando perfil…</div>';
+  delBtn.disabled = false; delBtn.textContent = '🗑 Delete';
+  document.getElementById('pp-body').innerHTML    = '<div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.8rem">Loading profile…</div>';
   document.getElementById('profile-panel').classList.add('open');
 
   const token = storedToken();
@@ -898,13 +899,13 @@ function renderProfile(client, logs, checkins){
 
   // ── Métricas corporales ──────────────────────────────────────
   const metSec = document.createElement('div');
-  metSec.innerHTML = '<div class="pp-sec-label">Métricas corporales</div>';
+  metSec.innerHTML = '<div class="pp-sec-label">Body Metrics</div>';
   const metGrid = document.createElement('div'); metGrid.className='pp-metrics';
   [
-    { label:'Peso',       val: client.weight  ? `${client.weight}<sup>kg</sup>`  : null },
-    { label:'Grasa corp.',val: client.bodyFat ? `${client.bodyFat}<sup>%</sup>`  : null },
-    { label:'Masa magra', val: client.lean    ? `${client.lean}<sup>kg</sup>`    : null },
-    { label:'BMI',        val: bmi            ? bmi                               : null },
+    { label:'Weight',    val: client.weight  ? `${client.weight}<sup>kg</sup>`  : null },
+    { label:'Body Fat',  val: client.bodyFat ? `${client.bodyFat}<sup>%</sup>`  : null },
+    { label:'Lean Mass', val: client.lean    ? `${client.lean}<sup>kg</sup>`    : null },
+    { label:'BMI',       val: bmi            ? bmi                               : null },
   ].forEach(({label,val})=>{
     const m=document.createElement('div'); m.className='pp-metric';
     m.innerHTML=`<div class="pp-metric-label">${label}</div>
@@ -918,13 +919,13 @@ function renderProfile(client, logs, checkins){
   if(lastCI){
     const ciSec = document.createElement('div');
     const ciDate = new Date(lastCI.date+'T12:00:00')
-      .toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});
-    ciSec.innerHTML=`<div class="pp-sec-label">Último check-in · ${ciDate}</div>`;
+      .toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    ciSec.innerHTML=`<div class="pp-sec-label">Last Check-in · ${ciDate}</div>`;
     const ciRow=document.createElement('div'); ciRow.className='pp-checkin-row';
     [
-      {v:lastCI.weight  ?`${lastCI.weight}kg` :null, l:'Peso'},
-      {v:lastCI.bodyFat ?`${lastCI.bodyFat}%` :null, l:'Grasa'},
-      {v:lastCI.lean    ?`${lastCI.lean}kg`   :null, l:'Masa magra'},
+      {v:lastCI.weight  ?`${lastCI.weight}kg` :null, l:'Weight'},
+      {v:lastCI.bodyFat ?`${lastCI.bodyFat}%` :null, l:'Body Fat'},
+      {v:lastCI.lean    ?`${lastCI.lean}kg`   :null, l:'Lean Mass'},
     ].filter(x=>x.v).forEach(({v,l})=>{
       const t=document.createElement('div'); t.className='pp-checkin-tile';
       t.innerHTML=`<div class="pp-checkin-val">${v}</div><div class="pp-checkin-lbl">${l}</div>`;
@@ -947,24 +948,24 @@ function renderProfile(client, logs, checkins){
   const tPct   = Math.round(tDone/14*100);
   const nPct   = Math.round(nLogs.length/14*100);
   const pctColor = p => p>=80?'var(--green)':p>=50?'var(--gold)':'#e08080';
-  adhSec.innerHTML=`<div class="pp-sec-label">Adherencia · últimos 14 días</div>
+  adhSec.innerHTML=`<div class="pp-sec-label">Adherence · last 14 days</div>
     <div class="pp-adh-wrap">
       <div class="pp-adh-row">
         <span style="font-size:.65rem;color:var(--muted);width:80px;flex-shrink:0">Training</span>
         <div class="pp-adh-track"><div class="pp-adh-fill" style="width:${tPct}%;background:${pctColor(tPct)}"></div></div>
-        <div class="pp-adh-label" style="color:${pctColor(tPct)}">${tDone}/14 completados</div>
+        <div class="pp-adh-label" style="color:${pctColor(tPct)}">${tDone}/14 completed</div>
       </div>
       <div class="pp-adh-row">
-        <span style="font-size:.65rem;color:var(--muted);width:80px;flex-shrink:0">Nutrición</span>
+        <span style="font-size:.65rem;color:var(--muted);width:80px;flex-shrink:0">Nutrition</span>
         <div class="pp-adh-track"><div class="pp-adh-fill" style="width:${nPct}%;background:${pctColor(nPct)}"></div></div>
-        <div class="pp-adh-label" style="color:${pctColor(nPct)}">${nLogs.length}/14 registrados</div>
+        <div class="pp-adh-label" style="color:${pctColor(nPct)}">${nLogs.length}/14 logged</div>
       </div>
     </div>`;
   body.appendChild(adhSec);
 
   // ── Registros diarios ────────────────────────────────────────
   const logSec  = document.createElement('div');
-  logSec.innerHTML='<div class="pp-sec-label">Registros diarios</div>';
+  logSec.innerHTML='<div class="pp-sec-label">Daily Logs</div>';
   const logGrid = document.createElement('div'); logGrid.className='pp-log-grid';
 
   const chipFor = (data, label) => {
@@ -978,14 +979,14 @@ function renderProfile(client, logs, checkins){
     const nLog = logMap[`${ds}-nutrition`];
     if(!tLog && !nLog) return;
     const d = new Date(ds+'T12:00:00');
-    const lbl = d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});
+    const lbl = d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
     const row = document.createElement('div'); row.className='pp-log-day';
     row.innerHTML=`<span class="pp-log-date">${lbl}</span>${chipFor(tLog,'Training')}${chipFor(nLog,'Nutrition')}`;
     logGrid.appendChild(row);
   });
 
   if(!logGrid.children.length){
-    logGrid.innerHTML='<div class="pp-empty">Sin registros en los últimos 14 días.</div>';
+    logGrid.innerHTML='<div class="pp-empty">No logs in the last 14 days.</div>';
   }
   logSec.appendChild(logGrid);
   body.appendChild(logSec);
@@ -1000,28 +1001,28 @@ document.getElementById('pp-chat-btn').addEventListener('click', ()=>{
 document.getElementById('pp-del-btn').addEventListener('click', async ()=>{
   if(!profileClient) return;
   const c = profileClient;
-  if(!confirm(`¿Eliminar a ${c.name}? Se borrarán su cuenta, planes, logs y check-ins. Esta acción no se puede deshacer.`)) return;
+  if(!confirm(`Delete ${c.name}? Their account, plans, logs and check-ins will be permanently removed. This cannot be undone.`)) return;
   const btn = document.getElementById('pp-del-btn');
-  btn.disabled = true; btn.textContent = 'Eliminando…';
+  btn.disabled = true; btn.textContent = 'Deleting…';
   try{
     const r = await fetch(`${BASE}/api/coach/clients/${c.id}`, {
       method:'DELETE', headers:{ Authorization:`Bearer ${storedToken()}` }
     });
     if(!r.ok){
       const data = await r.json().catch(()=>({}));
-      alert('No se pudo eliminar: ' + (data.error || r.status));
+      alert('Could not delete: ' + (data.error || r.status));
       btn.disabled = false; btn.textContent = '🗑 Eliminar';
       return;
     }
     if(activeClient && activeClient.id === c.id){
       activeClient = null;
       document.getElementById('chat-context').classList.remove('visible');
-      document.getElementById('chat-input').placeholder = 'Escribe aquí…';
+      document.getElementById('chat-input').placeholder = 'Type here…';
     }
     closeProfile();
     await loadClients();
   }catch(e){
-    alert('Error de conexión al eliminar.');
+    alert('Connection error while deleting.');
     btn.disabled = false; btn.textContent = '🗑 Eliminar';
   }
 });
