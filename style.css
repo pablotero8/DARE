@@ -2542,187 +2542,220 @@ body {
    Training + Nutrition are the heroes.
    One System = a quiet connector beneath.
    ========================================= */
-.p-fuse {
-    margin-top: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-
-/* --- The two hero pillars --- */
-.p-fuse-pillars {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: stretch;
-    gap: 1.1rem;
-}
-
-.p-fuse-card {
+/* =========================================
+   METHOD ACCORDION — 3 PANEL + FUSION ARROWS
+   ========================================= */
+.p-accord-outer {
+    margin-top: 2.5rem;
     position: relative;
-    display: block;
-    overflow: hidden;
-    border-radius: 18px;
-    min-height: clamp(380px, 46vh, 520px);
-    text-decoration: none;
-    border: 1px solid rgba(244,241,232,0.10);
-    isolation: isolate;
-    transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), border-color 0.4s ease;
 }
-.p-fuse-card:hover { transform: translateY(-4px); }
-.p-fuse-card--training:hover  { border-color: rgba(166,200,94,0.55); }
-.p-fuse-card--nutrition:hover { border-color: rgba(201,162,74,0.55); }
 
-/* photographic background */
-.p-fuse-card-bg {
+/* ── Fusion arrows ──────────────────────── */
+.p-accord-arrows-wrap {
+    width: 100%;
+    height: 80px;
+    margin-bottom: -2px;
+    display: block;
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+}
+.p-accord-arrows-svg { width: 100%; height: 100%; overflow: visible; }
+
+/* traveling paths — animated draw-in */
+.p-arr-path {
+    stroke-dasharray: 700;
+    stroke-dashoffset: 700;
+}
+.p-arr-path--l {
+    animation: p-arr-draw 1.9s cubic-bezier(.4,0,.2,1) forwards .1s,
+               p-arr-throb 3.2s ease-in-out infinite 2.3s;
+}
+.p-arr-path--r {
+    animation: p-arr-draw 1.9s cubic-bezier(.4,0,.2,1) forwards .45s,
+               p-arr-throb 3.2s ease-in-out infinite 2.7s;
+}
+@keyframes p-arr-draw  { to { stroke-dashoffset: 0; } }
+@keyframes p-arr-throb { 0%,100%{ opacity:.5; } 50%{ opacity:1; } }
+
+/* arrowheads + convergence dot — appear after draw */
+.p-arr-tips { opacity: 0; animation: p-arr-fade .5s ease forwards 2.1s; }
+@keyframes p-arr-fade  { to { opacity: 1; } }
+
+/* pulsing rings at the convergence point */
+.p-arr-ring-1 {
+    animation: p-ring-out 2.4s ease-out infinite 2.6s;
+    transform-origin: 500px 62px;
+}
+.p-arr-ring-2 {
+    animation: p-ring-out 2.4s ease-out infinite 2.95s;
+    transform-origin: 500px 62px;
+}
+@keyframes p-ring-out {
+    0%   { transform: scale(.3); opacity: .7; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ── 3-panel accordion ─────────────────── */
+.p-accord {
+    display: flex;
+    align-items: stretch;
+    height: clamp(460px, 58vh, 620px);
+    border-radius: 18px;
+    overflow: hidden;
+    gap: 0;
+}
+.p-accord-panel {
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    flex: 1;
+    min-width: 60px;
+    transition: flex .8s cubic-bezier(.22,1,.36,1);
+    isolation: isolate;
+    cursor: pointer;
+}
+.p-accord-panel.is-active { flex: 2.6; }
+
+/* background photos */
+.p-accord-bg {
     position: absolute;
     inset: 0;
     z-index: 0;
     background-size: cover;
     background-position: center;
-    transform: scale(1.01);
-    transition: transform 0.8s cubic-bezier(0.22,1,0.36,1), filter 0.5s ease;
-    filter: saturate(1.05) contrast(1.02);
+    transform: scale(1.03);
+    transition: transform .9s cubic-bezier(.22,1,.36,1);
+    filter: saturate(1.04) contrast(1.02);
 }
-.p-fuse-card--training .p-fuse-card-bg  { background-image: url('./images/rackslide.jpg'); }
-.p-fuse-card--nutrition .p-fuse-card-bg { background-image: url('./images/foodslide.jpg'); }
-.p-fuse-card:hover .p-fuse-card-bg { transform: scale(1.08); }
+.p-accord-panel--training  .p-accord-bg { background-image: url('./images/rackslide.jpg'); }
+.p-accord-panel--system    .p-accord-bg { background-image: url('./images/method1.jpg'); background-position: 50% 30%; }
+.p-accord-panel--nutrition .p-accord-bg { background-image: url('./images/foodslide.jpg'); }
+.p-accord-panel.is-active  .p-accord-bg { transform: scale(1.06); }
 
-/* dark shade for legibility + accent wash */
-.p-fuse-card-shade {
+/* shade overlays */
+.p-accord-shade {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(180deg,
-        rgba(5,5,7,0.10) 0%,
-        rgba(5,5,7,0.45) 42%,
-        rgba(5,5,7,0.94) 100%);
-    transition: background 0.4s ease;
 }
-.p-fuse-card--training .p-fuse-card-shade  { background-image: linear-gradient(180deg, rgba(5,5,7,0.10) 0%, rgba(5,5,7,0.45) 42%, rgba(5,5,7,0.94) 100%), linear-gradient(120deg, rgba(166,200,94,0.16), transparent 55%); }
-.p-fuse-card--nutrition .p-fuse-card-shade { background-image: linear-gradient(180deg, rgba(5,5,7,0.10) 0%, rgba(5,5,7,0.45) 42%, rgba(5,5,7,0.94) 100%), linear-gradient(240deg, rgba(201,162,74,0.16), transparent 55%); }
+.p-accord-panel--training  .p-accord-shade { background: linear-gradient(180deg,rgba(5,5,7,.06) 0%,rgba(5,5,7,.48) 48%,rgba(5,5,7,.97) 100%), linear-gradient(105deg,rgba(166,200,94,.15),transparent 55%); }
+.p-accord-panel--system    .p-accord-shade { background: linear-gradient(180deg,rgba(5,5,7,.04) 0%,rgba(5,5,7,.36) 44%,rgba(5,5,7,.9) 100%); }
+.p-accord-panel--nutrition .p-accord-shade { background: linear-gradient(180deg,rgba(5,5,7,.06) 0%,rgba(5,5,7,.48) 48%,rgba(5,5,7,.97) 100%), linear-gradient(255deg,rgba(201,162,74,.15),transparent 55%); }
 
-/* bold accent bar across the top — aggressive edge */
-.p-fuse-card::after {
+/* top accent bar */
+.p-accord-panel::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
     z-index: 3;
-    transform-origin: left;
-    transition: height 0.35s ease;
+    transition: height .35s ease;
 }
-.p-fuse-card--training::after  { background: linear-gradient(90deg, #a6c85e 0%, rgba(166,200,94,0) 85%); }
-.p-fuse-card--nutrition::after { background: linear-gradient(270deg, #c9a24a 0%, rgba(201,162,74,0) 85%); }
-.p-fuse-card:hover::after { height: 7px; }
+.p-accord-panel--training::before  { background: linear-gradient(90deg, #a6c85e, rgba(166,200,94,0) 82%); }
+.p-accord-panel--system::before    { background: linear-gradient(90deg, rgba(166,200,94,.55) 0%, rgba(201,162,74,.55) 50%, rgba(166,200,94,.55) 100%); height: 5px; }
+.p-accord-panel--nutrition::before { background: linear-gradient(270deg, #c9a24a, rgba(201,162,74,0) 82%); }
+.p-accord-panel.is-active::before  { height: 7px; }
 
-.p-fuse-card-inner {
+/* vertical label — shown when collapsed */
+.p-accord-label-v {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    font-family: 'Tulpen One', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity .25s;
+    pointer-events: none;
+    text-shadow: 0 4px 20px rgba(0,0,0,.6);
+}
+.p-accord-panel--training  .p-accord-label-v { color: rgba(180,213,106,.88); }
+.p-accord-panel--nutrition .p-accord-label-v { color: rgba(216,178,92,.88); }
+.p-accord-panel:not(.is-active) .p-accord-label-v { opacity: 1; }
+
+/* inner card content */
+.p-accord-inner {
     position: absolute;
     inset: 0;
     z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 2.2rem 2rem;
+    padding: 2.4rem 2.2rem;
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
 }
-.p-fuse-index {
+.p-accord-panel.is-active .p-accord-inner {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity .4s .22s;
+}
+
+.p-accord-index {
     font-family: 'Manrope', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
+    font-size: .68rem;
+    letter-spacing: .28em;
     text-transform: uppercase;
-    color: rgba(244,241,232,0.62);
-    margin-bottom: 0.6rem;
+    color: rgba(244,241,232,.6);
+    margin-bottom: .55rem;
 }
-.p-fuse-label {
+.p-accord-label {
     font-family: 'Tulpen One', serif;
-    font-size: clamp(3rem, 6.5vw, 5.2rem);
-    line-height: 0.82;
-    letter-spacing: 0.02em;
+    font-size: clamp(2.8rem, 5.5vw, 5rem);
+    line-height: .82;
+    letter-spacing: .02em;
     text-transform: uppercase;
-    text-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    text-shadow: 0 8px 40px rgba(0,0,0,.5);
 }
-.p-fuse-card--training .p-fuse-label  { color: #b4d56a; }
-.p-fuse-card--nutrition .p-fuse-label { color: #d8b25c; }
-.p-fuse-role {
+.p-accord-panel--training  .p-accord-label { color: #b4d56a; }
+.p-accord-panel--system    .p-accord-label { color: #f4f1e8; font-size: clamp(3.8rem, 7vw, 6.8rem); }
+.p-accord-panel--nutrition .p-accord-label { color: #d8b25c; }
+
+.p-accord-role {
     font-family: 'Manrope', sans-serif;
-    font-size: 1.02rem;
+    font-size: .96rem;
     font-weight: 800;
-    letter-spacing: 0.06em;
+    letter-spacing: .06em;
     text-transform: uppercase;
     color: #f4f1e8;
-    margin-top: 0.75rem;
+    margin-top: .75rem;
 }
-.p-fuse-copy {
-    font-size: 1.04rem;
-    line-height: 1.5;
-    color: rgba(244,241,232,0.74);
-    margin-top: 0.45rem;
+.p-accord-copy {
+    font-size: .95rem;
+    line-height: 1.56;
+    color: rgba(244,241,232,.7);
+    margin-top: .45rem;
     max-width: 34ch;
 }
-.p-fuse-link {
+.p-accord-link {
     font-family: 'Manrope', sans-serif;
-    font-size: 0.78rem;
+    font-size: .74rem;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: .18em;
     text-transform: uppercase;
-    margin-top: 1.3rem;
-    transition: letter-spacing 0.3s ease;
+    margin-top: 1.2rem;
+    display: inline-block;
+    transition: letter-spacing .3s;
 }
-.p-fuse-card--training .p-fuse-link  { color: #b4d56a; }
-.p-fuse-card--nutrition .p-fuse-link { color: #d8b25c; }
-.p-fuse-card:hover .p-fuse-link { letter-spacing: 0.24em; }
+.p-accord-panel--training  .p-accord-link { color: #b4d56a; }
+.p-accord-panel--system    .p-accord-link { color: rgba(201,162,74,.9); }
+.p-accord-panel--nutrition .p-accord-link { color: #d8b25c; }
+.p-accord-panel.is-active:hover .p-accord-link { letter-spacing: .24em; }
 
-/* "+" between the two pillars */
-.p-fuse-plus {
-    align-self: center;
-    justify-self: center;
-    padding: 0 0.3rem;
-    font-family: 'Tulpen One', serif;
-    font-size: clamp(2.2rem, 3vw, 3rem);
-    line-height: 1;
-    color: rgba(244,241,232,0.55);
-}
-
-/* --- One System — quiet connector, intentionally minor --- */
-.p-fuse-system {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.1rem;
-    margin-top: 1.5rem;
-    text-decoration: none;
-    transition: opacity 0.25s ease;
-}
-.p-fuse-system:hover { opacity: 0.8; }
-.p-fuse-system-line {
-    height: 1px;
-    flex: 1;
-    max-width: 110px;
-    background: linear-gradient(90deg, transparent, rgba(201,162,74,0.45));
-}
-.p-fuse-system-line + .p-fuse-system-line,
-.p-fuse-system-text + .p-fuse-system-line {
-    background: linear-gradient(90deg, rgba(201,162,74,0.45), transparent);
-}
-.p-fuse-system-text {
-    font-family: 'Manrope', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(244,241,232,0.5);
-    white-space: nowrap;
-}
-.p-fuse-system-text strong {
-    color: rgba(201,162,74,0.9);
-    font-weight: 700;
-}
-
-/* --- Responsive --- */
+/* ── Responsive ─────────────────────────── */
 @media (max-width: 760px) {
-    .p-fuse-pillars { grid-template-columns: 1fr; gap: 0; }
-    .p-fuse-plus { padding: 0.85rem 0; }
-    .p-fuse-card { min-height: clamp(340px, 56vh, 440px); }
-    .p-fuse-system-text { white-space: normal; text-align: center; }
-    .p-fuse-system-line { max-width: 36px; }
+    .p-accord { flex-direction: column; height: auto; }
+    .p-accord-panel { min-width: unset; min-height: 280px; flex: none !important; }
+    .p-accord-panel.is-active { min-height: 460px; }
+    .p-accord-panel:not(.is-active) .p-accord-label-v { display: none; }
+    .p-accord-panel:not(.is-active) .p-accord-inner,
+    .p-accord-panel.is-active .p-accord-inner { opacity: 1; pointer-events: auto; }
+    .p-accord-arrows-wrap { display: none; }
 }
 
 /* =========================================

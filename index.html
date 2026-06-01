@@ -388,42 +388,72 @@
                     <p class="p-sub">Training and nutrition aren't two separate plans. They run as one system.</p>
                 </div>
 
-                <div class="p-fuse" aria-label="Training and nutrition — two pillars, one system">
-                    <!-- Two hero pillars — full photo cards, all content visible -->
-                    <div class="p-fuse-pillars">
-                        <a href="method-training.html" class="p-fuse-card p-fuse-card--training">
-                            <span class="p-fuse-card-bg" aria-hidden="true"></span>
-                            <span class="p-fuse-card-shade" aria-hidden="true"></span>
-                            <span class="p-fuse-card-inner">
-                                <span class="p-fuse-index">01 · Pillar</span>
-                                <span class="p-fuse-label">Training</span>
-                                <span class="p-fuse-role">Drives the plan</span>
-                                <span class="p-fuse-copy">Built around your biomechanics, recovery and real schedule.</span>
-                                <span class="p-fuse-link">Explore training →</span>
+                <div class="p-accord-outer">
+                    <!-- Fusion arrows — animated paths converging to One System -->
+                    <div class="p-accord-arrows-wrap" aria-hidden="true">
+                        <svg class="p-accord-arrows-svg" viewBox="0 0 1000 80" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Ghost paths (always visible, dim) -->
+                            <path d="M 175 10 C 310 10 390 65 500 65" stroke="rgba(166,200,94,0.18)" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M 825 10 C 690 10 610 65 500 65" stroke="rgba(201,162,74,0.18)" stroke-width="1.5" stroke-linecap="round"/>
+                            <!-- Animated traveling paths -->
+                            <path class="p-arr-path p-arr-path--l" d="M 175 10 C 310 10 390 65 500 65" stroke="#a6c85e" stroke-width="2.5" stroke-linecap="round"/>
+                            <path class="p-arr-path p-arr-path--r" d="M 825 10 C 690 10 610 65 500 65" stroke="#d8b25c" stroke-width="2.5" stroke-linecap="round"/>
+                            <!-- Arrowheads + convergence point -->
+                            <g class="p-arr-tips">
+                                <path d="M 486 57 L 500 65 L 484 73" stroke="#a6c85e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <path d="M 514 57 L 500 65 L 516 73" stroke="#d8b25c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <circle cx="500" cy="65" r="6" fill="rgba(244,241,232,0.06)" stroke="rgba(244,241,232,0.22)" stroke-width="1"/>
+                                <circle cx="500" cy="65" r="2.5" fill="rgba(244,241,232,0.7)"/>
+                            </g>
+                            <!-- Pulse rings at convergence -->
+                            <circle class="p-arr-ring-1" cx="500" cy="65" r="14" stroke="rgba(244,241,232,0.22)" stroke-width="1" fill="none"/>
+                            <circle class="p-arr-ring-2" cx="500" cy="65" r="22" stroke="rgba(244,241,232,0.1)" stroke-width="1" fill="none"/>
+                        </svg>
+                    </div>
+
+                    <!-- 3-panel accordion -->
+                    <div class="p-accord" role="group" aria-label="Training and nutrition — two pillars, one system">
+                        <!-- Training -->
+                        <a href="method-training.html" class="p-accord-panel p-accord-panel--training">
+                            <span class="p-accord-bg" aria-hidden="true"></span>
+                            <span class="p-accord-shade" aria-hidden="true"></span>
+                            <span class="p-accord-label-v" aria-hidden="true">Training</span>
+                            <span class="p-accord-inner">
+                                <span class="p-accord-index">01 · Pillar</span>
+                                <span class="p-accord-label">Training</span>
+                                <span class="p-accord-role">Drives the plan</span>
+                                <span class="p-accord-copy">Built around your biomechanics, recovery and real schedule.</span>
+                                <span class="p-accord-link">Explore training →</span>
                             </span>
                         </a>
 
-                        <span class="p-fuse-plus" aria-hidden="true">+</span>
+                        <!-- One System — center, default active -->
+                        <a href="method-system.html" class="p-accord-panel p-accord-panel--system is-active">
+                            <span class="p-accord-bg" aria-hidden="true"></span>
+                            <span class="p-accord-shade" aria-hidden="true"></span>
+                            <span class="p-accord-inner">
+                                <span class="p-accord-index">The System</span>
+                                <span class="p-accord-label">One<br>System</span>
+                                <span class="p-accord-role">Training × Nutrition</span>
+                                <span class="p-accord-copy">Two disciplines. One protocol. Engineered to perform as a single operating system.</span>
+                                <span class="p-accord-link">Explore the system →</span>
+                            </span>
+                        </a>
 
-                        <a href="method-nutrition.html" class="p-fuse-card p-fuse-card--nutrition">
-                            <span class="p-fuse-card-bg" aria-hidden="true"></span>
-                            <span class="p-fuse-card-shade" aria-hidden="true"></span>
-                            <span class="p-fuse-card-inner">
-                                <span class="p-fuse-index">02 · Pillar</span>
-                                <span class="p-fuse-label">Nutrition</span>
-                                <span class="p-fuse-role">Supports the work</span>
-                                <span class="p-fuse-copy">Engineered to fuel the training you actually do.</span>
-                                <span class="p-fuse-link">Explore nutrition →</span>
+                        <!-- Nutrition -->
+                        <a href="method-nutrition.html" class="p-accord-panel p-accord-panel--nutrition">
+                            <span class="p-accord-bg" aria-hidden="true"></span>
+                            <span class="p-accord-shade" aria-hidden="true"></span>
+                            <span class="p-accord-label-v" aria-hidden="true">Nutrition</span>
+                            <span class="p-accord-inner">
+                                <span class="p-accord-index">02 · Pillar</span>
+                                <span class="p-accord-label">Nutrition</span>
+                                <span class="p-accord-role">Supports the work</span>
+                                <span class="p-accord-copy">Engineered to fuel the training you actually do.</span>
+                                <span class="p-accord-link">Explore nutrition →</span>
                             </span>
                         </a>
                     </div>
-
-                    <!-- One System — quiet connector, deliberately secondary -->
-                    <a href="method-system.html" class="p-fuse-system">
-                        <span class="p-fuse-system-line" aria-hidden="true"></span>
-                        <span class="p-fuse-system-text">Run together as <strong>one system</strong> →</span>
-                        <span class="p-fuse-system-line" aria-hidden="true"></span>
-                    </a>
                 </div>
 
             </div>
@@ -996,6 +1026,48 @@
         document.documentElement.setAttribute('data-theme', next);
         try { localStorage.setItem('dare-theme', next); } catch(e){}
       });
+    })();
+    </script>
+    <script>
+    // ── Method accordion interaction ──────────────────────────────────────────
+    (function () {
+        var accord = document.querySelector('.p-accord');
+        if (!accord) return;
+        var panels  = accord.querySelectorAll('.p-accord-panel');
+        var system  = accord.querySelector('.p-accord-panel--system');
+        var defaults = { training: 1, system: 2.6, nutrition: 1 };
+
+        function getType(p) {
+            if (p.classList.contains('p-accord-panel--training'))  return 'training';
+            if (p.classList.contains('p-accord-panel--nutrition')) return 'nutrition';
+            return 'system';
+        }
+
+        function applyState(hovered) {
+            panels.forEach(function (p) {
+                var t = getType(p);
+                var flex;
+                if (hovered === 'training') {
+                    flex = t === 'training' ? 1.9 : t === 'system' ? 1.9 : 1;
+                } else if (hovered === 'nutrition') {
+                    flex = t === 'nutrition' ? 1.9 : t === 'system' ? 1.9 : 1;
+                } else { // system or reset
+                    flex = defaults[t];
+                }
+                p.style.flex = flex;
+                // active class drives content visibility
+                var active = (hovered === 'system' && t === 'system') ||
+                             (hovered === 'training'  && (t === 'training'  || t === 'system')) ||
+                             (hovered === 'nutrition' && (t === 'nutrition' || t === 'system')) ||
+                             (hovered === null && t === 'system');
+                p.classList.toggle('is-active', active);
+            });
+        }
+
+        panels.forEach(function (p) {
+            p.addEventListener('mouseenter', function () { applyState(getType(p)); });
+        });
+        accord.addEventListener('mouseleave', function () { applyState(null); });
     })();
     </script>
 </body>
