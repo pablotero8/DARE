@@ -126,3 +126,24 @@ export function buildWeeklyShoppingList(nutritionDays) {
 
   return { generatedAt: new Date().toISOString(), count: items.length, items };
 }
+
+// Derive the nutrition `days` array from a plan in either stored shape:
+//   • plan.nutrition         — raw half straight from the save flow
+//   • plan.week[i].nutrition — merged/seeded shape (no separate half)
+export function extractNutritionDays(plan) {
+  if (!plan) return null;
+  if (Array.isArray(plan.nutrition) && plan.nutrition.length) return plan.nutrition;
+  if (Array.isArray(plan.week) && plan.week.length) {
+    const days = plan.week
+      .map((d) => (d && d.nutrition ? { ...d.nutrition, label: d.label } : null))
+      .filter(Boolean);
+    if (days.length) return days;
+  }
+  return null;
+}
+
+// Convenience: build the weekly list from a whole plan object (any shape).
+export function shoppingListForPlan(plan) {
+  const days = extractNutritionDays(plan);
+  return days ? buildWeeklyShoppingList(days) : null;
+}
