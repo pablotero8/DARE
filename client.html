@@ -161,6 +161,22 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .note-nutrition{background:rgba(201,162,74,.07);border:1px solid rgba(201,162,74,.18)}
 .note-nutrition strong{color:var(--gold);font-weight:600}
 
+/* ─── WEEKLY SHOPPING LIST ─── */
+#nutrition-shopping:empty{display:none}
+#nutrition-shopping{margin-bottom:1.1rem}
+.shop-card{background:rgba(201,162,74,.05);border:1px solid rgba(201,162,74,.16);border-radius:12px;overflow:hidden}
+.shop-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:none;border:0;cursor:pointer;padding:.85rem 1rem;color:var(--gold);font-family:inherit;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.shop-title{display:flex;align-items:center;gap:.55rem}
+.shop-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 .35rem;border-radius:999px;background:rgba(201,162,74,.18);color:var(--gold);font-size:.62rem;letter-spacing:0}
+.shop-caret{font-size:1.1rem;line-height:1;color:var(--gold);transition:transform .25s ease}
+.shop-card.open .shop-caret{transform:rotate(45deg)}
+.shop-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.shop-card.open .shop-body{max-height:1600px}
+.shop-cat{padding:.7rem 1rem .3rem;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.shop-item{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.4rem 1rem;border-top:1px solid rgba(255,255,255,.04)}
+.shop-name{color:var(--text,#f4f1e8);font-size:.86rem}
+.shop-qty{flex-shrink:0;color:var(--gold);font-size:.82rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+
 /* ─── NUTRITION ─── */
 .kcal-row{display:flex;align-items:flex-start;gap:.4rem;margin-bottom:1.1rem;height:68px}
 .kcal-num{font-family:'Tulpen One',serif;font-size:3rem;line-height:1;letter-spacing:.04em;background:linear-gradient(135deg,#d9d4c8,#c9a24a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -504,6 +520,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       </div>
       <p class="plan-eyebrow">Today's Protocol</p>
       <h2 class="plan-title">NUTRITION<br>PLAN</h2>
+      <div id="nutrition-shopping"></div>
       <div id="nutrition-content"></div>
     </div>
   </div>
@@ -838,6 +855,7 @@ const WEEK = [
 
 /* ═══ STATE ═══ */
 let ACTIVE_WEEK     = null;   // 7-day array currently rendered (null = no plan yet)
+let ACTIVE_PLAN     = null;   // full plan object for the active week (incl. shoppingList)
 let ACTIVE_WEEK_OF  = null;   // ISO weekOf of the week being displayed
 let currentDay      = 0;
 let chartsInit      = false;
@@ -923,6 +941,7 @@ async function switchToWeek(weekOf){
   }
 
   ACTIVE_WEEK=plan.week;
+  ACTIVE_PLAN=plan;
   CURRENT_WEEK_OF=weekOf;
   ACTIVE_WEEK_OF=weekOf;
   currentDay=todayIndex(plan.week);
@@ -935,6 +954,7 @@ async function switchToWeek(weekOf){
   plans.style.opacity='0';
   setTimeout(function(){
     renderDay(currentDay);
+    renderWeeklyShopping(ACTIVE_PLAN);
     plans.style.opacity='1';
   },180);
 
@@ -1018,6 +1038,7 @@ async function showDash(){
     const plan = await fetchPlanByWeek(defaultWeekOf);
     if(plan && plan.week && plan.week.length===7){
       ACTIVE_WEEK     = plan.week;
+      ACTIVE_PLAN     = plan;
       CURRENT_WEEK_OF = defaultWeekOf;
       ACTIVE_WEEK_OF  = defaultWeekOf;
       currentDay      = todayIndex(plan.week);
@@ -1030,6 +1051,7 @@ async function showDash(){
     const livePlan = await fetchLivePlan();
     if(livePlan && livePlan.week && livePlan.week.length===7){
       ACTIVE_WEEK     = livePlan.week;
+      ACTIVE_PLAN     = livePlan;
       CURRENT_WEEK_OF = livePlan.weekOf || null;
       ACTIVE_WEEK_OF  = livePlan.weekOf || null;
       currentDay      = todayIndex(livePlan.week);
@@ -1046,6 +1068,7 @@ async function showDash(){
     document.getElementById('no-plan-screen').style.display = 'none';
     document.getElementById('day-plans').style.display      = '';
     renderDay(currentDay);
+    renderWeeklyShopping(ACTIVE_PLAN);
     buildWeekStrip();
   } else {
     document.getElementById('day-plans').style.display      = 'none';
@@ -1390,6 +1413,54 @@ function setupAccordions(){
       const item=header.closest('.meal-item');
       item.classList.toggle('open');
     });
+  });
+}
+
+/* ═══ WEEKLY SHOPPING LIST ═══ */
+function escHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const SHOP_CAT_ORDER=['protein','carbs','vegetables & fruit','dairy','fats & oils','other'];
+const SHOP_CAT_LABEL={'protein':'Protein','carbs':'Carbs','vegetables & fruit':'Vegetables & fruit','dairy':'Dairy','fats & oils':'Fats & oils','other':'Other'};
+
+// Renders the aggregated weekly shopping list (plan.shoppingList) once per week.
+// Safe to call with any plan — hides itself when there's no list.
+function renderWeeklyShopping(plan){
+  const el=document.getElementById('nutrition-shopping');
+  if(!el) return;
+  const list=plan&&plan.shoppingList;
+  if(!list||!Array.isArray(list.items)||!list.items.length){ el.innerHTML=''; return; }
+
+  const groups={};
+  list.items.forEach(it=>{ const c=it.category||'other'; (groups[c]=groups[c]||[]).push(it); });
+  const cats=Object.keys(groups).sort((a,b)=>{
+    const ia=SHOP_CAT_ORDER.indexOf(a), ib=SHOP_CAT_ORDER.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+
+  let body='';
+  cats.forEach(cat=>{
+    body+=`<div class="shop-cat">${escHtml(SHOP_CAT_LABEL[cat]||cat)}</div>`;
+    groups[cat].forEach(it=>{
+      const qty=it.display?`<span class="shop-qty">${escHtml(it.display)}</span>`:'';
+      body+=`<div class="shop-item"><span class="shop-name">${escHtml(it.name)}</span>${qty}</div>`;
+    });
+  });
+
+  el.innerHTML=`<div class="shop-card">
+    <button class="shop-toggle" type="button" aria-expanded="false">
+      <span class="shop-title">🛒 Weekly shopping list <span class="shop-count">${list.count}</span></span>
+      <span class="shop-caret">+</span>
+    </button>
+    <div class="shop-body">${body}</div>
+  </div>`;
+
+  const card=el.querySelector('.shop-card');
+  const toggle=el.querySelector('.shop-toggle');
+  toggle.addEventListener('click',()=>{
+    const open=card.classList.toggle('open');
+    toggle.setAttribute('aria-expanded',open?'true':'false');
   });
 }
 

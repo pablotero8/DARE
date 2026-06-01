@@ -1,40 +1,111 @@
 import db from './db.js';
 import { archivePlanVersion } from './logs.js';
+import { validatePlan, validateTrainingDay, validateNutritionDay, isValidWeekOf, PlanValidationError } from './validators.js';
+import { buildWeeklyShoppingList } from './shopping.js';
+
+const PLAN_TYPE_FOR = { save_training_plan: 'training', save_nutrition_plan: 'nutrition' };
+
+// Load the stored plan object for a client+week, or null.
+function loadPlan(clientId, weekOf) {
+  const row = db.prepare('SELECT plan_json FROM plans WHERE client_id = ? AND week_of = ?').get(clientId, weekOf);
+  return row ? JSON.parse(row.plan_json) : null;
+}
+
+// Recompute derived fields (week array, shopping list, published flag) after
+// any mutation. Keeps the stored object internally consistent.
+function refreshDerived(plan) {
+  plan.week = buildWeek(plan.weekOf, plan.training, plan.nutrition);
+  plan.shoppingList = plan.nutrition ? buildWeeklyShoppingList(plan.nutrition) : null;
+  plan.publishedAt = plan.trainingReady && plan.nutritionReady
+    ? (plan.publishedAt || new Date().toISOString())
+    : null;
+  return plan;
+}
 
 // ── Save a plan half (training or nutrition) ──────────────────
+// Validates the incoming half BEFORE persisting. Throws PlanValidationError
+// on incomplete data so callers can reject (HTTP 422 / WhatsApp message).
 
 export function savePlan(toolName, input) {
+  const planType = PLAN_TYPE_FOR[toolName];
+  if (!planType) throw new Error(`savePlan: herramienta desconocida "${toolName}"`);
+
+  // ── Gate: reject incomplete plans ───────────────────────────
+  const { ok, errors } = validatePlan(toolName, input);
+  if (!ok) throw new PlanValidationError(errors);
+
   const { clientId, weekOf } = input;
+  const now = new Date().toISOString();
 
-  // Load existing row or start fresh
-  const row = db.prepare('SELECT plan_json FROM plans WHERE client_id = ? AND week_of = ?').get(clientId, weekOf);
-  let plan = row ? JSON.parse(row.plan_json) : { clientId, weekOf, createdAt: new Date().toISOString() };
+  let plan = loadPlan(clientId, weekOf) ?? { clientId, weekOf, createdAt: now };
 
-  // Archive the previous version before overwriting
-  if (row) {
-    const planType = toolName === 'save_training_plan' ? 'training' : 'nutrition';
-    const previous = toolName === 'save_training_plan' ? plan.training : plan.nutrition;
-    if (previous) archivePlanVersion(clientId, weekOf, planType, previous);
-  }
+  // Archive the previous version of this half before overwriting it.
+  const previous = plan[planType];
+  if (previous) archivePlanVersion(clientId, weekOf, planType, previous);
 
-  if (toolName === 'save_training_plan') {
-    plan.training = input.days;
-    plan.trainingReady = true;
-    plan.trainingAt = new Date().toISOString();
-  } else {
-    plan.nutrition = input.days;
-    plan.nutritionReady = true;
-    plan.nutritionAt = new Date().toISOString();
-  }
+  plan[planType] = input.days;
+  plan[`${planType}Ready`] = true;
+  plan[`${planType}At`] = now;
 
-  // Always build plan.week so partial saves are visible in the client portal
-  plan.week = buildWeek(weekOf, plan.training, plan.nutrition);
-  if (plan.trainingReady && plan.nutritionReady) {
-    plan.publishedAt = new Date().toISOString();
-  }
-
+  refreshDerived(plan);
   upsertPlan(clientId, weekOf, plan);
   console.log(`[planner] saved ${toolName} for ${clientId} week ${weekOf}`);
+  return plan;
+}
+
+// ── Overwrite a full week half ────────────────────────────────
+// Semantically identical to savePlan (which already replaces the half), but
+// named explicitly for the "sobrescribir semana completa" edit flow.
+export const overwritePlanHalf = savePlan;
+
+// ── Edit a single day of an existing plan ─────────────────────
+// Replaces days[dayIndex] of one half, validating just that day. Requires the
+// half to already exist (you can't patch a day into a plan that was never saved).
+export function updatePlanDay(clientId, weekOf, planType, dayIndex, dayData) {
+  if (!['training', 'nutrition'].includes(planType)) throw new Error('planType inválido');
+  if (!isValidWeekOf(weekOf)) throw new PlanValidationError(['weekOf debe ser un lunes en formato YYYY-MM-DD']);
+  if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex > 6) {
+    throw new PlanValidationError([`dayIndex fuera de rango (0-6): ${dayIndex}`]);
+  }
+
+  const plan = loadPlan(clientId, weekOf);
+  if (!plan || !Array.isArray(plan[planType])) {
+    throw new PlanValidationError([`No existe un plan de ${planType} para ${weekOf}; guárdalo completo primero.`]);
+  }
+
+  // Force the label to the correct weekday slot, then validate the single day.
+  const day = { ...dayData, label: DAY_LABELS[dayIndex] };
+  const { errors } = planType === 'training'
+    ? validateTrainingDay(day, dayIndex)
+    : validateNutritionDay(day, dayIndex);
+  if (errors.length) throw new PlanValidationError(errors);
+
+  // Archive the full half before patching, so edits are reversible.
+  archivePlanVersion(clientId, weekOf, planType, plan[planType]);
+
+  plan[planType] = plan[planType].map((d, i) => (i === dayIndex ? day : d));
+  plan[`${planType}At`] = new Date().toISOString();
+
+  refreshDerived(plan);
+  upsertPlan(clientId, weekOf, plan);
+  console.log(`[planner] updated ${planType} day ${DAY_LABELS[dayIndex]} for ${clientId} week ${weekOf}`);
+  return plan;
+}
+
+// ── Append a free-form note to a plan after creation ──────────
+// Stored on plan.notes[] (plan-level), independent of the per-day coach notes.
+export function appendPlanNote(clientId, weekOf, text, author = 'coach') {
+  const note = String(text || '').trim();
+  if (!note) throw new PlanValidationError(['La nota no puede estar vacía']);
+
+  const plan = loadPlan(clientId, weekOf);
+  if (!plan) throw new PlanValidationError([`No existe un plan para ${weekOf}`]);
+
+  plan.notes = Array.isArray(plan.notes) ? plan.notes : [];
+  plan.notes.push({ text: note, author, at: new Date().toISOString() });
+
+  upsertPlan(clientId, weekOf, plan);
+  console.log(`[planner] appended note (${author}) to ${clientId} week ${weekOf}`);
   return plan;
 }
 

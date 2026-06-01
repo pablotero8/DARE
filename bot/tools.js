@@ -113,6 +113,19 @@ export const NUTRITION_TOOL = {
                     description: 'Descripción breve: ingredientes principales',
                   },
                   kcal: { type: 'number' },
+                  ingredients: {
+                    type: 'array',
+                    description: 'Ingredientes con cantidades EXACTAS (en crudo) para esta comida. Base de la lista de la compra semanal.',
+                    items: {
+                      type: 'object',
+                      required: ['item', 'qty', 'unit'],
+                      properties: {
+                        item: { type: 'string', description: 'Nombre del ingrediente. Ej: Chicken breast, Brown rice' },
+                        qty:  { type: 'number', description: 'Cantidad numérica. Ej: 200, 1.5' },
+                        unit: { type: 'string', description: 'Unidad: g, ml, unit (piezas), tbsp, etc.' },
+                      },
+                    },
+                  },
                   steps: {
                     type: 'array',
                     items: { type: 'string' },
@@ -154,6 +167,20 @@ export const SHOW_TEMPLATE_TOOL = {
       clientId:   { type: 'string', description: 'ID del cliente (ej: alex-hammond)' },
       weekOf:     { type: 'string', description: 'Lunes de la semana en formato YYYY-MM-DD' },
       clientName: { type: 'string', description: 'Nombre completo del cliente' },
+    },
+  },
+};
+
+export const ADD_NOTE_TOOL = {
+  name: 'add_plan_note',
+  description: 'Añade una nota libre a un plan YA creado (logística, recordatorios, contexto del cliente) sin regenerar el plan. Úsalo cuando el coach quiera anotar algo sobre un plan existente.',
+  input_schema: {
+    type: 'object',
+    required: ['clientId', 'weekOf', 'note'],
+    properties: {
+      clientId: { type: 'string', description: 'ID del cliente (ej: alex-hammond)' },
+      weekOf:   { type: 'string', description: 'Lunes de la semana del plan, formato YYYY-MM-DD' },
+      note:     { type: 'string', description: 'Texto de la nota a añadir' },
     },
   },
 };

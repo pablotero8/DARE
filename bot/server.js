@@ -4,13 +4,15 @@ import rateLimit from 'express-rate-limit';
 import OpenAI from 'openai';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan, savePlan } from './planner.js';
+import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan, savePlan, updatePlanDay, appendPlanNote } from './planner.js';
+import { PlanValidationError } from './validators.js';
+import { buildWeeklyShoppingList } from './shopping.js';
 import {
   verifyClientPassword, getClientById, getClientByEmail,
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
-import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL } from './tools.js';
+import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { sendPasswordReset } from './mailer.js';
 import { sendWelcomeNotifications, scheduleDailyReminders, sendDailyReminders, sendTestEmail } from './notifier.js';
@@ -327,11 +329,19 @@ ${clientList}
 
 FLUJO PARA CREAR UN PLAN:
 1. Cuando el coach pida un plan, confirma brevemente: cliente y semana (lunes en formato YYYY-MM-DD).
-2. Una vez confirmados, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto.
-3. El coach rellenará la tabla interactiva que aparecerá en el chat.
-4. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.
+2. CONFIRMA REQUISITOS antes de seguir (ver abajo). No avances con datos ambiguos.
+3. Cuando cliente, semana y requisitos estén claros, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto.
+4. El coach rellenará la tabla interactiva que aparecerá en el chat.
+5. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.
+
+CONFIRMA REQUISITOS (paso 2) — nunca generes con información incompleta o ambigua:
+${coach.specialty === 'nutrition'
+  ? `• Alergias e intolerancias\n• Objetivo de calorías y proteína (o meta: déficit, mantenimiento, volumen)\n• Preferencias y alimentos a evitar\n• Nº de comidas al día y restricciones (religiosas, viajes, cenas fuera)`
+  : `• Objetivo de la semana (fuerza, hipertrofia, acondicionamiento…)\n• Días disponibles y días de descanso\n• Lesiones o limitaciones de movimiento\n• Material / gimnasio disponible`}
+Si falta algún punto o hay ambigüedad, haz UNA sola pregunta breve y concreta para cerrarlo. Solo cuando todo esté claro, muestra la tabla.
 
 OTRAS FUNCIONES:
+- Añadir una nota a un plan ya creado: usa add_plan_note (no regenera el plan)
 - Crear cliente: usa create_client (nombre, email, objetivo, semanas totales)
 - Resetear contraseña: usa reset_client_password
 - Responde en español. Tono profesional y cercano. Respuestas concisas.`;
@@ -340,6 +350,7 @@ OTRAS FUNCIONES:
   const tools = [
     toFn(SHOW_TEMPLATE_TOOL),
     toFn(coach.specialty === 'training' ? TRAINING_TOOL : NUTRITION_TOOL),
+    toFn(ADD_NOTE_TOOL),
     toFn(CREATE_CLIENT_TOOL),
     toFn(RESET_PASSWORD_TOOL),
   ];
@@ -400,9 +411,17 @@ OTRAS FUNCIONES:
       action = { type: 'show_template', specialty: coach.specialty, clientId: toolInput.clientId, weekOf: toolInput.weekOf, clientName: toolInput.clientName, days };
       toolResultContent = JSON.stringify({ success: true, message: 'Tabla interactiva mostrada al coach.' });
     } else if (toolName === 'save_training_plan' || toolName === 'save_nutrition_plan') {
-      const plan = savePlan(toolName, toolInput);
-      action = { type: 'plan_saved', toolName, weekOf: toolInput.weekOf, clientId: toolInput.clientId };
-      toolResultContent = JSON.stringify({ success: true, weekOf: toolInput.weekOf, clientId: toolInput.clientId });
+      try {
+        savePlan(toolName, toolInput);
+        action = { type: 'plan_saved', toolName, weekOf: toolInput.weekOf, clientId: toolInput.clientId };
+        toolResultContent = JSON.stringify({ success: true, weekOf: toolInput.weekOf, clientId: toolInput.clientId });
+      } catch (err) {
+        if (!(err instanceof PlanValidationError)) throw err;
+        // Hand the validation errors back to the model so it can ask the coach
+        // to complete the missing fields instead of silently failing.
+        action = null;
+        toolResultContent = JSON.stringify({ success: false, error: 'Plan incompleto', missing: err.errors });
+      }
     } else if (toolName === 'create_client') {
       const { client, generatedPassword } = await createClient(toolInput);
       action = { type: 'client_created', client, password: generatedPassword };
@@ -410,6 +429,16 @@ OTRAS FUNCIONES:
       sendWelcomeNotifications(client, generatedPassword).catch(err =>
         console.error('[notifier] welcome notifications failed:', err.message)
       );
+    } else if (toolName === 'add_plan_note') {
+      try {
+        appendPlanNote(toolInput.clientId, toolInput.weekOf, toolInput.note, coach.name || 'coach');
+        action = { type: 'note_added', clientId: toolInput.clientId, weekOf: toolInput.weekOf };
+        toolResultContent = JSON.stringify({ success: true, clientId: toolInput.clientId, weekOf: toolInput.weekOf });
+      } catch (err) {
+        if (!(err instanceof PlanValidationError)) throw err;
+        action = null;
+        toolResultContent = JSON.stringify({ success: false, error: err.message });
+      }
     } else if (toolName === 'reset_client_password') {
       const newPwd = await resetClientPassword(toolInput.clientId);
       if (!newPwd) {
@@ -667,9 +696,91 @@ Return ONLY this JSON:
 
     res.json({ success: true, weekOf, clientId });
   } catch (err) {
+    if (err instanceof PlanValidationError) {
+      // 422: the table is missing required data — tell the coach exactly what.
+      const head = err.errors.slice(0, 4).join('; ');
+      const more = err.errors.length > 4 ? ` (+${err.errors.length - 4} más)` : '';
+      return res.status(422).json({ error: `Plan incompleto: ${head}${more}`, missing: err.errors });
+    }
     console.error('[save-plan-table]', err);
     res.status(500).json({ error: 'Error saving plan' });
   }
+});
+
+// ── Plan editing (coach) ──────────────────────────────────────
+
+function ensureClient(clientId, res) {
+  const target = getClientById(clientId);
+  if (!target || target.role !== 'client') {
+    res.status(404).json({ error: 'Cliente no encontrado' });
+    return null;
+  }
+  return target;
+}
+
+function handlePlanError(err, res, context, fallback) {
+  if (err instanceof PlanValidationError) {
+    return res.status(422).json({ error: err.message, missing: err.errors });
+  }
+  console.error(context, err);
+  return res.status(500).json({ error: fallback });
+}
+
+// Edit a single day of an existing plan half.
+// body: { specialty:'training'|'nutrition', dayIndex:0-6, day:{…} }
+app.post('/api/coach/plans/:clientId/:weekOf/day', aiLimiter, requireCoach, (req, res) => {
+  const { clientId, weekOf } = req.params;
+  const { specialty, dayIndex, day } = req.body;
+  if (!['training', 'nutrition'].includes(specialty)) return res.status(400).json({ error: 'specialty inválido' });
+  if (!ensureClient(clientId, res)) return;
+  try {
+    const plan = updatePlanDay(clientId, weekOf, specialty, Number(dayIndex), day);
+    res.json({ success: true, weekOf, clientId, dayIndex: Number(dayIndex), shoppingList: plan.shoppingList || null });
+  } catch (err) {
+    handlePlanError(err, res, '[plans/day]', 'Error al actualizar el día');
+  }
+});
+
+// Overwrite a full week half (training or nutrition) — validated as complete.
+// body: { specialty, days:[7] }
+app.post('/api/coach/plans/:clientId/:weekOf/overwrite', aiLimiter, requireCoach, (req, res) => {
+  const { clientId, weekOf } = req.params;
+  const { specialty, days } = req.body;
+  if (!['training', 'nutrition'].includes(specialty)) return res.status(400).json({ error: 'specialty inválido' });
+  if (!Array.isArray(days)) return res.status(400).json({ error: 'days es obligatorio' });
+  if (!ensureClient(clientId, res)) return;
+  const toolName = specialty === 'training' ? 'save_training_plan' : 'save_nutrition_plan';
+  try {
+    const plan = savePlan(toolName, { clientId, weekOf, days });
+    res.json({ success: true, weekOf, clientId, shoppingList: plan.shoppingList || null });
+  } catch (err) {
+    handlePlanError(err, res, '[plans/overwrite]', 'Error al sobrescribir la semana');
+  }
+});
+
+// Append a free-form note to a plan after creation.  body: { note }
+app.post('/api/coach/plans/:clientId/:weekOf/note', requireCoach, (req, res) => {
+  const { clientId, weekOf } = req.params;
+  if (!ensureClient(clientId, res)) return;
+  try {
+    const plan = appendPlanNote(clientId, weekOf, req.body?.note, req.client.name || 'coach');
+    res.json({ success: true, notes: plan.notes });
+  } catch (err) {
+    handlePlanError(err, res, '[plans/note]', 'Error al añadir la nota');
+  }
+});
+
+// Weekly shopping list (client sees own; coach sees any). Computed at save;
+// recomputed on the fly for legacy plans saved before the feature existed.
+app.get('/api/plans/:clientId/week/:weekOf/shopping', requireAuth, (req, res) => {
+  if (req.client.id !== req.params.clientId && req.client.role !== 'coach') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  const plan = getPlanByWeek(req.params.clientId, req.params.weekOf);
+  if (!plan) return res.status(404).json({ error: 'Semana no encontrada' });
+  const shoppingList = plan.shoppingList || (plan.nutrition ? buildWeeklyShoppingList(plan.nutrition) : null);
+  if (!shoppingList) return res.status(404).json({ error: 'Sin lista de la compra para esta semana' });
+  res.json(shoppingList);
 });
 
 // ── Health ────────────────────────────────────────────────────
