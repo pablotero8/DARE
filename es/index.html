@@ -1,167 +1,46 @@
 <!DOCTYPE html>
-<html lang="en" translate="no" class="notranslate">
+<html lang="es" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <script>(function(){if(location.pathname.indexOf('/es/')!==-1)return;var p=localStorage.getItem('dare-lang');if(p==='en')return;if(p==='es'){var f=location.pathname.split('/').pop()||'index.html';location.replace('/es/'+f);return;}var l=(navigator.language||'').toLowerCase();if(l==='es'||l.startsWith('es-')){var f2=location.pathname.split('/').pop()||'index.html';localStorage.setItem('dare-lang','es');location.replace('/es/'+f2);}})();</script>
-    <title>DARE | Private Health OS — Dubai</title>
-    
+    <script>(function(){localStorage.setItem('dare-lang','es');})();</script>
+    <title>DARE | Sistema de Salud Privado — Dubái</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="../style.css">
     <style>
     .p-whoop-partner {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-top: 2rem;
-        padding-top: 1.8rem;
-        border-top: 1px solid rgba(201,162,74,0.12);
-        flex-wrap: wrap;
+        display: flex; align-items: center; gap: 0.75rem;
+        margin-top: 2rem; padding-top: 1.8rem;
+        border-top: 1px solid rgba(201,162,74,0.12); flex-wrap: wrap;
     }
-    .p-whoop-partner-label {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.62rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: rgba(201,162,74,0.5);
-        font-weight: 600;
-    }
-    .p-whoop-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.38rem 0.9rem 0.38rem 0.65rem;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(244,241,232,0.1);
-        border-radius: 999px;
-        text-decoration: none;
-    }
+    .p-whoop-partner-label { font-family: 'Manrope', sans-serif; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(201,162,74,0.5); font-weight: 600; }
+    .p-whoop-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.38rem 0.9rem 0.38rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(244,241,232,0.1); border-radius: 999px; text-decoration: none; }
     .p-whoop-badge svg { color: rgba(244,241,232,0.75); flex-shrink: 0; }
-    .p-whoop-badge-name {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.74rem;
-        font-weight: 800;
-        letter-spacing: 0.16em;
-        color: rgba(244,241,232,0.82);
-    }
-    .p-whoop-badge-tag {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.58rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        color: rgba(244,241,232,0.32);
-    }
+    .p-whoop-badge-name { font-family: 'Manrope', sans-serif; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.16em; color: rgba(244,241,232,0.82); }
+    .p-whoop-badge-tag { font-family: 'Manrope', sans-serif; font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em; color: rgba(244,241,232,0.32); }
 
-    /* ── WHOOP VISUAL SECTION ── */
-    .p-whoop-section {
-        padding: 9vh 0;
-        background: #0d0d10;
-        border-top: 1px solid rgba(244,241,232,0.05);
-        border-bottom: 1px solid rgba(244,241,232,0.05);
-    }
-    .p-whoop-section-inner {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 5%;
-        display: grid;
-        grid-template-columns: 5fr 7fr;
-        gap: 4.5rem;
-        align-items: center;
-    }
-    .p-whoop-eyebrow {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.68rem;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        color: rgba(201,162,74,0.6);
-        font-weight: 700;
-        margin-bottom: 1.1rem;
-    }
-    .p-whoop-hl-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.52rem;
-        padding: 0.4rem 0.9rem 0.4rem 0.65rem;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(244,241,232,0.1);
-        border-radius: 8px;
-        margin-bottom: 1.8rem;
-    }
+    .p-whoop-section { padding: 9vh 0; background: #0d0d10; border-top: 1px solid rgba(244,241,232,0.05); border-bottom: 1px solid rgba(244,241,232,0.05); }
+    .p-whoop-section-inner { max-width: 1280px; margin: 0 auto; padding: 0 5%; display: grid; grid-template-columns: 5fr 7fr; gap: 4.5rem; align-items: center; }
+    .p-whoop-eyebrow { font-family: 'Manrope', sans-serif; font-size: 0.68rem; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(201,162,74,0.6); font-weight: 700; margin-bottom: 1.1rem; }
+    .p-whoop-hl-badge { display: inline-flex; align-items: center; gap: 0.52rem; padding: 0.4rem 0.9rem 0.4rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(244,241,232,0.1); border-radius: 8px; margin-bottom: 1.8rem; }
     .p-whoop-hl-badge svg { color: rgba(244,241,232,0.75); }
-    .p-whoop-hl-badge-name {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.82rem;
-        font-weight: 800;
-        letter-spacing: 0.18em;
-        color: rgba(244,241,232,0.85);
-    }
-    .p-whoop-hl-title {
-        font-family: 'Tulpen One', serif;
-        font-size: clamp(2.8rem, 4.5vw, 4.2rem);
-        line-height: 0.9;
-        text-transform: uppercase;
-        color: #f4f1e8;
-        margin-bottom: 1.2rem;
-    }
-    .p-whoop-hl-sub {
-        font-size: 0.9rem;
-        color: rgba(244,241,232,0.45);
-        line-height: 1.72;
-        margin-bottom: 1.6rem;
-        max-width: 340px;
-    }
-    .p-whoop-hl-link {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: rgba(166,200,94,0.7);
-        text-decoration: none;
-        transition: color 0.2s;
-    }
+    .p-whoop-hl-badge-name { font-family: 'Manrope', sans-serif; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.18em; color: rgba(244,241,232,0.85); }
+    .p-whoop-hl-title { font-family: 'Tulpen One', serif; font-size: clamp(2.8rem, 4.5vw, 4.2rem); line-height: 0.9; text-transform: uppercase; color: #f4f1e8; margin-bottom: 1.2rem; }
+    .p-whoop-hl-sub { font-size: 0.9rem; color: rgba(244,241,232,0.45); line-height: 1.72; margin-bottom: 1.6rem; max-width: 340px; }
+    .p-whoop-hl-link { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(166,200,94,0.7); text-decoration: none; transition: color 0.2s; }
     .p-whoop-hl-link:hover { color: #a6c85e; }
-    .p-whoop-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.85rem;
-    }
-    .p-whoop-tile {
-        padding: 1.4rem 1.3rem;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(244,241,232,0.08);
-    }
-    .p-whoop-tile-green {
-        background: rgba(166,200,94,0.06);
-        border-color: rgba(166,200,94,0.2);
-    }
-    .p-whoop-tile-val {
-        font-family: 'Tulpen One', serif;
-        font-size: 2.6rem;
-        line-height: 1;
-        color: #f4f1e8;
-        margin-bottom: 0.35rem;
-    }
+    .p-whoop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+    .p-whoop-tile { padding: 1.4rem 1.3rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(244,241,232,0.08); }
+    .p-whoop-tile-green { background: rgba(166,200,94,0.06); border-color: rgba(166,200,94,0.2); }
+    .p-whoop-tile-val { font-family: 'Tulpen One', serif; font-size: 2.6rem; line-height: 1; color: #f4f1e8; margin-bottom: 0.35rem; }
     .p-whoop-tile-green .p-whoop-tile-val { color: #a6c85e; }
-    .p-whoop-tile-name {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #f4f1e8;
-        margin-bottom: 0.12rem;
-    }
+    .p-whoop-tile-name { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #f4f1e8; margin-bottom: 0.12rem; }
     .p-whoop-tile-green .p-whoop-tile-name { color: #a6c85e; }
-    .p-whoop-tile-sub {
-        font-size: 0.65rem;
-        color: rgba(244,241,232,0.38);
-        line-height: 1.4;
-    }
-    @media (max-width: 960px) {
-        .p-whoop-section-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-    }
+    .p-whoop-tile-sub { font-size: 0.65rem; color: rgba(244,241,232,0.38); line-height: 1.4; }
+    @media (max-width: 960px) { .p-whoop-section-inner { grid-template-columns: 1fr; gap: 2.5rem; } }
     </style>
     <script>
     (function(){
@@ -177,14 +56,14 @@
 
         <header class="header-main">
         <a href="index.html" class="logo">DARE</a>
-        <nav class="header-nav" aria-label="Main navigation">
-            <a href="index.html" class="header-nav-link" aria-current="page">Home</a>
-            <a href="plans.html" class="header-nav-link">Plans</a>
-            <a href="team.html" class="header-nav-link">The Team</a>
-            <a href="faq.html" class="header-nav-link">FAQ</a>
+        <nav class="header-nav" aria-label="Navegación principal">
+            <a href="index.html" class="header-nav-link" aria-current="page">Inicio</a>
+            <a href="plans.html" class="header-nav-link">Planes</a>
+            <a href="team.html" class="header-nav-link">El Equipo</a>
+            <a href="../faq.html" class="header-nav-link">FAQ</a>
         </nav>
         <div class="header-controls">
-        <button class="header-theme-btn" id="theme-toggle" aria-label="Toggle light / dark mode">
+        <button class="header-theme-btn" id="theme-toggle" aria-label="Cambiar modo claro / oscuro">
             <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <circle cx="12" cy="12" r="4.5"/>
                 <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
@@ -197,7 +76,7 @@
             </svg>
         </button>
 
-        <a href="client.html" class="header-user-btn" aria-label="Client area">
+        <a href="../client.html" class="header-user-btn" aria-label="Área de clientes">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <circle cx="12" cy="8" r="4"/>
                 <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
@@ -206,12 +85,9 @@
         </div>
     </header>
 
-
-
-
     <main>
-        
-        <section class="p-hero" id="top" aria-label="DARE introduction">
+
+        <section class="p-hero" id="top" aria-label="DARE introducción">
             <div class="p-hero-bg" role="presentation"></div>
             <div class="p-hero-overlay" role="presentation"></div>
             <div class="p-hero-takeover" role="presentation"></div>
@@ -229,7 +105,7 @@
                             </div>
                             <div class="p-stamp-inline p-hero-fade" aria-hidden="true">
                                 <span class="p-stamp-line"></span>
-                                <span class="p-stamp-text">DUBAI, 2026.</span>
+                                <span class="p-stamp-text">DUBÁI, 2026.</span>
                                 <span class="p-stamp-line p-stamp-line-right"></span>
                             </div>
                         </div>
@@ -240,10 +116,9 @@
                             </p>
 
                             <div class="p-cta-row">
-                                <!-- Replace 971501234567 with your actual WhatsApp business number -->
-                                <a class="p-btn p-btn-primary" href="https://wa.me/34666076489?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" target="_blank" rel="noopener">Request private consultation</a>
-                                <a class="p-btn p-btn-ghost" href="plans.html">View engagement models</a>
-                                <a class="p-btn p-btn-ghost" href="team.html">Meet the team</a>
+                                <a class="p-btn p-btn-primary" href="https://wa.me/34666076489?text=Hola%20DARE.%20He%20visitado%20vuestra%20web%20y%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20vuestros%20protocolos%20de%20salud%20privados%20en%20Dub%C3%A1i.%20%C2%BFPodr%C3%ADamos%20concertar%20una%20consulta%20discreta%3F" target="_blank" rel="noopener">Solicitar consulta privada</a>
+                                <a class="p-btn p-btn-ghost" href="plans.html">Ver modelos de colaboración</a>
+                                <a class="p-btn p-btn-ghost" href="team.html">Conocer al equipo</a>
                             </div>
                         </div>
                     </div>
@@ -251,7 +126,7 @@
             </div>
         </section>
 
-        <section class="p-philosophy" id="philosophy" aria-label="DARE philosophy">
+        <section class="p-philosophy" id="philosophy" aria-label="Filosofía DARE">
             <div class="p-philosophy-text">
                 <span class="p-philosophy-outline">Most programs</span>
                 <span class="p-philosophy-outline">are built for</span>
@@ -259,27 +134,27 @@
                 <span class="p-philosophy-solid">DARE is built</span>
                 <span class="p-philosophy-solid">for the</span>
                 <span class="p-philosophy-solid">exception.</span>
-                <span class="p-philosophy-sub">Dubai · Private · By application only</span>
+                <span class="p-philosophy-sub">Dubái · Privado · Solo por solicitud</span>
                 <div class="p-philosophy-divider"></div>
                 <div class="p-philosophy-stats">
                     <div class="p-philosophy-stat">
                         <span class="p-stat-val">12–24</span>
-                        <span class="p-stat-key">week<br>programs</span>
+                        <span class="p-stat-key">semanas<br>de programa</span>
                     </div>
                     <div class="p-philosophy-stat">
                         <span class="p-stat-val">100%</span>
-                        <span class="p-stat-key">custom<br>to your body</span>
+                        <span class="p-stat-key">personalizado<br>a tu cuerpo</span>
                     </div>
                     <div class="p-philosophy-stat">
                         <span class="p-stat-val">2</span>
-                        <span class="p-stat-key">coaches<br>one system</span>
+                        <span class="p-stat-key">coaches<br>un sistema</span>
                     </div>
                 </div>
                 <div class="p-whoop-partner">
-                    <span class="p-whoop-partner-label">Biometric tracking</span>
+                    <span class="p-whoop-partner-label">Seguimiento biométrico</span>
                     <div class="p-whoop-badge">
                         <!-- Official WHOOP logo asset — download whoop-logo-white.svg from developer.whoop.com/branding and save to /images/ -->
-                        <img src="images/whoop-logo-white.svg" alt="WHOOP" width="52" height="14" style="opacity:0.75;display:block;" onerror="this.style.display='none'">
+                        <img src="../images/whoop-logo-white.svg" alt="WHOOP" width="52" height="14" style="opacity:0.75;display:block;" onerror="this.style.display='none'">
                         <span class="p-whoop-badge-name">WHOOP</span>
                         <span class="p-whoop-badge-tag">Peak · included</span>
                     </div>
@@ -296,136 +171,102 @@
                             <rect x="38" y="0" width="452" height="348"/>
                         </clipPath>
                     </defs>
-
-                    <!-- Faint horizontal guides -->
                     <line x1="38" y1="260" x2="490" y2="260" stroke="rgba(201,162,74,0.055)" stroke-width="1"/>
                     <line x1="38" y1="185" x2="490" y2="185" stroke="rgba(201,162,74,0.055)" stroke-width="1"/>
                     <line x1="38" y1="110" x2="490" y2="110" stroke="rgba(201,162,74,0.055)" stroke-width="1"/>
                     <line x1="38" y1="38"  x2="490" y2="38"  stroke="rgba(201,162,74,0.04)"  stroke-width="1"/>
-
-                    <!-- Axes -->
                     <line x1="38" y1="18" x2="38" y2="340" stroke="rgba(201,162,74,0.3)" stroke-width="1.3" stroke-linecap="round"/>
                     <line x1="28" y1="335" x2="492" y2="335" stroke="rgba(201,162,74,0.3)" stroke-width="1.3" stroke-linecap="round"/>
-
-                    <!-- Axis arrows -->
                     <path d="M33 24 L38 15 L43 24" stroke="rgba(201,162,74,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                     <path d="M486 330 L494 335 L486 340" stroke="rgba(201,162,74,0.5)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-
-                    <!-- Y axis ticks -->
                     <line x1="32" y1="260" x2="38" y2="260" stroke="rgba(201,162,74,0.35)" stroke-width="1"/>
                     <line x1="32" y1="185" x2="38" y2="185" stroke="rgba(201,162,74,0.35)" stroke-width="1"/>
                     <line x1="32" y1="110" x2="38" y2="110" stroke="rgba(201,162,74,0.35)" stroke-width="1"/>
-
-                    <!-- X axis ticks -->
                     <line x1="170" y1="335" x2="170" y2="341" stroke="rgba(201,162,74,0.3)" stroke-width="1"/>
                     <line x1="300" y1="335" x2="300" y2="341" stroke="rgba(201,162,74,0.3)" stroke-width="1"/>
                     <line x1="430" y1="335" x2="430" y2="341" stroke="rgba(201,162,74,0.3)" stroke-width="1"/>
-
-                    <!-- X labels -->
                     <text x="55"  y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.32)">START</text>
                     <text x="160" y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.28)">W4</text>
                     <text x="290" y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.28)">W8</text>
                     <text x="420" y="352" font-family="Manrope,sans-serif" font-size="9" letter-spacing="1.5" fill="rgba(201,162,74,0.42)">W12</text>
-
-                    <!-- Area fill (animated opacity via JS) -->
-                    <path id="chart-area"
-                          d="M 55 322 C 130 316 200 298 260 268 C 320 238 365 192 408 142 C 440 103 462 66 482 32 L 482 335 L 55 335 Z"
-                          fill="url(#areaGold)" clip-path="url(#chartClip)" opacity="0"/>
-
-                    <!-- Average comparison line (dashed green) -->
-                    <path id="chart-avg"
-                          d="M 55 322 C 140 314 220 300 285 276 C 350 252 400 222 450 190"
-                          stroke="rgba(166,200,94,0.45)" stroke-width="1.6" stroke-linecap="round"
-                          stroke-dasharray="5 6" fill="none"/>
-
-                    <!-- Main DARE growth curve (gold) -->
-                    <path id="chart-main"
-                          d="M 55 322 C 130 316 200 298 260 268 C 320 238 365 192 408 142 C 440 103 462 66 482 32"
-                          stroke="rgba(201,162,74,0.92)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-
-                    <!-- Data points -->
+                    <path id="chart-area" d="M 55 322 C 130 316 200 298 260 268 C 320 238 365 192 408 142 C 440 103 462 66 482 32 L 482 335 L 55 335 Z" fill="url(#areaGold)" clip-path="url(#chartClip)" opacity="0"/>
+                    <path id="chart-avg" d="M 55 322 C 140 314 220 300 285 276 C 350 252 400 222 450 190" stroke="rgba(166,200,94,0.45)" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="5 6" fill="none"/>
+                    <path id="chart-main" d="M 55 322 C 130 316 200 298 260 268 C 320 238 365 192 408 142 C 440 103 462 66 482 32" stroke="rgba(201,162,74,0.92)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
                     <circle id="dot-0" cx="55"  cy="322" r="4"   fill="rgba(166,200,94,0.75)"  opacity="0"/>
                     <circle id="dot-1" cx="170" cy="288" r="4"   fill="rgba(201,162,74,0.65)"  opacity="0"/>
                     <circle id="dot-2" cx="300" cy="218" r="4.5" fill="rgba(201,162,74,0.80)"  opacity="0"/>
                     <circle id="dot-3" cx="430" cy="120" r="4"   fill="rgba(201,162,74,0.85)"  opacity="0"/>
                     <circle id="dot-4" cx="482" cy="32"  r="6"   fill="rgba(201,162,74,1)"     opacity="0"/>
-
-                    <!-- Peak rings (glow) -->
                     <circle id="ring-1" cx="482" cy="32" r="13" stroke="rgba(201,162,74,0.22)" stroke-width="1" fill="none" opacity="0"/>
                     <circle id="ring-2" cx="482" cy="32" r="22" stroke="rgba(201,162,74,0.09)" stroke-width="1" fill="none" opacity="0"/>
-
-                    <!-- "DARE" label at peak -->
                     <text id="peak-label" x="462" y="22" text-anchor="end" font-family="Manrope,sans-serif" font-size="8.5" letter-spacing="2.5" fill="rgba(201,162,74,0.7)" opacity="0">DARE</text>
-
-                    <!-- "AVG" label at avg curve end -->
                     <text x="455" y="186" font-family="Manrope,sans-serif" font-size="8" letter-spacing="1.5" fill="rgba(166,200,94,0.5)">AVG</text>
                 </svg>
             </div>
         </section>
 
-        <section class="p-section" id="our-method" aria-label="Our method">
+        <section class="p-section" id="our-method" aria-label="Nuestro método">
             <div class="p-shell">
                 <div class="p-section-head">
-                    <h2 class="p-title p-split" data-split="lines">OUR METHOD</h2>
+                    <h2 class="p-title p-split" data-split="lines">NUESTRO MÉTODO</h2>
                     <div class="p-method-lines">
                         <div class="p-method-line">
-                            <span class="p-ml-kw p-ml-kw--training">Training</span>
+                            <span class="p-ml-kw p-ml-kw--training">Entrenamiento</span>
                             <span class="p-ml-sep"></span>
-                            <span class="p-ml-desc">drives the plan.</span>
+                            <span class="p-ml-desc">dirige el plan.</span>
                         </div>
                         <div class="p-method-line">
-                            <span class="p-ml-kw p-ml-kw--nutrition">Nutrition</span>
+                            <span class="p-ml-kw p-ml-kw--nutrition">Nutrición</span>
                             <span class="p-ml-sep"></span>
-                            <span class="p-ml-desc">supports the work.</span>
+                            <span class="p-ml-desc">apoya el trabajo.</span>
                         </div>
                         <div class="p-method-line">
-                            <span class="p-ml-kw p-ml-kw--integration">Integration</span>
+                            <span class="p-ml-kw p-ml-kw--integration">Integración</span>
                             <span class="p-ml-sep"></span>
-                            <span class="p-ml-desc">makes it sustainable.</span>
+                            <span class="p-ml-desc">lo hace sostenible.</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-method-trio" aria-label="Training, nutrition and integration">
-                    <a href="method-training.html" class="p-method-pillar p-pillar-training">
+                <div class="p-method-trio" aria-label="Entrenamiento, nutrición e integración">
+                    <a href="../method-training.html" class="p-method-pillar p-pillar-training">
                         <div class="p-method-pillar-bg"></div>
                         <div class="p-method-pillar-overlay"></div>
                         <div class="p-method-pillar-content">
                             <span class="p-pillar-index">01</span>
                             <div class="p-pillar-body">
-                                <span class="p-pillar-label">TRAINING</span>
-                                <h3 class="p-pillar-title">Personalized program</h3>
-                                <p class="p-pillar-copy">Built around biomechanics, recovery and your real schedule.</p>
-                                <span class="p-pillar-cta">Learn more →</span>
+                                <span class="p-pillar-label">ENTRENAMIENTO</span>
+                                <h3 class="p-pillar-title">Programa personalizado</h3>
+                                <p class="p-pillar-copy">Construido en torno a la biomecánica, la recuperación y tu agenda real.</p>
+                                <span class="p-pillar-cta">Saber más →</span>
                             </div>
                         </div>
                     </a>
 
-
-                    <a href="method-system.html" class="p-method-pillar p-pillar-system">
+                    <a href="../method-system.html" class="p-method-pillar p-pillar-system">
                         <div class="p-method-pillar-bg"></div>
                         <div class="p-method-pillar-overlay"></div>
                         <div class="p-method-pillar-content">
                             <span class="p-pillar-index">03</span>
                             <div class="p-pillar-body">
-                                <span class="p-pillar-label">ONE SYSTEM</span>
-                                <h3 class="p-pillar-title">Integration</h3>
-                                <p class="p-pillar-copy">Training + nutrition working as a single operating system.</p>
-                                <span class="p-pillar-cta">Learn more →</span>
+                                <span class="p-pillar-label">UN SISTEMA</span>
+                                <h3 class="p-pillar-title">Integración</h3>
+                                <p class="p-pillar-copy">Entrenamiento + nutrición funcionando como un único sistema operativo.</p>
+                                <span class="p-pillar-cta">Saber más →</span>
                             </div>
                         </div>
                     </a>
 
-                                        <a href="method-nutrition.html" class="p-method-pillar p-pillar-nutrition">
+                    <a href="../method-nutrition.html" class="p-method-pillar p-pillar-nutrition">
                         <div class="p-method-pillar-bg"></div>
                         <div class="p-method-pillar-overlay"></div>
                         <div class="p-method-pillar-content">
                             <span class="p-pillar-index">02</span>
                             <div class="p-pillar-body">
-                                <span class="p-pillar-label">NUTRITION</span>
-                                <h3 class="p-pillar-title">Training-led protocol</h3>
-                                <p class="p-pillar-copy">Nutrition engineered to support the work you do in the gym.</p>
-                                <span class="p-pillar-cta">Learn more →</span>
+                                <span class="p-pillar-label">NUTRICIÓN</span>
+                                <h3 class="p-pillar-title">Protocolo guiado por el entrenamiento</h3>
+                                <p class="p-pillar-copy">Nutrición diseñada para apoyar el trabajo que realizas en el gym.</p>
+                                <span class="p-pillar-cta">Saber más →</span>
                             </div>
                         </div>
                     </a>
@@ -434,22 +275,21 @@
             </div>
         </section>
 
-        <!-- ── WHOOP RECOVERY INTELLIGENCE ── -->
-        <section class="p-whoop-section" id="whoop-tracking" aria-label="WHOOP recovery tracking">
+        <!-- WHOOP RECOVERY INTELLIGENCE -->
+        <section class="p-whoop-section" id="whoop-tracking" aria-label="Seguimiento de recuperación WHOOP">
             <div class="p-whoop-section-inner">
                 <div class="p-whoop-copy">
-                    <p class="p-whoop-eyebrow">Included in every protocol</p>
+                    <p class="p-whoop-eyebrow">Incluido en cada protocolo</p>
                     <div class="p-whoop-hl-badge">
                         <!-- Official WHOOP logo asset — download whoop-logo-white.svg from developer.whoop.com/branding and save to /images/ -->
-                        <img src="images/whoop-logo-white.svg" alt="WHOOP" width="56" height="15" style="opacity:0.75;display:block;" onerror="this.style.display='none'">
+                        <img src="../images/whoop-logo-white.svg" alt="WHOOP" width="56" height="15" style="opacity:0.75;display:block;" onerror="this.style.display='none'">
                         <span class="p-whoop-hl-badge-name">WHOOP</span>
                     </div>
-                    <h2 class="p-whoop-hl-title">YOUR RECOVERY<br>IN THE BRIEF.</h2>
-                    <p class="p-whoop-hl-sub">Four biometric signals reviewed by your coaches every Monday morning. Your plan responds before you feel the need to ask.</p>
-                    <a href="plan-online.html" class="p-whoop-hl-link">Included in the Online Protocol →</a>
+                    <h2 class="p-whoop-hl-title">TU RECUPERACIÓN<br>EN EL INFORME.</h2>
+                    <p class="p-whoop-hl-sub">Cuatro señales biométricas revisadas por tus coaches cada lunes por la mañana. Tu plan responde antes de que sientas la necesidad de preguntar.</p>
+                    <a href="../plan-online.html" class="p-whoop-hl-link">Incluido en el Protocolo Online →</a>
                 </div>
                 <div class="p-whoop-grid">
-                    <!-- Recovery tile with SVG ring -->
                     <div class="p-whoop-tile p-whoop-tile-green">
                         <div style="position:relative;width:60px;height:60px;margin-bottom:0.75rem;">
                             <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
@@ -461,75 +301,57 @@
                                 <span style="font-size:0.42rem;letter-spacing:0.08em;color:rgba(244,241,232,0.4);text-transform:uppercase;">%</span>
                             </div>
                         </div>
-                        <div class="p-whoop-tile-name">Recovery</div>
-                        <div class="p-whoop-tile-sub">Green · Ready to train</div>
+                        <div class="p-whoop-tile-name">Recuperación</div>
+                        <div class="p-whoop-tile-sub">Verde · Listo para entrenar</div>
                     </div>
-                    <!-- HRV tile -->
                     <div class="p-whoop-tile">
                         <div class="p-whoop-tile-val">61<span style="font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0;">ms</span> <span style="font-size:1.4rem;color:#a6c85e;">↑</span></div>
                         <div class="p-whoop-tile-name">HRV</div>
-                        <div class="p-whoop-tile-sub">Above 14-day baseline</div>
+                        <div class="p-whoop-tile-sub">Por encima de la media de 14 días</div>
                     </div>
-                    <!-- Sleep tile -->
                     <div class="p-whoop-tile">
                         <div class="p-whoop-tile-val">7.8<span style="font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0;">h</span></div>
-                        <div class="p-whoop-tile-name">Sleep</div>
-                        <div class="p-whoop-tile-sub">87% performance score</div>
+                        <div class="p-whoop-tile-name">Sueño</div>
+                        <div class="p-whoop-tile-sub">87% de puntuación de rendimiento</div>
                     </div>
-                    <!-- Strain tile -->
                     <div class="p-whoop-tile">
                         <div class="p-whoop-tile-val">9.2</div>
-                        <div class="p-whoop-tile-name">Strain</div>
-                        <div class="p-whoop-tile-sub">Moderate · within target</div>
+                        <div class="p-whoop-tile-name">Carga</div>
+                        <div class="p-whoop-tile-sub">Moderada · dentro del objetivo</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="p-section p-section-tight" id="method" aria-label="Method">
+        <section class="p-section p-section-tight" id="method" aria-label="Método">
             <div class="p-shell">
                 <div class="p-section-head">
-                    <h2 class="p-title p-split" data-split="lines">How we build your program</h2>
-                    <p class="p-sub">Audit → build → execute. Zero ambiguity. Full follow‑through.</p>
+                    <h2 class="p-title p-split" data-split="lines">Cómo construimos tu programa</h2>
+                    <p class="p-sub">Diagnóstico → diseño → ejecución. Cero ambigüedad. Seguimiento total.</p>
                 </div>
 
                 <div class="p-process-list" role="list">
                     <div class="p-process-item" role="listitem">
                         <span class="p-process-num" aria-hidden="true">01</span>
                         <div class="p-process-body">
-                            <h3 class="p-process-title">Personal assessment</h3>
-                            <p class="p-process-copy">Constraints, patterns, and current baselines — mapped with clarity before we touch execution.</p>
+                            <h3 class="p-process-title">Evaluación personal</h3>
+                            <p class="p-process-copy">Restricciones, patrones y niveles actuales — trazados con claridad antes de tocar la ejecución.</p>
                         </div>
                         <div class="p-process-art" aria-hidden="true">
-                            <!-- Person with measurement scan lines -->
                             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="pg01" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#d9d4c8"/>
-                                        <stop offset="50%" stop-color="#c9a24a"/>
-                                        <stop offset="100%" stop-color="#8fb85a"/>
-                                    </linearGradient>
-                                </defs>
-                                <!-- Head -->
+                                <defs><linearGradient id="pg01" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d9d4c8"/><stop offset="50%" stop-color="#c9a24a"/><stop offset="100%" stop-color="#8fb85a"/></linearGradient></defs>
                                 <circle cx="50" cy="15" r="9" stroke="url(#pg01)" stroke-width="1.5"/>
-                                <!-- Neck -->
                                 <line x1="50" y1="24" x2="50" y2="33" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
-                                <!-- Shoulders -->
                                 <line x1="28" y1="40" x2="72" y2="40" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
-                                <!-- Torso -->
                                 <line x1="50" y1="33" x2="50" y2="67" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
-                                <!-- Arms -->
                                 <line x1="28" y1="40" x2="20" y2="60" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
                                 <line x1="72" y1="40" x2="80" y2="60" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
-                                <!-- Legs -->
                                 <line x1="50" y1="67" x2="37" y2="92" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
                                 <line x1="50" y1="67" x2="63" y2="92" stroke="url(#pg01)" stroke-width="1.5" stroke-linecap="round"/>
-                                <!-- Shoulder scan line -->
                                 <line x1="7"  y1="40" x2="28" y2="40" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
                                 <line x1="72" y1="40" x2="93" y2="40" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
                                 <line x1="7"  y1="37" x2="7"  y2="43" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
                                 <line x1="93" y1="37" x2="93" y2="43" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
-                                <!-- Hip scan line -->
                                 <line x1="11" y1="67" x2="37" y2="67" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
                                 <line x1="63" y1="67" x2="89" y2="67" stroke="url(#pg01)" stroke-width="1" stroke-dasharray="2 2.5"/>
                                 <line x1="11" y1="64" x2="11" y2="70" stroke="url(#pg01)" stroke-width="1.2" stroke-linecap="round"/>
@@ -541,32 +363,21 @@
                     <div class="p-process-item" role="listitem">
                         <span class="p-process-num" aria-hidden="true">02</span>
                         <div class="p-process-body">
-                            <h3 class="p-process-title">System design</h3>
-                            <p class="p-process-copy">One integrated plan across training + nutrition + culinary execution. Built to survive your calendar.</p>
+                            <h3 class="p-process-title">Diseño del sistema</h3>
+                            <p class="p-process-copy">Un plan integrado de entrenamiento + nutrición + ejecución culinaria. Construido para sobrevivir a tu agenda.</p>
                         </div>
                         <div class="p-process-art" aria-hidden="true">
-                            <!-- 3 outer nodes + center node — integrated system -->
                             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="pg02" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#d9d4c8"/>
-                                        <stop offset="50%" stop-color="#c9a24a"/>
-                                        <stop offset="100%" stop-color="#8fb85a"/>
-                                    </linearGradient>
-                                </defs>
-                                <!-- Connecting lines to center -->
+                                <defs><linearGradient id="pg02" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d9d4c8"/><stop offset="50%" stop-color="#c9a24a"/><stop offset="100%" stop-color="#8fb85a"/></linearGradient></defs>
                                 <line x1="50" y1="18" x2="50" y2="44" stroke="url(#pg02)" stroke-width="1.2" stroke-linecap="round"/>
                                 <line x1="21" y1="75" x2="44" y2="56" stroke="url(#pg02)" stroke-width="1.2" stroke-linecap="round"/>
                                 <line x1="79" y1="75" x2="56" y2="56" stroke="url(#pg02)" stroke-width="1.2" stroke-linecap="round"/>
-                                <!-- Outer triangle edges -->
                                 <line x1="27" y1="72" x2="73" y2="72" stroke="url(#pg02)" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 3"/>
                                 <line x1="53" y1="14" x2="76" y2="68" stroke="url(#pg02)" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 3"/>
                                 <line x1="47" y1="14" x2="24" y2="68" stroke="url(#pg02)" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 3"/>
-                                <!-- Outer nodes -->
                                 <circle cx="50" cy="12" r="6" stroke="url(#pg02)" stroke-width="1.5"/>
                                 <circle cx="20" cy="78" r="6" stroke="url(#pg02)" stroke-width="1.5"/>
                                 <circle cx="80" cy="78" r="6" stroke="url(#pg02)" stroke-width="1.5"/>
-                                <!-- Center node -->
                                 <circle cx="50" cy="50" r="7" stroke="url(#pg02)" stroke-width="1.8"/>
                                 <circle cx="50" cy="50" r="3" fill="url(#pg02)"/>
                             </svg>
@@ -576,41 +387,22 @@
                     <div class="p-process-item" role="listitem">
                         <span class="p-process-num" aria-hidden="true">03</span>
                         <div class="p-process-body">
-                            <h3 class="p-process-title">Execution &amp; monitoring</h3>
-                            <p class="p-process-copy">Weekly adjustments, tight feedback loops, and hands‑on control — so outcomes are inevitable. Biometric data via WHOOP — recovery, HRV, and sleep — feeds directly into every Monday review.</p>
+                            <h3 class="p-process-title">Ejecución y seguimiento</h3>
+                            <p class="p-process-copy">Ajustes semanales, ciclos de retroalimentación estrechos y control directo — para que los resultados sean inevitables. Los datos biométricos de WHOOP — recuperación, HRV y sueño — se integran directamente en cada revisión del lunes.</p>
                         </div>
                         <div class="p-process-art" aria-hidden="true">
-                            <!-- Performance gauge dial — execution & monitoring -->
                             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="pg03" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#d9d4c8"/>
-                                        <stop offset="50%" stop-color="#c9a24a"/>
-                                        <stop offset="100%" stop-color="#8fb85a"/>
-                                    </linearGradient>
-                                </defs>
-                                <!-- Base gauge arc (full semicircle, dim) -->
+                                <defs><linearGradient id="pg03" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d9d4c8"/><stop offset="50%" stop-color="#c9a24a"/><stop offset="100%" stop-color="#8fb85a"/></linearGradient></defs>
                                 <path d="M 16 68 A 34 34 0 0 1 84 68" stroke="url(#pg03)" stroke-width="1.4" stroke-linecap="round" opacity="0.32"/>
-                                <!-- Performance zone arc (right portion — needle target, bright) -->
                                 <path d="M 69.5 40 A 34 34 0 0 1 84 68" stroke="url(#pg03)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
-                                <!-- Tick marks — 5 major positions along the arc -->
-                                <!-- 180° left -->
                                 <line x1="16" y1="68" x2="23" y2="68" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
-                                <!-- 135° upper-left -->
                                 <line x1="26" y1="44" x2="31.5" y2="49.5" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
-                                <!-- 90° top -->
                                 <line x1="50" y1="34" x2="50" y2="41" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
-                                <!-- 45° upper-right -->
                                 <line x1="74" y1="44" x2="68.5" y2="49.5" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                <!-- 0° right -->
                                 <line x1="84" y1="68" x2="77" y2="68" stroke="url(#pg03)" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                <!-- Needle — pointing at ~55° (high-performance zone) -->
                                 <line x1="50" y1="68" x2="69.5" y2="40" stroke="url(#pg03)" stroke-width="1.9" stroke-linecap="round"/>
-                                <!-- Center pivot -->
                                 <circle cx="50" cy="68" r="3.5" fill="url(#pg03)"/>
-                                <!-- Needle tip marker -->
                                 <circle cx="69.5" cy="40" r="1.6" fill="url(#pg03)" opacity="0.75"/>
-                                <!-- Weekly check-in dots (3 done · 1 current) -->
                                 <circle cx="32" cy="84" r="2.2" fill="url(#pg03)" opacity="0.72"/>
                                 <circle cx="42" cy="84" r="2.2" fill="url(#pg03)" opacity="0.72"/>
                                 <circle cx="52" cy="84" r="2.2" fill="url(#pg03)" opacity="0.72"/>
@@ -620,75 +412,46 @@
                     </div>
                 </div>
 
-                <!-- <section class="p-standards" aria-label="Private service standards">
-                    <div class="p-standards-inner p-glass">
-                        <div class="p-standards-left">
-                            <div class="p-standards-k">PRIVATE SERVICE STANDARDS</div>
-                            <h3 class="p-standards-h">Luxury is consistency.</h3>
-                            <p class="p-standards-p">No exposure. No mailing lists. No assistants. A compact team, engineered around your calendar — with standards that protect privacy and outcomes.</p>
-                        </div>
-
-                        <div class="p-standards-right" role="list" aria-label="Standards list">
-                            <div class="p-std" role="listitem">
-                                <div class="p-std-t">Privacy-first</div>
-                                <div class="p-std-p">Your life stays yours. Execution stays quiet.</div>
-                            </div>
-                            <div class="p-std" role="listitem">
-                                <div class="p-std-t">Training-led decisions</div>
-                                <div class="p-std-p">Nutrition supports the work — not the other way around.</div>
-                            </div>
-                            <div class="p-std" role="listitem">
-                                <div class="p-std-t">Weekly refinement</div>
-                                <div class="p-std-p">Protocols evolve with your response, travel and workload.</div>
-                            </div>
-                            <div class="p-std" role="listitem">
-                                <div class="p-std-t">Limited capacity</div>
-                                <div class="p-std-p">Engagements are selective to keep quality uncompromised.</div>
-                            </div>
-                        </div>
-                    </div>
-                </section> -->
-
             </div>
         </section>
 
-<section class="p-section p-section-tight" id="data" aria-label="Measured outcomes">
+        <section class="p-section p-section-tight" id="data" aria-label="Resultados medidos">
             <div class="p-shell">
                 <div class="p-section-head">
-                    <h2 class="p-title p-split" data-split="lines">MEASURED PROGRESS</h2>
-                    <p class="p-sub">Composite data across DARE clients — 12 weeks of integrated training and nutrition, tracked and verified.</p>
+                    <h2 class="p-title p-split" data-split="lines">PROGRESO MEDIDO</h2>
+                    <p class="p-sub">Datos compuestos de clientes de DARE — 12 semanas de entrenamiento y nutrición integrados, seguidos y verificados.</p>
                 </div>
 
                 <div class="p-charts-grid">
                     <div class="p-chart-wrap p-glass">
                         <div class="p-chart-head">
-                            <span class="p-chart-kicker">12-Week Composite</span>
-                            <h3 class="p-chart-title">Body Composition Shift</h3>
-                            <p class="p-chart-note">Body fat reduction vs. lean mass gain across a full quarterly engagement.</p>
+                            <span class="p-chart-kicker">Composición 12 Semanas</span>
+                            <h3 class="p-chart-title">Cambio en Composición Corporal</h3>
+                            <p class="p-chart-note">Reducción de grasa corporal frente al aumento de masa magra en un trimestre completo.</p>
                         </div>
                         <div class="p-chart-canvas-wrap">
                             <canvas id="progressChart"></canvas>
                         </div>
                         <div class="p-chart-legend">
                             <span class="p-chart-legend-item p-chart-legend-fat">
-                                <span class="p-chart-legend-dot"></span>Body Fat %
+                                <span class="p-chart-legend-dot"></span>% Grasa Corporal
                             </span>
                             <span class="p-chart-legend-item p-chart-legend-lean">
-                                <span class="p-chart-legend-dot"></span>Lean Mass Index
+                                <span class="p-chart-legend-dot"></span>Índice de Masa Magra
                             </span>
                         </div>
                     </div>
 
                     <div class="p-chart-wrap p-glass">
                         <div class="p-chart-head">
-                            <span class="p-chart-kicker">Protocol Design</span>
-                            <h3 class="p-chart-title">Macronutrient Architecture</h3>
-                            <p class="p-chart-note">Precision allocation adjusted to training phase and individual metabolic response.</p>
+                            <span class="p-chart-kicker">Diseño del Protocolo</span>
+                            <h3 class="p-chart-title">Arquitectura de Macronutrientes</h3>
+                            <p class="p-chart-note">Asignación de precisión ajustada a la fase de entrenamiento y la respuesta metabólica individual.</p>
                         </div>
-                        <div class="p-chart-goal-tabs" role="tablist" aria-label="Training goal">
-                            <button class="p-chart-tab is-active" data-goal="fat-loss" role="tab">Fat Loss</button>
-                            <button class="p-chart-tab" data-goal="recomp" role="tab">Recomposition</button>
-                            <button class="p-chart-tab" data-goal="performance" role="tab">Performance</button>
+                        <div class="p-chart-goal-tabs" role="tablist" aria-label="Objetivo de entrenamiento">
+                            <button class="p-chart-tab is-active" data-goal="fat-loss" role="tab">Pérdida de Grasa</button>
+                            <button class="p-chart-tab" data-goal="recomp" role="tab">Recomposición</button>
+                            <button class="p-chart-tab" data-goal="performance" role="tab">Rendimiento</button>
                         </div>
                         <div class="p-chart-canvas-wrap">
                             <canvas id="macroChart"></canvas>
@@ -698,134 +461,133 @@
                     <div class="p-chart-wrap p-glass p-chart-full" id="weekChartWrap">
                         <div class="p-week-chart-head">
                             <div>
-                                <span class="p-chart-kicker">Weekly Monitoring</span>
-                                <h3 class="p-chart-title">Training &amp; Nutrition Example Week</h3>
-                                <p class="p-chart-note">Calories cycle with training load. Carbohydrates adapt to daily stimulus; protein anchors the rebuild throughout.</p>
+                                <span class="p-chart-kicker">Seguimiento Semanal</span>
+                                <h3 class="p-chart-title">Semana Ejemplo de Entrenamiento y Nutrición</h3>
+                                <p class="p-chart-note">Las calorías ciclan con la carga de entrenamiento. Los carbohidratos se adaptan al estímulo diario; la proteína ancla la recuperación.</p>
                             </div>
                             <div class="p-week-tabs" role="tablist">
-                                <button class="p-chart-tab p-week-tab is-active" data-week="strength" role="tab">Strength Week</button>
-                                <button class="p-chart-tab p-week-tab" data-week="performance" role="tab">Performance Week</button>
+                                <button class="p-chart-tab p-week-tab is-active" data-week="strength" role="tab">Semana de Fuerza</button>
+                                <button class="p-chart-tab p-week-tab" data-week="performance" role="tab">Semana de Rendimiento</button>
                             </div>
                         </div>
                         <div class="p-chart-canvas-wrap p-chart-canvas-tall">
                             <canvas id="weekChart"></canvas>
                         </div>
                         <div class="p-week-day-strip">
-                            <div class="p-week-day-cell p-day-strength">STRENGTH</div>
+                            <div class="p-week-day-cell p-day-strength">FUERZA</div>
                             <div class="p-week-day-cell p-day-cardio">CARDIO</div>
-                            <div class="p-week-day-cell p-day-rest">REST</div>
-                            <div class="p-week-day-cell p-day-strength">STRENGTH</div>
-                            <div class="p-week-day-cell p-day-mobility">MOBILITY</div>
-                            <div class="p-week-day-cell p-day-strength">STRENGTH</div>
-                            <div class="p-week-day-cell p-day-rest">REST</div>
+                            <div class="p-week-day-cell p-day-rest">DESCANSO</div>
+                            <div class="p-week-day-cell p-day-strength">FUERZA</div>
+                            <div class="p-week-day-cell p-day-mobility">MOVILIDAD</div>
+                            <div class="p-week-day-cell p-day-strength">FUERZA</div>
+                            <div class="p-week-day-cell p-day-rest">DESCANSO</div>
                         </div>
                         <div class="p-week-legend">
-                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-protein"></span>Protein</span>
-                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-carbs"></span>Carbohydrates</span>
-                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-fat"></span>Fat</span>
-                            <span class="p-wl-item"><span class="p-wl-line-sample"></span>Training Load</span>
+                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-protein"></span>Proteína</span>
+                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-carbs"></span>Carbohidratos</span>
+                            <span class="p-wl-item"><span class="p-wl-dot p-wl-dot-fat"></span>Grasa</span>
+                            <span class="p-wl-item"><span class="p-wl-line-sample"></span>Carga de Entrenamiento</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-<section class="p-section p-section-tight" id="onboarding" aria-label="Your first 7 days">
+        <section class="p-section p-section-tight" id="onboarding" aria-label="Tus primeros 7 días">
             <div class="p-shell">
                 <div class="p-section-head">
-                    <h2 class="p-title p-split" data-split="lines">Your first 7 days</h2>
-                    <p class="p-sub">From first contact to full execution — no friction, no ambiguity.</p>
+                    <h2 class="p-title p-split" data-split="lines">Tus primeros 7 días</h2>
+                    <p class="p-sub">Desde el primer contacto hasta la ejecución completa — sin fricción, sin ambigüedad.</p>
                 </div>
                 <div class="p-timeline">
                     <div class="p-timeline-item">
                         <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 1</span>
+                            <span class="p-timeline-day">Día 1</span>
                             <span class="p-timeline-line"></span>
                         </div>
                         <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Private consultation</h3>
-                            <p class="p-timeline-copy">Direct call with Erika and Daniel. No forms, no intake assistants — just an honest conversation about your goals, constraints, and standard.</p>
+                            <h3 class="p-timeline-title">Consulta privada</h3>
+                            <p class="p-timeline-copy">Llamada directa con Erika y Daniel. Sin formularios, sin asistentes de captación — solo una conversación honesta sobre tus objetivos, limitaciones y estándares.</p>
                         </div>
                     </div>
                     <div class="p-timeline-item">
                         <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 2–3</span>
+                            <span class="p-timeline-day">Días 2–3</span>
                             <span class="p-timeline-line"></span>
                         </div>
                         <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Full baseline assessment</h3>
-                            <p class="p-timeline-copy">Movement screening, metabolic markers, lifestyle audit and schedule mapping. Your WHOOP Peak band is dispatched at this stage — biometric data begins flowing to your coaches before your first session.</p>
+                            <h3 class="p-timeline-title">Evaluación inicial completa</h3>
+                            <p class="p-timeline-copy">Análisis de movimiento, marcadores metabólicos, auditoría de estilo de vida y mapeo de agenda. Tu pulsera WHOOP Peak se envía en esta fase — los datos biométricos comienzan a llegar a tus coaches antes de tu primera sesión.</p>
                         </div>
                     </div>
                     <div class="p-timeline-item">
                         <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 4–5</span>
+                            <span class="p-timeline-day">Días 4–5</span>
                             <span class="p-timeline-line"></span>
                         </div>
                         <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Program delivered</h3>
-                            <p class="p-timeline-copy">Your integrated training and nutrition protocol — built around your biology, your calendar and your standard. Reviewed together before execution begins.</p>
+                            <h3 class="p-timeline-title">Programa entregado</h3>
+                            <p class="p-timeline-copy">Tu protocolo integrado de entrenamiento y nutrición — construido en torno a tu biología, tu agenda y tus estándares. Revisado juntos antes de comenzar la ejecución.</p>
                         </div>
                     </div>
                     <div class="p-timeline-item">
                         <div class="p-timeline-marker">
-                            <span class="p-timeline-day">Day 7</span>
+                            <span class="p-timeline-day">Día 7</span>
                         </div>
                         <div class="p-timeline-body">
-                            <h3 class="p-timeline-title">Execution begins</h3>
-                            <p class="p-timeline-copy">First session. First meals. Full system active. No ramp-up period — you are already on protocol.</p>
+                            <h3 class="p-timeline-title">Comienza la ejecución</h3>
+                            <p class="p-timeline-copy">Primera sesión. Primeras comidas. Sistema completo activo. Sin período de calentamiento — ya estás en el protocolo.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="p-section p-founders-section" id="founders" aria-label="The founders">
+        <section class="p-section p-founders-section" id="founders" aria-label="Los fundadores">
             <div class="p-shell">
                 <blockquote class="p-founders-quote">
                     <p class="p-founders-quote-text">"Two disciplines. One operating system."</p>
-                    <cite class="p-founders-cite">Erika Silva &amp; Daniel Otero — Co-Founders, DARE Dubai</cite>
+                    <cite class="p-founders-cite">Erika Silva y Daniel Otero — Cofundadores, DARE Dubái</cite>
                 </blockquote>
 
                 <div class="p-founders-unified">
                     <div class="p-founders-duo">
                         <div class="p-founders-duo-card">
                             <div class="p-founders-duo-photo">
-                                <img src="images/erikaa.jpg" alt="Erika Silva">
+                                <img src="../images/erikaa.jpg" alt="Erika Silva">
                             </div>
                             <div class="p-founders-duo-overlay">
-                                <span class="p-founders-duo-role">Biomechanics &amp; Training</span>
+                                <span class="p-founders-duo-role">Biomecánica y Entrenamiento</span>
                                 <span class="p-founders-duo-name">Erika Silva</span>
                             </div>
                         </div>
                         <div class="p-founders-duo-divider" aria-hidden="true"></div>
                         <div class="p-founders-duo-card">
                             <div class="p-founders-duo-photo">
-                                <img src="images/DANI3.jpg" alt="Daniel Otero">
+                                <img src="../images/DANI3.jpg" alt="Daniel Otero">
                             </div>
                             <div class="p-founders-duo-overlay">
-                                <span class="p-founders-duo-role">Nutrition &amp; Culinary Execution</span>
+                                <span class="p-founders-duo-role">Nutrición y Ejecución Culinaria</span>
                                 <span class="p-founders-duo-name">Daniel Otero</span>
                             </div>
                         </div>
                     </div>
-                    <p class="p-founders-unified-bio"><em>A movement architect and a clinical nutritionist — a decade each, at the highest level. Together: one integrated system built around your body, your calendar, and your standard.</em></p>
-                    <a href="team.html" class="p-btn p-btn-ghost p-founders-team-btn">Meet the team →</a>
+                    <p class="p-founders-unified-bio"><em>Una arquitecta del movimiento y un nutricionista clínico — una década cada uno, al más alto nivel. Juntos: un sistema integrado construido en torno a tu cuerpo, tu agenda y tus estándares.</em></p>
+                    <a href="team.html" class="p-btn p-btn-ghost p-founders-team-btn">Conoce al equipo →</a>
                 </div>
                 <div class="p-founders-slogan" aria-label="DARE TAKE YOUR HEALTH TO THE NEXT LEVEL">
                     <div class="p-founders-slogan-track">
                         <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    </span>
+                        <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         <span>DARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAKE YOUR HEALTH TO THE NEXT LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     </div>
                 </div>
             </div>
         </section>
 
-
     </main>
 
-    <a class="p-wa-float" href="https://wa.me/34651585260?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" target="_blank" rel="noopener" aria-label="WhatsApp Enquiry">
+    <a class="p-wa-float" href="https://wa.me/34651585260?text=Hola%20DARE.%20He%20visitado%20vuestra%20web%20y%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20vuestros%20protocolos%20de%20salud%20privados%20en%20Dub%C3%A1i.%20%C2%BFPodr%C3%ADamos%20concertar%20una%20consulta%20discreta%3F" target="_blank" rel="noopener" aria-label="Consulta por WhatsApp">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
         </svg>
@@ -836,22 +598,21 @@
             <div class="p-footer-grid">
                 <div class="p-footer-brand">
                     <span class="p-footer-logo">DARE</span>
-                    <p class="p-footer-tagline">Private Health OS — Dubai, UAE</p>
+                    <p class="p-footer-tagline">Sistema de Salud Privado — Dubái, EAU</p>
                 </div>
-                <nav class="p-footer-nav" aria-label="Footer navigation">
-                    <a href="plans.html">Plans</a>
-                    <a href="team.html">The Team</a>
-                    <a href="#contact">Contact</a>
-                    <a href="faq.html">FAQ</a>
+                <nav class="p-footer-nav" aria-label="Navegación footer">
+                    <a href="plans.html">Planes</a>
+                    <a href="team.html">El Equipo</a>
+                    <a href="#contact">Contacto</a>
+                    <a href="../faq.html">FAQ</a>
                 </nav>
                 <div class="p-footer-contact-col">
-                    <!-- Replace 971501234567 with your actual WhatsApp number -->
-                    <a href="https://wa.me/34651585260?text=Hello%20DARE.%20I%20visited%20your%20website%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20private%20health%20protocols%20and%20engagement%20models%20in%20Dubai.%20Could%20we%20arrange%20a%20discreet%20consultation%3F" class="p-footer-wa" target="_blank" rel="noopener">WhatsApp Enquiry →</a>
+                    <a href="https://wa.me/34651585260?text=Hola%20DARE.%20He%20visitado%20vuestra%20web%20y%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20vuestros%20protocolos%20de%20salud%20privados%20en%20Dub%C3%A1i.%20%C2%BFPodr%C3%ADamos%20concertar%20una%20consulta%20discreta%3F" class="p-footer-wa" target="_blank" rel="noopener">Consulta por WhatsApp →</a>
                 </div>
             </div>
             <div class="p-footer-bottom">
-                <span>© 2026 DARE. Private &amp; Confidential.</span>
-                <span>Training · Nutrition · Culinary Execution</span>
+                <span>© 2026 DARE. Privado y Confidencial.</span>
+                <span>Entrenamiento · Nutrición · Ejecución Culinaria</span>
             </div>
         </div>
     </footer>
@@ -861,101 +622,33 @@
     <script src="https://unpkg.com/@studio-freight/lenis@latest/bundled/lenis.min.js"></script>
     <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
     <script>
-    // ── DARE growth chart – scroll-driven animation ──────────────────────────
     (function () {
         const svg      = document.getElementById('dare-chart');
         if (!svg) return;
-
         const mainPath = document.getElementById('chart-main');
         const avgPath  = document.getElementById('chart-avg');
         const area     = document.getElementById('chart-area');
         const dots     = [0,1,2,3,4].map(i => document.getElementById('dot-' + i));
         const rings    = [1,2].map(i => document.getElementById('ring-' + i));
         const peakLbl  = document.getElementById('peak-label');
-
-        // Measure path lengths after paint
         requestAnimationFrame(() => {
             const mLen = mainPath.getTotalLength();
             const aLen = avgPath.getTotalLength();
-
-            // Set initial state – invisible
             mainPath.style.strokeDasharray  = mLen;
             mainPath.style.strokeDashoffset = mLen;
             avgPath.style.strokeDasharray   = aLen;
             avgPath.style.strokeDashoffset  = aLen;
-
             if (window.gsap && window.ScrollTrigger) {
                 gsap.registerPlugin(ScrollTrigger);
-
                 const section = document.getElementById('philosophy');
-
-                // Main curve draws itself on scroll
-                gsap.to(mainPath, {
-                    strokeDashoffset: 0,
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: section,
-                        start: 'top 80%',
-                        end:   'top 15%',
-                        scrub: 1.2,
-                    }
-                });
-
-                // Avg curve follows with slight lag
-                gsap.to(avgPath, {
-                    strokeDashoffset: 0,
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: section,
-                        start: 'top 75%',
-                        end:   'top 20%',
-                        scrub: 1.8,
-                    }
-                });
-
-                // Area fill fades in
-                gsap.to(area, {
-                    opacity: 1,
-                    ease: 'power1.out',
-                    scrollTrigger: {
-                        trigger: section,
-                        start: 'top 50%',
-                        end:   'top 10%',
-                        scrub: true,
-                    }
-                });
-
-                // Data points appear staggered
-                dots.forEach((dot, i) => {
-                    if (!dot) return;
-                    gsap.to(dot, {
-                        opacity: 1,
-                        duration: 0.4,
-                        ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: section,
-                            start: `top ${68 - i * 11}%`,
-                            toggleActions: 'play none none reverse',
-                        }
-                    });
-                });
-
-                // Peak rings + label appear at end
-                gsap.to([...rings, peakLbl], {
-                    opacity: 1,
-                    duration: 0.6,
-                    ease: 'power2.out',
-                    scrollTrigger: {
-                        trigger: section,
-                        start: 'top 18%',
-                        toggleActions: 'play none none reverse',
-                    }
-                });
-
+                gsap.to(mainPath, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: section, start: 'top 80%', end: 'top 15%', scrub: 1.2 } });
+                gsap.to(avgPath,  { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: section, start: 'top 75%', end: 'top 20%', scrub: 1.8 } });
+                gsap.to(area, { opacity: 1, ease: 'power1.out', scrollTrigger: { trigger: section, start: 'top 50%', end: 'top 10%', scrub: true } });
+                dots.forEach((dot, i) => { if (!dot) return; gsap.to(dot, { opacity: 1, duration: 0.4, ease: 'power2.out', scrollTrigger: { trigger: section, start: `top ${68 - i * 11}%`, toggleActions: 'play none none reverse' } }); });
+                gsap.to([...rings, peakLbl], { opacity: 1, duration: 0.6, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 18%', toggleActions: 'play none none reverse' } });
             } else {
-                // Fallback: IntersectionObserver if GSAP not ready
                 const io = new IntersectionObserver((entries) => {
                     if (entries[0].isIntersecting) {
                         mainPath.style.transition = `stroke-dashoffset 2.4s cubic-bezier(.4,0,.2,1)`;
@@ -964,9 +657,7 @@
                         avgPath.style.strokeDashoffset  = '0';
                         area.style.transition = 'opacity 1.5s ease 1s';
                         area.style.opacity = '1';
-                        dots.forEach((d, i) => {
-                            if (d) { d.style.transition = `opacity .4s ease ${0.5 + i*0.2}s`; d.style.opacity = '1'; }
-                        });
+                        dots.forEach((d, i) => { if (d) { d.style.transition = `opacity .4s ease ${0.5 + i*0.2}s`; d.style.opacity = '1'; } });
                         io.disconnect();
                     }
                 }, { threshold: 0.3 });
