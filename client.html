@@ -160,6 +160,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .note-rest strong{color:var(--lav-text);font-weight:600}
 .note-nutrition{background:rgba(201,162,74,.07);border:1px solid rgba(201,162,74,.18)}
 .note-nutrition strong{color:var(--gold);font-weight:600}
+.still-planning{padding:2rem 1rem;text-align:center;color:var(--muted);font-size:.9rem;font-style:italic;opacity:.72}
 
 /* ─── WEEKLY SHOPPING LIST ─── */
 #nutrition-shopping:empty{display:none}
@@ -1381,6 +1382,9 @@ function renderTraining(t,type){
 }
 
 function renderNutrition(n){
+  if(!n||!n.meals||n.meals.length===0||!n.kcal){
+    return '<div class="still-planning">Daniel is still planning your meals.</div>';
+  }
   const pP=Math.round(n.protein*4/n.kcal*100);
   const cP=Math.round(n.carbs*4/n.kcal*100);
   const fP=Math.round(n.fat*9/n.kcal*100);
