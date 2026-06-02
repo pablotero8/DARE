@@ -104,6 +104,25 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_plan_history_client ON plan_history(client_id, week_of);
 
+  -- Reusable recipe library — one row per (meal_type, recipe). Built from every
+  -- saved nutrition plan so coaches can reuse previous recipes per meal slot.
+  CREATE TABLE IF NOT EXISTS recipes (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    meal_type        TEXT NOT NULL,         -- normalized slot: breakfast | lunch | dinner | snack…
+    name             TEXT NOT NULL,         -- recipe label (dish/ingredient summary)
+    kcal             REAL,
+    protein          REAL,
+    carbs            REAL,
+    fat              REAL,
+    ingredients_json TEXT NOT NULL DEFAULT '[]',
+    steps_json       TEXT NOT NULL DEFAULT '[]',
+    times_used       INTEGER NOT NULL DEFAULT 1,
+    created_at       TEXT DEFAULT (datetime('now')),
+    last_used_at     TEXT DEFAULT (datetime('now')),
+    UNIQUE(meal_type, name)
+  );
+  CREATE INDEX IF NOT EXISTS idx_recipes_meal_type ON recipes(meal_type);
+
   -- Password reset tokens
   CREATE TABLE IF NOT EXISTS password_reset_tokens (
     token       TEXT PRIMARY KEY,

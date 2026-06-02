@@ -200,6 +200,8 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
   font-family:'Manrope',sans-serif;font-size:.76rem;outline:none;cursor:pointer;
 }
 .pt-select:focus{border-color:rgba(201,162,74,.5)}
+.pt-recipe-select{flex:1;max-width:100%;font-size:.72rem;color:var(--muted);background:rgba(201,162,74,.05);border-color:rgba(201,162,74,.14)}
+.pt-recipe-select:disabled{opacity:.5;cursor:default}
 .pt-totals-block{
   background:rgba(201,162,74,.08);border:1px solid rgba(201,162,74,.15);
   border-radius:10px;padding:.6rem .65rem;margin-bottom:.6rem;
@@ -607,6 +609,41 @@ function ptIn(ph, narrow, data){
 const MEAL_NAMES=['Breakfast','Morning Snack','Lunch','Snack','Dinner'];
 const MEAL_TIMES=['08:00','11:00','14:00','17:00','20:30'];
 
+// ── Recipe library (reuse previous recipes per meal slot) ─────
+const normalizeMealKey = (s)=>String(s||'').trim().toLowerCase();
+let RECIPE_CACHE=null; // { grouped: { breakfast:[...], … } }
+
+async function fetchRecipesGrouped(){
+  if(RECIPE_CACHE) return RECIPE_CACHE;
+  try{
+    const r=await fetch(`${BASE}/api/coach/recipes`,{headers:{Authorization:`Bearer ${storedToken()}`}});
+    if(!r.ok) return (RECIPE_CACHE={grouped:{}});
+    const data=await r.json();
+    return (RECIPE_CACHE={grouped:data.grouped||{}});
+  }catch{ return (RECIPE_CACHE={grouped:{}}); }
+}
+
+// Fill every .pt-recipe-select in `wrap` with options for its meal slot.
+async function populateRecipeDropdowns(wrap){
+  const { grouped } = await fetchRecipesGrouped();
+  wrap.querySelectorAll('.pt-recipe-select').forEach(sel=>{
+    const list=grouped[sel.dataset.mealType]||[];
+    if(!list.length){
+      sel.options[0].textContent='↳ No previous recipes';
+      sel.disabled=true;
+      return;
+    }
+    list.forEach(rec=>{
+      const o=document.createElement('option');
+      o.value=rec.name;
+      const kcal=rec.kcal?` · ${Math.round(rec.kcal)} kcal`:'';
+      const used=rec.timesUsed>1?` (×${rec.timesUsed})`:'';
+      o.textContent=(rec.name.length>52?rec.name.slice(0,52)+'…':rec.name)+kcal+used;
+      sel.appendChild(o);
+    });
+  });
+}
+
 function buildNutritionTable(action){
   const wrap=document.createElement('div'); wrap.className='plan-table-wrap';
 
@@ -638,8 +675,23 @@ function buildNutritionTable(action){
       mb.innerHTML=`<div class="pt-meal-name"><span>${mName}</span><span class="pt-meal-time">${MEAL_TIMES[mi]}</span></div>`;
       const dishRow=document.createElement('div'); dishRow.className='pt-row';
       dishRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Dishes'}));
-      dishRow.appendChild(ptIn('e.g. grilled chicken breast, brown rice, broccoli',false,{field:'dishes',day:di,meal:mi}));
+      const dishIn=ptIn('e.g. grilled chicken breast, brown rice, broccoli',false,{field:'dishes',day:di,meal:mi});
+      dishRow.appendChild(dishIn);
       mb.appendChild(dishRow);
+
+      // Reuse-previous-recipe dropdown (populated async from the recipe library)
+      const recRow=document.createElement('div'); recRow.className='pt-row';
+      recRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Reuse'}));
+      const recSel=document.createElement('select');
+      recSel.className='pt-select pt-recipe-select';
+      recSel.dataset.mealType=normalizeMealKey(mName);
+      recSel.innerHTML='<option value="">↳ Previous recipes…</option>';
+      recSel.addEventListener('change',()=>{
+        if(recSel.value){ dishIn.value=recSel.value; dishIn.dispatchEvent(new Event('input')); recSel.selectedIndex=0; }
+      });
+      recRow.appendChild(recSel);
+      mb.appendChild(recRow);
+
       body.appendChild(mb);
     });
 
@@ -653,6 +705,7 @@ function buildNutritionTable(action){
   });
 
   wrap.appendChild(buildSaveRow(action,'nutrition'));
+  populateRecipeDropdowns(wrap); // async — fills the reuse dropdowns when ready
   return wrap;
 }
 
@@ -725,6 +778,7 @@ function buildSaveRow(action, specialty){
       });
       const data=await r.json();
       if(r.ok){
+        if(specialty==='nutrition') RECIPE_CACHE=null; // new recipes were just stored
         status.textContent='✅ Plan saved to client portal.'; status.className='pt-status ok';
         btn.textContent='Saved ✓';
         const confirmMsg=`${specialty==='nutrition'?'Nutrition':'Training'} plan saved for ${action.clientName} — week of ${action.weekOf}.`;
