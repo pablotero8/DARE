@@ -132,6 +132,21 @@ db.exec(`
     created_at  TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
   );
+
+  -- Client ⇄ coach messaging. One shared thread per client; both coaches see it.
+  -- from_role tells who wrote it; coach_id records which coach replied (null for
+  -- client messages). read_at is set when the *other* side opens the thread.
+  CREATE TABLE IF NOT EXISTS messages (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id   TEXT NOT NULL,
+    coach_id    TEXT,
+    from_role   TEXT NOT NULL CHECK(from_role IN ('client','coach')),
+    text        TEXT NOT NULL,
+    created_at  TEXT DEFAULT (datetime('now')),
+    read_at     TEXT,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_messages_client ON messages(client_id, created_at);
 `);
 
 // ── Safe migrations for existing DBs ──────────────────────────

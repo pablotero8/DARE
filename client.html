@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" translate="no" class="notranslate">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Client Area | DARE</title>
 <link rel="icon" type="image/svg+xml" href="./images/favicon.svg">
@@ -436,6 +435,99 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .wki-has-plan .wki-dot{background:var(--gold)}
 .wki-locked .wki-dot{background:rgba(244,241,232,.15)}
 .wk-wrap{position:relative;display:inline-block}
+
+/* ─── PREMIUM PLAN CARDS ─── */
+.plan-card{
+  box-shadow:0 20px 55px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07);
+  border-color:var(--border2);
+}
+/* Top accent bar — gold for training, green for nutrition */
+.plan-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;z-index:2;
+  border-radius:var(--r) var(--r) 0 0;
+}
+.plan-card.accent-gold::after{background:linear-gradient(90deg,rgba(201,162,74,.4),#c9a24a 50%,rgba(201,162,74,.4))}
+.plan-card.accent-green::after{background:linear-gradient(90deg,rgba(166,200,94,.4),#a6c85e 50%,rgba(166,200,94,.4))}
+.plan-card .eb-img{width:50px;height:50px}
+.plan-card.accent-green .eb-img{border-color:rgba(166,200,94,.4)}
+/* Gradient-filled titles for a more premium header */
+.accent-gold .plan-title{background:linear-gradient(135deg,#f4f1e8,#c9a24a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.accent-green .plan-title{background:linear-gradient(135deg,#f4f1e8,#a6c85e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.accent-green .plan-eyebrow{color:var(--green)}
+.divider{border-top:1px solid var(--border2)}
+/* Entrance animation, re-triggered on each day render */
+@keyframes cardFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.plan-card.animate-in{animation:cardFadeUp .32s cubic-bezier(.4,0,.2,1) both}
+
+/* ─── MOBILE APP-STYLE BOTTOM TABS ─── */
+.mobile-tabs{display:none}
+@media(max-width:600px){
+  .mobile-tabs{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:850;gap:.4rem;
+    background:rgba(5,5,7,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    padding:.4rem .6rem calc(.4rem + env(safe-area-inset-bottom,0px));
+  }
+  .mtab{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:.22rem;
+    background:none;border:none;cursor:pointer;padding:.55rem;border-radius:13px;
+    color:var(--muted);font-family:'Manrope',sans-serif;transition:color .2s,background .2s;
+  }
+  .mtab-ico{font-size:1.15rem;line-height:1}
+  .mtab-lbl{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  .mtab.mtab-active[data-target="training"]{color:var(--gold);background:rgba(201,162,74,.12)}
+  .mtab.mtab-active[data-target="nutrition"]{color:var(--green);background:rgba(166,200,94,.12)}
+  #day-plans{padding:1rem .8rem 6rem;gap:0}
+  #day-plans.m-training #nutrition-card{display:none}
+  #day-plans.m-nutrition #training-card{display:none}
+  .plan-card{padding:1.5rem 1.15rem}
+}
+
+/* ─── MESSAGING (client ⇄ coach) ─── */
+#msg-fab{
+  position:fixed;right:1.25rem;bottom:1.25rem;z-index:860;display:none;
+  align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;
+  border:none;cursor:pointer;color:#070707;
+  background:linear-gradient(135deg,#c9a24a,#a6c85e);
+  box-shadow:0 8px 26px rgba(201,162,74,.42);font-size:1.4rem;
+  transition:transform .2s,box-shadow .2s;
+}
+#msg-fab:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(201,162,74,.55)}
+#msg-fab.visible{display:flex}
+.msg-fab-badge{
+  position:absolute;top:-3px;right:-3px;min-width:20px;height:20px;padding:0 5px;
+  border-radius:999px;background:#e0524d;color:#fff;font-size:.66rem;font-weight:700;
+  display:none;align-items:center;justify-content:center;border:2px solid var(--bg);
+}
+.msg-fab-badge.visible{display:flex}
+@media(max-width:600px){ #msg-fab{bottom:5.5rem} }
+
+#msg-panel{
+  position:fixed;top:0;right:0;bottom:0;width:380px;max-width:92vw;z-index:9100;
+  display:flex;flex-direction:column;
+  background:radial-gradient(700px 400px at 90% 0%,rgba(201,162,74,.10),transparent 60%),var(--bg);
+  border-left:1px solid var(--border2);box-shadow:-24px 0 60px rgba(0,0,0,.6);
+  transform:translateX(105%);transition:transform .4s cubic-bezier(.4,0,.2,1);
+}
+#msg-panel.open{transform:translateX(0)}
+.msg-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);background:rgba(5,5,7,.7);backdrop-filter:blur(14px)}
+.msg-head h3{font-size:1.4rem;letter-spacing:.08em}
+.msg-head-sub{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.msg-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;font-size:.9rem;flex-shrink:0;transition:all .18s}
+.msg-close:hover{background:rgba(255,255,255,.07);color:var(--text)}
+.msg-thread{flex:1;overflow-y:auto;padding:1.1rem 1.1rem;display:flex;flex-direction:column;gap:.7rem;scrollbar-width:thin}
+.msg-empty{margin:auto;text-align:center;color:var(--muted2);font-size:.82rem;line-height:1.7;padding:1.5rem}
+.msg-bubble{max-width:82%;padding:.62rem .85rem;border-radius:14px;font-size:.84rem;line-height:1.5;word-wrap:break-word}
+.msg-bubble .msg-meta{display:block;font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.35rem;opacity:.6}
+.msg-bubble.from-client{align-self:flex-end;background:linear-gradient(135deg,rgba(201,162,74,.2),rgba(201,162,74,.12));border:1px solid rgba(201,162,74,.28);border-bottom-right-radius:5px}
+.msg-bubble.from-coach{align-self:flex-start;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid var(--border);border-bottom-left-radius:5px}
+.msg-input-row{display:flex;gap:.6rem;align-items:flex-end;padding:.85rem 1rem calc(.85rem + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border);background:rgba(5,5,7,.8)}
+.msg-textarea{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:12px;padding:.65rem .9rem;color:var(--text);font-family:'Manrope',sans-serif;font-size:.85rem;line-height:1.5;resize:none;outline:none;min-height:42px;max-height:120px;transition:border-color .2s}
+.msg-textarea:focus{border-color:rgba(201,162,74,.45)}
+.msg-textarea::placeholder{color:var(--muted2)}
+.msg-send{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;flex-shrink:0;background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:transform .15s;box-shadow:0 4px 16px rgba(201,162,74,.3)}
+.msg-send:hover:not(:disabled){transform:scale(1.08)}
+.msg-send:disabled{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
@@ -444,13 +536,13 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 <div id="login-screen">
   <div class="login-card glass">
     <div class="login-logo" translate="no">DARE</div>
-    <p class="login-sub">Private Health OS &mdash; Client Portal</p>
-    <div class="lf"><label for="email">Email</label><input type="email" id="email" placeholder="your@email.com" autocomplete="email"></div>
-    <div class="lf"><label for="pw">Password</label><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
-    <div class="login-error" id="login-error">Incorrect credentials. Please try again.</div>
-    <button class="login-btn" id="login-btn">Enter Portal</button>
-    <p style="text-align:center;margin-top:.9rem"><a href="/reset.html" style="font-size:.72rem;color:rgba(244,241,232,.3);text-decoration:none;transition:color .2s" onmouseover="this.style.color='rgba(201,162,74,.7)'" onmouseout="this.style.color='rgba(244,241,232,.3)'">Forgot password?</a></p>
-    <p class="login-hint">Access by invitation only.<br>If you haven't received credentials, contact <strong>Erika</strong> or <strong>Dani</strong>.</p>
+    <p class="login-sub" data-i18n="login.sub">Private Health OS &mdash; Client Portal</p>
+    <div class="lf"><label for="email" data-i18n="login.email">Email</label><input type="email" id="email" placeholder="your@email.com" autocomplete="email"></div>
+    <div class="lf"><label for="pw" data-i18n="login.password">Password</label><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="login-error" id="login-error" data-i18n="login.error">Incorrect credentials. Please try again.</div>
+    <button class="login-btn" id="login-btn" data-i18n="login.enter">Enter Portal</button>
+    <p style="text-align:center;margin-top:.9rem"><a href="/reset.html" data-i18n="login.forgot" style="font-size:.72rem;color:rgba(244,241,232,.3);text-decoration:none;transition:color .2s" onmouseover="this.style.color='rgba(201,162,74,.7)'" onmouseout="this.style.color='rgba(244,241,232,.3)'">Forgot password?</a></p>
+    <p class="login-hint" data-i18n-html="login.hint">Access by invitation only.<br>If you haven't received credentials, contact <strong>Erika</strong> or <strong>Dani</strong>.</p>
   </div>
 </div>
 
@@ -468,14 +560,14 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
     </div>
     <button class="ch-profile" id="profile-btn">
       <div class="ch-avatar" id="header-avatar">?</div>
-      <span class="ch-profile-label">Profile</span>
+      <span class="ch-profile-label" data-i18n="header.profile">Profile</span>
     </button>
   </header>
 
   <div class="week-strip" id="week-strip">
     <div class="wk-wrap" id="wk-wrap">
       <button class="wk-btn" id="wk-btn">
-        <span id="wk-btn-label">Week —</span>
+        <span id="wk-btn-label" data-i18n="week.dash">Week —</span>
         <svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l4 4 4-4"/></svg>
       </button>
       <div class="wk-dropdown" id="wk-dropdown" style="display:none"></div>
@@ -487,10 +579,10 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
     <div class="nwb-inner">
       <span class="nwb-icon">✦</span>
       <div class="nwb-text">
-        <div class="nwb-title">Your plan for next week is ready!</div>
-        <div class="nwb-sub">Training &amp; nutrition &mdash; prepared by Erika &amp; Dani</div>
+        <div class="nwb-title" data-i18n="banner.title">Your plan for next week is ready!</div>
+        <div class="nwb-sub" data-i18n="banner.sub">Training &amp; nutrition &mdash; prepared by Erika &amp; Dani</div>
       </div>
-      <button class="nwb-see" id="nwb-see-btn">See</button>
+      <button class="nwb-see" id="nwb-see-btn" data-i18n="banner.see">See</button>
       <button class="nwb-dismiss" id="nwb-dismiss-btn">&times;</button>
     </div>
   </div>
@@ -505,32 +597,44 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   </div>
 
   <div id="no-plan-screen">
-    <div class="np-title">WELCOME<br>TO DARE</div>
+    <div class="np-title" data-i18n-html="noplan.title">WELCOME<br>TO DARE</div>
     <div class="np-name" id="np-client-name"></div>
-    <div class="np-sub">Your personalised plan will be ready soon.<br>Your coach will prepare it for you.</div>
+    <div class="np-sub" data-i18n-html="noplan.sub">Your personalised plan will be ready soon.<br>Your coach will prepare it for you.</div>
   </div>
 
-  <div id="day-plans">
-    <div class="plan-card glass" id="training-card">
+  <div id="day-plans" class="m-training">
+    <div class="plan-card glass accent-gold" id="training-card">
       <div class="expert-badge">
         <div class="eb-img"><img src="images/erikaa.jpg" alt="Erika"></div>
-        <div><div class="eb-name">Erika</div><div class="eb-role">Head of Performance</div></div>
+        <div><div class="eb-name">Erika</div><div class="eb-role" data-i18n="card.trainingRole">Head of Performance</div></div>
       </div>
-      <p class="plan-eyebrow">Today's Session</p>
-      <h2 class="plan-title">TRAINING<br>PLAN</h2>
+      <p class="plan-eyebrow" data-i18n="card.trainingEyebrow">Today's Session</p>
+      <h2 class="plan-title" data-i18n-html="card.trainingTitle">TRAINING<br>PLAN</h2>
       <div id="training-content"></div>
     </div>
-    <div class="plan-card glass" id="nutrition-card">
+    <div class="plan-card glass accent-green" id="nutrition-card">
       <div class="expert-badge">
         <div class="eb-img"><img src="images/DANI3.jpg" alt="Daniel"></div>
-        <div><div class="eb-name">Daniel</div><div class="eb-role">Head of Nutrition</div></div>
+        <div><div class="eb-name">Daniel</div><div class="eb-role" data-i18n="card.nutritionRole">Head of Nutrition</div></div>
       </div>
-      <p class="plan-eyebrow">Today's Protocol</p>
-      <h2 class="plan-title">NUTRITION<br>PLAN</h2>
+      <p class="plan-eyebrow" data-i18n="card.nutritionEyebrow">Today's Protocol</p>
+      <h2 class="plan-title" data-i18n-html="card.nutritionTitle">NUTRITION<br>PLAN</h2>
       <div id="nutrition-shopping"></div>
       <div id="nutrition-content"></div>
     </div>
   </div>
+
+  <!-- ═══ MOBILE BOTTOM TABS (app-style) ═══ -->
+  <nav class="mobile-tabs" id="mobile-tabs">
+    <button class="mtab mtab-active" data-target="training">
+      <span class="mtab-ico">⛊</span>
+      <span class="mtab-lbl" data-i18n="tabs.training">Training</span>
+    </button>
+    <button class="mtab" data-target="nutrition">
+      <span class="mtab-ico">✦</span>
+      <span class="mtab-lbl" data-i18n="tabs.nutrition">Nutrition</span>
+    </button>
+  </nav>
 </div>
 
 <!-- ═══ PROFILE PANEL ═══ -->
@@ -538,10 +642,10 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
   <div class="pp-header">
     <button class="pp-back" id="close-profile">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
-      Back to Plans
+      <span data-i18n="profile.back">Back to Plans</span>
     </button>
-    <span class="pp-title">MY PROFILE</span>
-    <button class="pp-logout" id="logout-btn">Log out</button>
+    <span class="pp-title" data-i18n="profile.title">MY PROFILE</span>
+    <button class="pp-logout" id="logout-btn" data-i18n="profile.logout">Log out</button>
   </div>
   <div class="pp-body">
     <div class="pp-client-row">
@@ -552,55 +656,75 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       </div>
     </div>
     <div class="pp-metrics">
-      <div class="pp-metric glass"><div class="pp-metric-label">Weight</div><div class="pp-metric-val" id="pp-met-wt">—</div></div>
-      <div class="pp-metric glass"><div class="pp-metric-label">BMI</div><div class="pp-metric-val" id="pp-met-bmi">—</div></div>
-      <div class="pp-metric glass"><div class="pp-metric-label">Body Fat</div><div class="pp-metric-val" id="pp-met-fat">—</div></div>
-      <div class="pp-metric glass"><div class="pp-metric-label">Lean Mass</div><div class="pp-metric-val" id="pp-met-lean">—</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label" data-i18n="metric.weight">Weight</div><div class="pp-metric-val" id="pp-met-wt">—</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label" data-i18n="metric.bmi">BMI</div><div class="pp-metric-val" id="pp-met-bmi">—</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label" data-i18n="metric.bodyfat">Body Fat</div><div class="pp-metric-val" id="pp-met-fat">—</div></div>
+      <div class="pp-metric glass"><div class="pp-metric-label" data-i18n="metric.lean">Lean Mass</div><div class="pp-metric-val" id="pp-met-lean">—</div></div>
     </div>
     <div class="pp-charts">
       <div class="pp-chart-card glass">
-        <p class="pp-chart-eyebrow">12-Week Protocol</p>
-        <h3 class="pp-chart-title">BODY PROGRESS</h3>
+        <p class="pp-chart-eyebrow" data-i18n="chart.protocolEyebrow">12-Week Protocol</p>
+        <h3 class="pp-chart-title" data-i18n="chart.progressTitle">BODY PROGRESS</h3>
         <div class="chart-legend-row">
-          <div class="legend-item"><span class="legend-dot" style="background:#c9a24a"></span>Weight (kg)</div>
-          <div class="legend-item"><span class="legend-dot" style="background:#a6c85e"></span>Body Fat %</div>
-          <div class="legend-item" style="opacity:.5"><span style="display:inline-block;width:18px;height:1px;border-top:2px dashed rgba(244,241,232,.45);vertical-align:middle;margin-right:.4rem"></span>Projection</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#c9a24a"></span><span data-i18n="chart.weightKg">Weight (kg)</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#a6c85e"></span><span data-i18n="chart.bodyFatPct">Body Fat %</span></div>
+          <div class="legend-item" style="opacity:.5"><span style="display:inline-block;width:18px;height:1px;border-top:2px dashed rgba(244,241,232,.45);vertical-align:middle;margin-right:.4rem"></span><span data-i18n="chart.projection">Projection</span></div>
         </div>
         <div class="pp-chart-wrap"><canvas id="progressChart"></canvas></div>
       </div>
       <div class="pp-chart-card glass">
-        <p class="pp-chart-eyebrow">Current State</p>
-        <h3 class="pp-chart-title">BODY COMPOSITION</h3>
+        <p class="pp-chart-eyebrow" data-i18n="chart.currentEyebrow">Current State</p>
+        <h3 class="pp-chart-title" data-i18n="chart.compositionTitle">BODY COMPOSITION</h3>
         <div class="pp-chart-wrap" style="height:170px"><canvas id="donutChart"></canvas></div>
         <div class="donut-legend">
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(166,200,94,.8)"></span>Muscle Mass<span class="donut-pct" id="donut-lean">—</span></div>
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(201,162,74,.75)"></span>Body Fat<span class="donut-pct" id="donut-fat">—</span></div>
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(100,160,220,.65)"></span>Water<span class="donut-pct">~29%</span></div>
-          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(180,170,155,.5)"></span>Bone &amp; Other<span class="donut-pct">~10%</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(166,200,94,.8)"></span><span data-i18n="chart.muscle">Muscle Mass</span><span class="donut-pct" id="donut-lean">—</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(201,162,74,.75)"></span><span data-i18n="metric.bodyfat">Body Fat</span><span class="donut-pct" id="donut-fat">—</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(100,160,220,.65)"></span><span data-i18n="chart.water">Water</span><span class="donut-pct">~29%</span></div>
+          <div class="donut-legend-item"><span class="donut-legend-sq" style="background:rgba(180,170,155,.5)"></span><span data-i18n="chart.bone">Bone &amp; Other</span><span class="donut-pct">~10%</span></div>
         </div>
       </div>
     </div>
 
     <!-- Weekly check-in -->
     <div class="checkin-section">
-      <div class="checkin-title">📊 Weekly Check-In — Log your measurements</div>
+      <div class="checkin-title" data-i18n="checkin.title">📊 Weekly Check-In — Log your measurements</div>
       <div class="checkin-grid">
         <div class="checkin-field">
-          <label class="checkin-label">Weight (kg)</label>
+          <label class="checkin-label" data-i18n="checkin.weight">Weight (kg)</label>
           <input id="ci-weight" type="number" step="0.1" class="checkin-input" placeholder="82.5">
         </div>
         <div class="checkin-field">
-          <label class="checkin-label">Body Fat (%)</label>
+          <label class="checkin-label" data-i18n="checkin.bodyfat">Body Fat (%)</label>
           <input id="ci-fat" type="number" step="0.1" class="checkin-input" placeholder="18.5">
         </div>
         <div class="checkin-field">
-          <label class="checkin-label">Notes (optional)</label>
-          <input id="ci-notes" type="text" class="checkin-input" placeholder="Feeling good…">
+          <label class="checkin-label" data-i18n="checkin.notes">Notes (optional)</label>
+          <input id="ci-notes" type="text" class="checkin-input" data-i18n-ph="checkin.notesPh" placeholder="Feeling good…">
         </div>
       </div>
-      <button class="log-save-btn" id="ci-save-btn">Save check-in</button>
+      <button class="log-save-btn" id="ci-save-btn" data-i18n="checkin.save">Save check-in</button>
       <span class="log-status" id="ci-status"></span>
     </div>
+  </div>
+</div>
+
+<!-- ═══ COACH MESSAGING ═══ -->
+<button id="msg-fab" title="Message your coach" aria-label="Message your coach">
+  💬
+  <span class="msg-fab-badge" id="msg-fab-badge">0</span>
+</button>
+<div id="msg-panel">
+  <div class="msg-head">
+    <div>
+      <h3 data-i18n="msg.title">Your coach</h3>
+      <div class="msg-head-sub" data-i18n="msg.sub">Erika &amp; Dani</div>
+    </div>
+    <button class="msg-close" id="msg-close">✕</button>
+  </div>
+  <div class="msg-thread" id="msg-thread"></div>
+  <div class="msg-input-row">
+    <textarea class="msg-textarea" id="msg-input" rows="1" data-i18n-ph="msg.placeholder" placeholder="Write a message…"></textarea>
+    <button class="msg-send" id="msg-send" title="Send">›</button>
   </div>
 </div>
 
@@ -610,6 +734,103 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 // Bot API URL — localhost in dev, Railway in production
 const _isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 window.DARE_API_URL = _isLocal ? window.location.origin : 'https://dare-production-2636.up.railway.app';
+
+/* ═══ I18N — auto Spanish when the device language is Spanish ═══
+ * No framework. navigator.language drives it; English is the fallback.
+ * Static UI strings use data-i18n / data-i18n-html / data-i18n-ph.
+ * Dynamic (JS-rendered) strings use t('key').
+ * ═══════════════════════════════════════════════════════════ */
+const LANG = (navigator.language || navigator.userLanguage || 'en').toLowerCase().startsWith('es') ? 'es' : 'en';
+document.documentElement.lang = LANG;
+
+const I18N = {
+  en: {
+    'login.sub':'Private Health OS — Client Portal','login.email':'Email','login.password':'Password',
+    'login.error':'Incorrect credentials. Please try again.','login.enter':'Enter Portal','login.forgot':'Forgot password?',
+    'login.hint':"Access by invitation only.<br>If you haven't received credentials, contact <strong>Erika</strong> or <strong>Dani</strong>.",
+    'login.empty':'Please enter your email and password.','login.entering':'Entering…','login.noConnect':'Could not connect to the server',
+    'header.profile':'Profile',
+    'banner.title':'Your plan for next week is ready!','banner.sub':'Training & nutrition — prepared by Erika & Dani','banner.see':'See',
+    'noplan.title':'WELCOME<br>TO DARE','noplan.sub':'Your personalised plan will be ready soon.<br>Your coach will prepare it for you.',
+    'card.trainingRole':'Head of Performance','card.trainingEyebrow':"Today's Session",'card.trainingTitle':'TRAINING<br>PLAN',
+    'card.nutritionRole':'Head of Nutrition','card.nutritionEyebrow':"Today's Protocol",'card.nutritionTitle':'NUTRITION<br>PLAN',
+    'tabs.training':'Training','tabs.nutrition':'Nutrition',
+    'profile.back':'Back to Plans','profile.title':'MY PROFILE','profile.logout':'Log out',
+    'metric.weight':'Weight','metric.bmi':'BMI','metric.bodyfat':'Body Fat','metric.lean':'Lean Mass',
+    'chart.protocolEyebrow':'12-Week Protocol','chart.progressTitle':'BODY PROGRESS','chart.weightKg':'Weight (kg)','chart.bodyFatPct':'Body Fat %','chart.projection':'Projection',
+    'chart.currentEyebrow':'Current State','chart.compositionTitle':'BODY COMPOSITION','chart.muscle':'Muscle Mass','chart.water':'Water','chart.bone':'Bone & Other',
+    'checkin.title':'📊 Weekly Check-In — Log your measurements','checkin.weight':'Weight (kg)','checkin.bodyfat':'Body Fat (%)','checkin.notes':'Notes (optional)','checkin.notesPh':'Feeling good…','checkin.save':'Save check-in',
+    'checkin.enterOne':'Enter at least weight or body fat.','checkin.saving':'Saving…','checkin.saved':'✓ Check-in saved!','checkin.errSave':'Error saving.','checkin.errConn':'Connection error.',
+    // dynamic render
+    'badge.strength':'STRENGTH','badge.cardio':'CARDIO','badge.rest':'ACTIVE REST','badge.pending':'PLAN PENDING',
+    'plan.for':'My plan for ','plan.today':'today','plan.tomorrow':'tomorrow','plan.yesterday':'yesterday','suffix.today':' · TODAY',
+    'note.erika':"Erika's note:",'note.daniel':"Daniel's note:",
+    'still.training':'Erika has not created your plan yet — it will be ready shortly!','still.nutrition':'Dani has not created your plan yet — it will be ready shortly!','still.meals':'Daniel is still planning your meals.',
+    'nut.kcalTarget':'kcal target','nut.protein':'Protein','nut.carbs':'Carbs','nut.fat':'Fat',
+    'nut.dailyTotal':'Daily total · achieved / target','nut.calories':'Calories','nut.kcal':'kcal',
+    'msg.title':'Your coach','msg.sub':'Erika & Dani','msg.placeholder':'Write a message…','msg.empty':'No messages yet.<br>Write to Erika or Dani — they\'ll get back to you here.','msg.you':'You','msg.coach':'Coach',
+    'log.training':'Log this session','log.nutrition':'Log nutrition','log.done':'✓ Done','log.partial':'~ Partial','log.skipped':'✗ Skipped',
+    'log.onplan':'✓ On plan','log.offplan':'✗ Off plan','log.notePh':'How did it go? (optional)','log.noteNutPh':'Any notes on your nutrition today? (optional)',
+    'log.save':'Save log','log.saving':'Saving…','log.saved':'Saved ✓','log.savedShort':'Saved','log.error':'Error',
+    'log.sessionLogged':'✓ Session logged','log.nutLogged':'✓ Nutrition logged','log.fullAdh':'✓ Full adherence','log.logged':'✓ Logged',
+    'week.label':'Week','week.dash':'Week —',
+    'shop.title':'🛒 Weekly shopping list','shop.protein':'Protein','shop.carbs':'Carbs','shop.veg':'Vegetables & fruit','shop.dairy':'Dairy','shop.fats':'Fats & oils','shop.other':'Other',
+  },
+  es: {
+    'login.sub':'Sistema de Salud Privado — Portal Cliente','login.email':'Correo','login.password':'Contraseña',
+    'login.error':'Credenciales incorrectas. Inténtalo de nuevo.','login.enter':'Entrar al Portal','login.forgot':'¿Olvidaste tu contraseña?',
+    'login.hint':'Acceso solo por invitación.<br>Si no has recibido tus credenciales, contacta con <strong>Erika</strong> o <strong>Dani</strong>.',
+    'login.empty':'Introduce tu correo y contraseña.','login.entering':'Entrando…','login.noConnect':'No se pudo conectar con el servidor',
+    'header.profile':'Perfil',
+    'banner.title':'¡Tu plan de la próxima semana está listo!','banner.sub':'Entrenamiento y nutrición — preparado por Erika y Dani','banner.see':'Ver',
+    'noplan.title':'BIENVENIDO<br>A DARE','noplan.sub':'Tu plan personalizado estará listo pronto.<br>Tu coach lo está preparando para ti.',
+    'card.trainingRole':'Responsable de Rendimiento','card.trainingEyebrow':'Sesión de hoy','card.trainingTitle':'PLAN DE<br>ENTRENAMIENTO',
+    'card.nutritionRole':'Responsable de Nutrición','card.nutritionEyebrow':'Protocolo de hoy','card.nutritionTitle':'PLAN DE<br>NUTRICIÓN',
+    'tabs.training':'Entreno','tabs.nutrition':'Nutrición',
+    'profile.back':'Volver a Planes','profile.title':'MI PERFIL','profile.logout':'Cerrar sesión',
+    'metric.weight':'Peso','metric.bmi':'IMC','metric.bodyfat':'Grasa Corporal','metric.lean':'Masa Magra',
+    'chart.protocolEyebrow':'Protocolo de 12 Semanas','chart.progressTitle':'PROGRESO CORPORAL','chart.weightKg':'Peso (kg)','chart.bodyFatPct':'Grasa Corporal %','chart.projection':'Proyección',
+    'chart.currentEyebrow':'Estado Actual','chart.compositionTitle':'COMPOSICIÓN CORPORAL','chart.muscle':'Masa Muscular','chart.water':'Agua','chart.bone':'Hueso y Otros',
+    'checkin.title':'📊 Control Semanal — Registra tus medidas','checkin.weight':'Peso (kg)','checkin.bodyfat':'Grasa Corporal (%)','checkin.notes':'Notas (opcional)','checkin.notesPh':'Me siento bien…','checkin.save':'Guardar control',
+    'checkin.enterOne':'Introduce al menos peso o grasa corporal.','checkin.saving':'Guardando…','checkin.saved':'✓ ¡Control guardado!','checkin.errSave':'Error al guardar.','checkin.errConn':'Error de conexión.',
+    // dynamic render
+    'badge.strength':'FUERZA','badge.cardio':'CARDIO','badge.rest':'DESCANSO ACTIVO','badge.pending':'PLAN PENDIENTE',
+    'plan.for':'Mi plan para ','plan.today':'hoy','plan.tomorrow':'mañana','plan.yesterday':'ayer','suffix.today':' · HOY',
+    'note.erika':'Nota de Erika:','note.daniel':'Nota de Dani:',
+    'still.training':'Erika aún no ha creado tu plan — ¡estará listo en breve!','still.nutrition':'Dani aún no ha creado tu plan — ¡estará listo en breve!','still.meals':'Dani aún está planificando tus comidas.',
+    'nut.kcalTarget':'kcal objetivo','nut.protein':'Proteína','nut.carbs':'Carbohid.','nut.fat':'Grasa',
+    'nut.dailyTotal':'Total diario · conseguido / objetivo','nut.calories':'Calorías','nut.kcal':'kcal',
+    'msg.title':'Tu coach','msg.sub':'Erika y Dani','msg.placeholder':'Escribe un mensaje…','msg.empty':'Aún no hay mensajes.<br>Escribe a Erika o Dani — te responderán aquí.','msg.you':'Tú','msg.coach':'Coach',
+    'log.training':'Registra esta sesión','log.nutrition':'Registra tu nutrición','log.done':'✓ Hecho','log.partial':'~ Parcial','log.skipped':'✗ Saltada',
+    'log.onplan':'✓ Según plan','log.offplan':'✗ Fuera de plan','log.notePh':'¿Cómo fue? (opcional)','log.noteNutPh':'¿Alguna nota sobre tu nutrición hoy? (opcional)',
+    'log.save':'Guardar registro','log.saving':'Guardando…','log.saved':'Guardado ✓','log.savedShort':'Guardado','log.error':'Error',
+    'log.sessionLogged':'✓ Sesión registrada','log.nutLogged':'✓ Nutrición registrada','log.fullAdh':'✓ Adherencia total','log.logged':'✓ Registrado',
+    'week.label':'Semana','week.dash':'Semana —',
+    'shop.title':'🛒 Lista de la compra semanal','shop.protein':'Proteína','shop.carbs':'Carbohidratos','shop.veg':'Verduras y fruta','shop.dairy':'Lácteos','shop.fats':'Grasas y aceites','shop.other':'Otros',
+  },
+};
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || I18N.en[key] || key; }
+// Alias for use inside functions that locally shadow `t` (renderTraining /
+// renderNutrition take a `t` param / reduce accumulator).
+const tr = t;
+function applyLang(root){
+  const scope = root || document;
+  scope.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  scope.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  scope.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+}
+
+// Localize an English date string ("Monday, 25 May") into Spanish when needed.
+const _ES_DAYS={Monday:'lunes',Tuesday:'martes',Wednesday:'miércoles',Thursday:'jueves',Friday:'viernes',Saturday:'sábado',Sunday:'domingo'};
+const _ES_MONTHS={January:'enero',February:'febrero',March:'marzo',April:'abril',May:'mayo',June:'junio',July:'julio',August:'agosto',September:'septiembre',October:'octubre',November:'noviembre',December:'diciembre'};
+function localizeDate(str){
+  if(LANG!=='es'||!str) return str;
+  let out=String(str);
+  Object.entries(_ES_DAYS).forEach(([en,es])=>{ out=out.replace(new RegExp(en,'g'),es); });
+  Object.entries(_ES_MONTHS).forEach(([en,es])=>{ out=out.replace(new RegExp(en,'g'),es); });
+  return out;
+}
+
 /* ═══ DYNAMIC PLAN LOADING ═══
  * Reads ?client=<clientId> from the URL.
  * Tries to fetch the plan from the bot API (window.DARE_API_URL).
@@ -659,7 +880,7 @@ async function apiLogin(email, password){
     if(!r.ok) return { error: data.error || 'Incorrect credentials' };
     return data;
   }catch(err){
-    return { error: 'Could not connect to the server' };
+    return { error: t('login.noConnect') };
   }
 }
 
@@ -925,7 +1146,7 @@ function buildWeekSelector(weekList, activeWeekOf){
     var dateStr=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
     var pill=document.createElement('button');
     pill.className='week-pill'+(isActive?' wp-active':'')+(isFuture?' wp-future':'');
-    pill.innerHTML='Week '+weekNum+'<span class="wp-date">'+dateStr+'</span>';
+    pill.innerHTML=t('week.label')+' '+weekNum+'<span class="wp-date">'+dateStr+'</span>';
     pill.addEventListener('click',function(){ switchToWeek(entry.weekOf); });
     container.appendChild(pill);
   });
@@ -1101,9 +1322,16 @@ async function showDash(){
   if(hasFuture && (!CURRENT_WEEK_OF || CURRENT_WEEK_OF<nextWeekOf)){
     showNextWeekBanner();
   }
+
+  // Activate the coach-messaging floating button (clients only)
+  if(window.DARE_initMessagingFab) window.DARE_initMessagingFab();
 }
 
-function showLogin(){ app.classList.remove('visible'); loginScreen.classList.remove('hidden'); }
+function showLogin(){
+  app.classList.remove('visible'); loginScreen.classList.remove('hidden');
+  const fab=document.getElementById('msg-fab'); if(fab) fab.classList.remove('visible');
+  const mp=document.getElementById('msg-panel'); if(mp) mp.classList.remove('open');
+}
 
 /* ═══ NEXT-WEEK PLAN NOTIFICATION ═══ */
 
@@ -1167,8 +1395,8 @@ document.getElementById('login-btn').addEventListener('click', async ()=>{
   const btn = document.getElementById('login-btn');
   const e = document.getElementById('email').value.trim().toLowerCase();
   const p = document.getElementById('pw').value;
-  if(!e || !p){ loginError.textContent='Please enter your email and password.'; loginError.classList.add('visible'); return; }
-  btn.disabled = true; const oldText = btn.textContent; btn.textContent = 'Entering…';
+  if(!e || !p){ loginError.textContent=t('login.empty'); loginError.classList.add('visible'); return; }
+  btn.disabled = true; const oldText = btn.textContent; btn.textContent = t('login.entering');
   const result = await apiLogin(e, p);
   btn.disabled = false; btn.textContent = oldText;
   if(result.error){
@@ -1217,7 +1445,7 @@ function buildWeekDropdown(){
     var dateStr=d2.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
     var item=document.createElement('div');
     item.className='wk-item'+(isActive?' wki-active':'')+(isLocked?' wki-locked':'')+(hasPlan?' wki-has-plan':'');
-    item.innerHTML='<span class="wki-num">Week '+w+'</span><span class="wki-date">'+dateStr+'</span><span class="wki-dot"></span>';
+    item.innerHTML='<span class="wki-num">'+t('week.label')+' '+w+'</span><span class="wki-date">'+dateStr+'</span><span class="wki-dot"></span>';
     if(!isLocked){
       (function(wOf){ item.addEventListener('click',function(){
         closeWeekDropdown();
@@ -1263,7 +1491,7 @@ document.addEventListener('click',function(e){
 
 function updateWeekBtn(weekNum){
   var lbl=document.getElementById('wk-btn-label');
-  if(lbl) lbl.textContent='Week '+(weekNum||'—');
+  if(lbl) lbl.textContent=t('week.label')+' '+(weekNum||'—');
 }
 
 /* ═══ WEEK STRIP ═══ */
@@ -1328,9 +1556,9 @@ function renderDay(idx){
   document.getElementById('prev-day').disabled=idx===0;
   document.getElementById('next-day').disabled=idx===6;
   const badge=document.getElementById('day-badge');
-  badge.textContent=d.type==='strength'?'STRENGTH · '+d.training.session:d.type==='cardio'?'CARDIO · '+d.training.session:'ACTIVE REST';
+  badge.textContent=d.type==='strength'?t('badge.strength')+' · '+d.training.session:d.type==='cardio'?t('badge.cardio')+' · '+d.training.session:t('badge.rest');
   badge.className='day-type-badge badge-'+d.type;
-  document.getElementById('day-name').textContent=d.fullDate+(d.today?' · TODAY':'');
+  document.getElementById('day-name').textContent=localizeDate(d.fullDate)+(d.today?t('suffix.today'):'');
   // Update plan label — compare day against real system date
   const planLabel=document.getElementById('cs-plan-label');
   if(planLabel){
@@ -1346,27 +1574,32 @@ function renderDay(idx){
     const tmNorm=tomorrowNormalized.replace(',','');
     const yNorm=yesterdayNormalized.replace(',','');
     let when='';
-    if(dNorm===tNorm) when='today';
-    else if(dNorm===tmNorm) when='tomorrow';
-    else if(dNorm===yNorm) when='yesterday';
-    const prefix=when?`My plan for ${when}, `:'My plan for ';
-    planLabel.textContent=prefix+d.fullDate;
+    if(dNorm===tNorm) when=t('plan.today');
+    else if(dNorm===tmNorm) when=t('plan.tomorrow');
+    else if(dNorm===yNorm) when=t('plan.yesterday');
+    const prefix=when?`${t('plan.for')}${when}, `:t('plan.for');
+    planLabel.textContent=prefix+localizeDate(d.fullDate);
   }
   // A whole half (training or nutrition) may not be uploaded yet by its coach.
   const trainingReady  = !ACTIVE_PLAN || ACTIVE_PLAN.trainingReady  !== false;
   const nutritionReady = !ACTIVE_PLAN || ACTIVE_PLAN.nutritionReady !== false;
 
   if(!trainingReady){
-    badge.textContent='PLAN PENDING';
+    badge.textContent=t('badge.pending');
     badge.className='day-type-badge badge-rest';
   }
 
   document.getElementById('training-content').innerHTML = trainingReady
     ? renderTraining(d.training,d.type)
-    : '<div class="still-planning">Erika has not created your plan yet — it will be ready shortly!</div>';
+    : `<div class="still-planning">${t('still.training')}</div>`;
   document.getElementById('nutrition-content').innerHTML = nutritionReady
     ? renderNutrition(d.nutrition)
-    : '<div class="still-planning">Dani has not created your plan yet — it will be ready shortly!</div>';
+    : `<div class="still-planning">${t('still.nutrition')}</div>`;
+  // Re-trigger the premium entrance animation on each day render
+  ['training-card','nutrition-card'].forEach(id=>{
+    const c=document.getElementById(id);
+    if(c){ c.classList.remove('animate-in'); void c.offsetWidth; c.classList.add('animate-in'); }
+  });
   setupAccordions();
   // Load existing log state for this day (only for halves that are ready)
   if(CURRENT_LOG_DATE) loadDayLogs(CURRENT_LOG_DATE, d.training, d.type, trainingReady, nutritionReady);
@@ -1398,13 +1631,13 @@ function renderTraining(t,type){
     h+='</div>';
   }
   const nc=`note-${t.noteType}`;
-  h+=`<div class="expert-note"><div class="note-inner ${nc}"><strong>Erika's note:</strong> ${t.note}</div></div>`;
+  h+=`<div class="expert-note"><div class="note-inner ${nc}"><strong>${tr('note.erika')}</strong> ${t.note}</div></div>`;
   return h;
 }
 
 function renderNutrition(n){
   if(!n||!n.meals||n.meals.length===0||!n.kcal){
-    return '<div class="still-planning">Daniel is still planning your meals.</div>';
+    return `<div class="still-planning">${tr('still.meals')}</div>`;
   }
   const pP=Math.round(n.protein*4/n.kcal*100);
   const cP=Math.round(n.carbs*4/n.kcal*100);
@@ -1426,15 +1659,15 @@ function renderNutrition(n){
       </div>`;
     };
     verifyHtml=`<div style="margin:.2rem 0 1.1rem;padding:.55rem .8rem;border:1px solid rgba(201,162,74,.18);border-radius:10px;background:rgba(201,162,74,.05)">
-      <div style="font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem">Daily total · achieved / target</div>
-      ${vRow('Calories',sum.kcal,n.kcal,'')}${vRow('Protein',sum.protein,n.protein,'g')}${vRow('Carbs',sum.carbs,n.carbs,'g')}${vRow('Fat',sum.fat,n.fat,'g')}
+      <div style="font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem">${tr('nut.dailyTotal')}</div>
+      ${vRow(tr('nut.calories'),sum.kcal,n.kcal,'')}${vRow(tr('nut.protein'),sum.protein,n.protein,'g')}${vRow(tr('nut.carbs'),sum.carbs,n.carbs,'g')}${vRow(tr('nut.fat'),sum.fat,n.fat,'g')}
     </div>`;
   }
-  let h=`<span class="pill-spacer"></span><div class="kcal-row"><span class="kcal-num">${n.kcal.toLocaleString()}</span><span class="kcal-label">kcal target</span></div>
+  let h=`<span class="pill-spacer"></span><div class="kcal-row"><span class="kcal-num">${n.kcal.toLocaleString()}</span><span class="kcal-label">${tr('nut.kcalTarget')}</span></div>
     <div class="macro-bars">
-      <div class="macro-row"><span class="macro-name">Protein</span><div class="macro-track"><div class="macro-fill" style="width:${pP}%;background:linear-gradient(90deg,#a6c85e,#8fb85a)"></div></div><span class="macro-g">${n.protein}g</span></div>
-      <div class="macro-row"><span class="macro-name">Carbs</span><div class="macro-track"><div class="macro-fill" style="width:${cP}%;background:linear-gradient(90deg,#c9a24a,#b8922a)"></div></div><span class="macro-g">${n.carbs}g</span></div>
-      <div class="macro-row"><span class="macro-name">Fat</span><div class="macro-track"><div class="macro-fill" style="width:${fP}%;background:linear-gradient(90deg,rgba(217,212,200,.7),rgba(180,175,160,.6))"></div></div><span class="macro-g">${n.fat}g</span></div>
+      <div class="macro-row"><span class="macro-name">${tr('nut.protein')}</span><div class="macro-track"><div class="macro-fill" style="width:${pP}%;background:linear-gradient(90deg,#a6c85e,#8fb85a)"></div></div><span class="macro-g">${n.protein}g</span></div>
+      <div class="macro-row"><span class="macro-name">${tr('nut.carbs')}</span><div class="macro-track"><div class="macro-fill" style="width:${cP}%;background:linear-gradient(90deg,#c9a24a,#b8922a)"></div></div><span class="macro-g">${n.carbs}g</span></div>
+      <div class="macro-row"><span class="macro-name">${tr('nut.fat')}</span><div class="macro-track"><div class="macro-fill" style="width:${fP}%;background:linear-gradient(90deg,rgba(217,212,200,.7),rgba(180,175,160,.6))"></div></div><span class="macro-g">${n.fat}g</span></div>
     </div>
     ${verifyHtml}
     <hr class="divider">
@@ -1452,7 +1685,7 @@ function renderNutrition(n){
       <div class="meal-steps"><ol>${steps}</ol></div>
     </div>`;
   });
-  h+=`</div><div class="expert-note"><div class="note-inner note-nutrition"><strong>Daniel's note:</strong> ${n.note}</div></div>`;
+  h+=`</div><div class="expert-note"><div class="note-inner note-nutrition"><strong>${tr('note.daniel')}</strong> ${n.note}</div></div>`;
   return h;
 }
 
@@ -1471,7 +1704,8 @@ function escHtml(s){
 }
 
 const SHOP_CAT_ORDER=['protein','carbs','vegetables & fruit','dairy','fats & oils','other'];
-const SHOP_CAT_LABEL={'protein':'Protein','carbs':'Carbs','vegetables & fruit':'Vegetables & fruit','dairy':'Dairy','fats & oils':'Fats & oils','other':'Other'};
+const SHOP_CAT_KEY={'protein':'shop.protein','carbs':'shop.carbs','vegetables & fruit':'shop.veg','dairy':'shop.dairy','fats & oils':'shop.fats','other':'shop.other'};
+const shopCatLabel=(cat)=>SHOP_CAT_KEY[cat]?t(SHOP_CAT_KEY[cat]):cat;
 
 // Renders the aggregated weekly shopping list (plan.shoppingList) once per week.
 // Safe to call with any plan — hides itself when there's no list.
@@ -1490,7 +1724,7 @@ function renderWeeklyShopping(plan){
 
   let body='';
   cats.forEach(cat=>{
-    body+=`<div class="shop-cat">${escHtml(SHOP_CAT_LABEL[cat]||cat)}</div>`;
+    body+=`<div class="shop-cat">${escHtml(shopCatLabel(cat))}</div>`;
     groups[cat].forEach(it=>{
       const qty=it.display?`<span class="shop-qty">${escHtml(it.display)}</span>`:'';
       body+=`<div class="shop-item"><span class="shop-name">${escHtml(it.name)}</span>${qty}</div>`;
@@ -1499,7 +1733,7 @@ function renderWeeklyShopping(plan){
 
   el.innerHTML=`<div class="shop-card">
     <button class="shop-toggle" type="button" aria-expanded="false">
-      <span class="shop-title">🛒 Weekly shopping list <span class="shop-count">${list.count}</span></span>
+      <span class="shop-title">${t('shop.title')} <span class="shop-count">${list.count}</span></span>
       <span class="shop-caret">+</span>
     </button>
     <div class="shop-body">${body}</div>
@@ -1522,7 +1756,7 @@ function renderLogSection(containerId, type, logDate, existingLog){
   if(!client) return;
 
   const div=document.createElement('div'); div.className='log-section';
-  const title=document.createElement('div'); title.className='log-title'; title.textContent=type==='training'?'Log this session':'Log nutrition';
+  const title=document.createElement('div'); title.className='log-title'; title.textContent=type==='training'?t('log.training'):t('log.nutrition');
   div.appendChild(title);
 
   if(existingLog){
@@ -1530,39 +1764,39 @@ function renderLogSection(containerId, type, logDate, existingLog){
     const isDone=existingLog.data?.done!==false;
     const badge=document.createElement('span'); badge.className='log-done-badge';
     badge.textContent= type==='training'
-      ? (isDone?'✓ Session logged':'✗ Skipped')
-      : ({full:'✓ Full adherence',partial:'~ Partial',none:'✗ Off plan'}[existingLog.data?.adherence]||'✓ Logged');
+      ? (isDone?t('log.sessionLogged'):t('log.skipped'))
+      : ({full:t('log.fullAdh'),partial:t('log.partial'),none:t('log.offplan')}[existingLog.data?.adherence]||t('log.logged'));
     div.appendChild(badge);
     c.appendChild(div); return;
   }
 
   if(type==='training'){
     const row=document.createElement('div'); row.className='log-btn-row';
-    const btnDone=document.createElement('button'); btnDone.className='log-btn active'; btnDone.dataset.val='done'; btnDone.textContent='✓ Done';
-    const btnSkip=document.createElement('button'); btnSkip.className='log-btn skip'; btnSkip.dataset.val='partial'; btnSkip.textContent='~ Partial';
-    const btnMiss=document.createElement('button'); btnMiss.className='log-btn missed'; btnMiss.dataset.val='missed'; btnMiss.textContent='✗ Skipped';
+    const btnDone=document.createElement('button'); btnDone.className='log-btn active'; btnDone.dataset.val='done'; btnDone.textContent=t('log.done');
+    const btnSkip=document.createElement('button'); btnSkip.className='log-btn skip'; btnSkip.dataset.val='partial'; btnSkip.textContent=t('log.partial');
+    const btnMiss=document.createElement('button'); btnMiss.className='log-btn missed'; btnMiss.dataset.val='missed'; btnMiss.textContent=t('log.skipped');
     let selected='done';
     [btnDone,btnSkip,btnMiss].forEach(b=>{ b.addEventListener('click',()=>{ selected=b.dataset.val; [btnDone,btnSkip,btnMiss].forEach(x=>x.style.opacity='0.45'); b.style.opacity='1'; }); });
     row.appendChild(btnDone); row.appendChild(btnSkip); row.appendChild(btnMiss);
     div.appendChild(row);
-    const note=document.createElement('textarea'); note.className='log-note'; note.placeholder='How did it go? (optional)'; note.rows=2;
+    const note=document.createElement('textarea'); note.className='log-note'; note.placeholder=t('log.notePh'); note.rows=2;
     div.appendChild(note);
     const saveRow=document.createElement('div'); saveRow.style.display='flex'; saveRow.style.alignItems='center';
-    const saveBtn=document.createElement('button'); saveBtn.className='log-save-btn'; saveBtn.textContent='Save log';
+    const saveBtn=document.createElement('button'); saveBtn.className='log-save-btn'; saveBtn.textContent=t('log.save');
     const status=document.createElement('span'); status.className='log-status';
     saveRow.appendChild(saveBtn); saveRow.appendChild(status); div.appendChild(saveRow);
     saveBtn.addEventListener('click',async()=>{
-      saveBtn.disabled=true; status.textContent='Saving…';
+      saveBtn.disabled=true; status.textContent=t('log.saving');
       try{
         const r=await fetch(`${window.DARE_API_URL}/api/logs/${client.id}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getAuthToken()},body:JSON.stringify({type:'training',logDate,done:selected==='done',adherence:selected,note:note.value.trim()})});
-        if(r.ok){status.textContent='Saved ✓'; status.className='log-status ok'; saveBtn.textContent='Saved'; title.textContent=''; div.innerHTML=''; const b=document.createElement('span'); b.className='log-done-badge'; b.textContent=selected==='done'?'✓ Session logged':selected==='partial'?'~ Partial':'✗ Skipped'; div.appendChild(b);}
-        else{status.textContent='Error'; saveBtn.disabled=false;}
-      }catch{status.textContent='Error'; saveBtn.disabled=false;}
+        if(r.ok){status.textContent=t('log.saved'); status.className='log-status ok'; saveBtn.textContent=t('log.savedShort'); title.textContent=''; div.innerHTML=''; const b=document.createElement('span'); b.className='log-done-badge'; b.textContent=selected==='done'?t('log.sessionLogged'):selected==='partial'?t('log.partial'):t('log.skipped'); div.appendChild(b);}
+        else{status.textContent=t('log.error'); saveBtn.disabled=false;}
+      }catch{status.textContent=t('log.error'); saveBtn.disabled=false;}
     });
   } else {
     // Nutrition log
     const row=document.createElement('div'); row.className='log-btn-row';
-    const opts=[['full','✓ On plan'],['partial','~ Partial'],['none','✗ Off plan']];
+    const opts=[['full',t('log.onplan')],['partial',t('log.partial')],['none',t('log.offplan')]];
     let selected='full';
     opts.forEach(([val,label])=>{
       const b=document.createElement('button'); b.className='log-btn'+(val==='full'?' active':''); b.dataset.val=val; b.textContent=label;
@@ -1570,19 +1804,19 @@ function renderLogSection(containerId, type, logDate, existingLog){
       row.appendChild(b);
     });
     div.appendChild(row);
-    const note=document.createElement('textarea'); note.className='log-note'; note.placeholder='Any notes on your nutrition today? (optional)'; note.rows=2;
+    const note=document.createElement('textarea'); note.className='log-note'; note.placeholder=t('log.noteNutPh'); note.rows=2;
     div.appendChild(note);
     const saveRow=document.createElement('div'); saveRow.style.display='flex'; saveRow.style.alignItems='center';
-    const saveBtn=document.createElement('button'); saveBtn.className='log-save-btn'; saveBtn.textContent='Save log';
+    const saveBtn=document.createElement('button'); saveBtn.className='log-save-btn'; saveBtn.textContent=t('log.save');
     const status=document.createElement('span'); status.className='log-status';
     saveRow.appendChild(saveBtn); saveRow.appendChild(status); div.appendChild(saveRow);
     saveBtn.addEventListener('click',async()=>{
-      saveBtn.disabled=true; status.textContent='Saving…';
+      saveBtn.disabled=true; status.textContent=t('log.saving');
       try{
         const r=await fetch(`${window.DARE_API_URL}/api/logs/${client.id}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getAuthToken()},body:JSON.stringify({type:'nutrition',logDate,adherence:selected,note:note.value.trim()})});
-        if(r.ok){status.textContent='Saved ✓'; status.className='log-status ok'; saveBtn.textContent='Saved'; div.innerHTML='<div class="log-done-badge">✓ Nutrition logged</div>';}
-        else{status.textContent='Error'; saveBtn.disabled=false;}
-      }catch{status.textContent='Error'; saveBtn.disabled=false;}
+        if(r.ok){status.textContent=t('log.saved'); status.className='log-status ok'; saveBtn.textContent=t('log.savedShort'); div.innerHTML=`<div class="log-done-badge">${t('log.nutLogged')}</div>`;}
+        else{status.textContent=t('log.error'); saveBtn.disabled=false;}
+      }catch{status.textContent=t('log.error'); saveBtn.disabled=false;}
     });
   }
   c.appendChild(div);
@@ -1626,21 +1860,21 @@ document.getElementById('ci-save-btn').addEventListener('click',async()=>{
   const w=document.getElementById('ci-weight').value.trim();
   const f=document.getElementById('ci-fat').value.trim();
   const n=document.getElementById('ci-notes').value.trim();
-  if(!w&&!f){document.getElementById('ci-status').textContent='Enter at least weight or body fat.'; return;}
+  if(!w&&!f){document.getElementById('ci-status').textContent=t('checkin.enterOne'); return;}
   const btn=document.getElementById('ci-save-btn'); btn.disabled=true;
-  document.getElementById('ci-status').textContent='Saving…';
+  document.getElementById('ci-status').textContent=t('checkin.saving');
   const today=new Date().toISOString().split('T')[0];
   try{
     const r=await fetch(`${window.DARE_API_URL}/api/checkins/${client.id}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getAuthToken()},body:JSON.stringify({checkDate:today,weightKg:w?Number(w):null,bodyFatPct:f?Number(f):null,notes:n||null})});
     if(r.ok){
-      document.getElementById('ci-status').textContent='✓ Check-in saved!'; document.getElementById('ci-status').className='log-status ok';
+      document.getElementById('ci-status').textContent=t('checkin.saved'); document.getElementById('ci-status').className='log-status ok';
       // Update profile metrics live
       if(w){ const el=document.getElementById('pp-met-wt'); if(el) el.innerHTML=`${w}<sup>kg</sup>`; }
       if(f){ const el=document.getElementById('pp-met-fat'); if(el) el.innerHTML=`${f}<sup>%</sup>`; }
       // Update sessionStorage so header shows new values
       const me=getAuthClient(); if(me){ if(w) me.weight=Number(w); if(f) me.bodyFat=Number(f); sessionStorage.setItem('dare_client',JSON.stringify(me)); }
-    }else{ document.getElementById('ci-status').textContent='Error saving.'; btn.disabled=false; }
-  }catch{ document.getElementById('ci-status').textContent='Connection error.'; btn.disabled=false; }
+    }else{ document.getElementById('ci-status').textContent=t('checkin.errSave'); btn.disabled=false; }
+  }catch{ document.getElementById('ci-status').textContent=t('checkin.errConn'); btn.disabled=false; }
 });
 
 /* ═══ PROFILE CHARTS ═══ */
@@ -1722,6 +1956,117 @@ function initProfileCharts(checkIns){
     },
   });
 }
+
+/* ═══ MOBILE APP-STYLE TABS ═══ */
+// On phones, only one card shows at a time; the bottom tabs switch between them.
+(function initMobileTabs(){
+  const dayPlans=document.getElementById('day-plans');
+  const tabs=document.querySelectorAll('#mobile-tabs .mtab');
+  tabs.forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      const target=tab.dataset.target;
+      dayPlans.classList.remove('m-training','m-nutrition');
+      dayPlans.classList.add('m-'+target);
+      tabs.forEach(x=>x.classList.toggle('mtab-active', x===tab));
+      // Re-run the entrance animation on the now-visible card
+      const card=document.getElementById(target+'-card');
+      if(card){ card.classList.remove('animate-in'); void card.offsetWidth; card.classList.add('animate-in'); }
+    });
+  });
+})();
+
+/* ═══ COACH MESSAGING ═══ */
+(function initMessaging(){
+  const fab=document.getElementById('msg-fab');
+  const badge=document.getElementById('msg-fab-badge');
+  const panel=document.getElementById('msg-panel');
+  const thread=document.getElementById('msg-thread');
+  const input=document.getElementById('msg-input');
+  const sendBtn=document.getElementById('msg-send');
+  if(!fab||!panel) return;
+
+  let pollTimer=null;
+  let isOpen=false;
+
+  function authHeaders(){ return { Authorization:'Bearer '+getAuthToken() }; }
+
+  function renderThread(messages){
+    if(!messages||!messages.length){ thread.innerHTML=`<div class="msg-empty">${t('msg.empty')}</div>`; return; }
+    thread.innerHTML='';
+    messages.forEach(m=>{
+      const div=document.createElement('div');
+      div.className='msg-bubble '+(m.fromRole==='client'?'from-client':'from-coach');
+      const time=m.createdAt ? new Date(m.createdAt.replace(' ','T')+'Z').toLocaleString(LANG==='es'?'es-ES':'en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+      div.innerHTML=`${escHtml(m.text)}<span class="msg-meta">${m.fromRole==='client'?t('msg.you'):t('msg.coach')} · ${time}</span>`;
+      thread.appendChild(div);
+    });
+    thread.scrollTop=thread.scrollHeight;
+  }
+
+  async function loadThread(){
+    try{
+      const r=await fetch(window.DARE_API_URL+'/api/messages',{headers:authHeaders()});
+      if(!r.ok) return;
+      const data=await r.json();
+      renderThread(data.messages);
+      setBadge(0); // opening marks coach msgs as read
+    }catch{}
+  }
+
+  function setBadge(n){
+    if(n>0){ badge.textContent=n>9?'9+':String(n); badge.classList.add('visible'); }
+    else badge.classList.remove('visible');
+  }
+
+  async function pollUnread(){
+    if(isOpen) return; // open panel already marks read
+    try{
+      const r=await fetch(window.DARE_API_URL+'/api/messages/unread',{headers:authHeaders()});
+      if(!r.ok) return;
+      const data=await r.json();
+      setBadge(data.unread||0);
+    }catch{}
+  }
+
+  function openPanel(){ isOpen=true; panel.classList.add('open'); loadThread(); input.focus(); }
+  function closePanel(){ isOpen=false; panel.classList.remove('open'); }
+
+  fab.addEventListener('click',()=>{ isOpen?closePanel():openPanel(); });
+  document.getElementById('msg-close').addEventListener('click',closePanel);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&isOpen) closePanel(); });
+
+  input.addEventListener('input',()=>{ input.style.height='auto'; input.style.height=Math.min(input.scrollHeight,120)+'px'; });
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); doSend(); } });
+  sendBtn.addEventListener('click',doSend);
+
+  async function doSend(){
+    const text=input.value.trim();
+    if(!text) return;
+    sendBtn.disabled=true;
+    try{
+      const r=await fetch(window.DARE_API_URL+'/api/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',...authHeaders()},
+        body:JSON.stringify({text}),
+      });
+      if(r.ok){ input.value=''; input.style.height='auto'; await loadThread(); }
+    }catch{}
+    finally{ sendBtn.disabled=false; input.focus(); }
+  }
+
+  // Exposed so showDash() can activate messaging once a client is logged in.
+  window.DARE_initMessagingFab=function(){
+    const client=getAuthClient();
+    if(!client || client.role!=='client') return;
+    fab.classList.add('visible');
+    pollUnread();
+    if(pollTimer) clearInterval(pollTimer);
+    pollTimer=setInterval(pollUnread,30000); // 30s polling
+  };
+})();
+
+// Translate all static UI now that the DOM is ready.
+applyLang();
 
 })();
 </script>

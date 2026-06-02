@@ -328,6 +328,61 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 .pp-checkin-lbl{font-size:.57rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-top:.2rem}
 .pp-note-tile{padding:.65rem .85rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);flex:1;min-width:140px;font-size:.75rem;color:var(--muted);display:flex;align-items:center;font-style:italic}
 .pp-empty{font-size:.75rem;color:var(--muted2);padding:.3rem 0}
+.pp-view-btn{display:flex;align-items:center;gap:.4rem;padding:.38rem .85rem;border:1px solid rgba(166,200,94,.4);border-radius:8px;background:rgba(166,200,94,.07);color:var(--green);font-family:'Manrope',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .18s}
+.pp-view-btn:hover{background:rgba(166,200,94,.15);border-color:rgba(166,200,94,.6)}
+.ci-unread{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#e0524d;color:#fff;font-size:.6rem;font-weight:700;flex-shrink:0;margin-left:.3rem}
+
+/* ── Modal shell (plan viewer + messaging) ── */
+.cmodal{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;padding:1.5rem;background:rgba(3,3,5,.72);backdrop-filter:blur(6px)}
+.cmodal.open{display:flex}
+.cmodal-box{width:100%;max-width:960px;max-height:90vh;display:flex;flex-direction:column;background:radial-gradient(700px 400px at 12% 0%,rgba(201,162,74,.08),transparent 60%),var(--bg);border:1px solid var(--border2);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.7);overflow:hidden}
+.cmodal-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);background:rgba(5,5,7,.6);flex-shrink:0}
+.cmodal-title{font-family:'Tulpen One',serif;font-size:1.5rem;letter-spacing:.07em;text-transform:uppercase}
+.cmodal-sub{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.cmodal-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;font-size:.9rem;flex-shrink:0;transition:all .18s}
+.cmodal-close:hover{background:rgba(255,255,255,.07);color:var(--text)}
+
+/* ── Plan day selector + cards ── */
+.cplan-days{display:flex;gap:.4rem;padding:.8rem 1.4rem;border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;scrollbar-width:thin}
+.cplan-chip{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.4rem .7rem;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:all .18s;min-width:46px;flex-shrink:0}
+.cplan-chip:hover:not(.active){background:rgba(255,255,255,.04);border-color:var(--border)}
+.cplan-chip.active{border-color:rgba(201,162,74,.45);background:rgba(201,162,74,.08)}
+.cplan-chip-lbl{font-size:.64rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cplan-chip.active .cplan-chip-lbl{color:var(--gold)}
+.cplan-chip-dot{width:6px;height:6px;border-radius:50%}
+.dot-strength{background:var(--green)} .dot-cardio{background:var(--gold)} .dot-rest{background:#c0a8e8}
+.cplan-body{flex:1;overflow-y:auto;padding:1.3rem 1.4rem;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;scrollbar-width:thin}
+.cplan-card{background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.1rem;position:relative;overflow:hidden}
+.cplan-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cplan-card.acc-gold::after{background:linear-gradient(90deg,rgba(201,162,74,.4),#c9a24a,rgba(201,162,74,.4))}
+.cplan-card.acc-green::after{background:linear-gradient(90deg,rgba(166,200,94,.4),#a6c85e,rgba(166,200,94,.4))}
+.cplan-eyebrow{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:.5rem}
+.acc-gold .cplan-eyebrow{color:var(--gold)} .acc-green .cplan-eyebrow{color:var(--green)}
+.cplan-ctitle{font-family:'Tulpen One',serif;font-size:1.5rem;letter-spacing:.05em;text-transform:uppercase;line-height:1;margin-bottom:.9rem}
+.cplan-item{padding:.55rem .75rem;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;margin-bottom:.45rem}
+.cplan-item-name{font-size:.78rem;font-weight:600;color:var(--text)}
+.cplan-item-detail{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.45}
+.cplan-item-badge{float:right;font-size:.62rem;font-weight:700;color:var(--gold);background:rgba(201,162,74,.1);border:1px solid rgba(201,162,74,.22);padding:.18rem .5rem;border-radius:6px;margin-left:.5rem}
+.cplan-macros{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.8rem;font-size:.72rem;color:var(--muted)}
+.cplan-macros b{color:var(--text);font-weight:700}
+.cplan-note{margin-top:.7rem;padding:.6rem .8rem;border-radius:9px;font-size:.72rem;line-height:1.55;color:var(--muted);background:rgba(201,162,74,.05);border:1px solid rgba(201,162,74,.16)}
+.cplan-note b{color:var(--gold)}
+.cplan-empty{color:var(--muted2);font-size:.78rem;font-style:italic;padding:1rem 0}
+@media(max-width:760px){ .cplan-body{grid-template-columns:1fr} }
+
+/* ── Coach messaging modal ── */
+.cmsg-box{max-width:540px;height:72vh}
+.cmsg-thread{flex:1;overflow-y:auto;padding:1.1rem;display:flex;flex-direction:column;gap:.7rem;scrollbar-width:thin}
+.cmsg-empty{margin:auto;text-align:center;color:var(--muted2);font-size:.82rem;line-height:1.7;padding:1.5rem}
+.cmsg-bubble{max-width:82%;padding:.6rem .85rem;border-radius:14px;font-size:.84rem;line-height:1.5;word-wrap:break-word}
+.cmsg-bubble .cmsg-meta{display:block;font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.35rem;opacity:.6}
+.cmsg-bubble.from-coach{align-self:flex-end;background:linear-gradient(135deg,rgba(201,162,74,.2),rgba(201,162,74,.12));border:1px solid rgba(201,162,74,.28);border-bottom-right-radius:5px}
+.cmsg-bubble.from-client{align-self:flex-start;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid var(--border);border-bottom-left-radius:5px}
+.cmsg-input-row{display:flex;gap:.6rem;align-items:flex-end;padding:.85rem 1rem;border-top:1px solid var(--border);background:rgba(5,5,7,.6)}
+.cmsg-textarea{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:12px;padding:.65rem .9rem;color:var(--text);font-family:'Manrope',sans-serif;font-size:.85rem;line-height:1.5;resize:none;outline:none;min-height:42px;max-height:120px;transition:border-color .2s}
+.cmsg-textarea:focus{border-color:rgba(201,162,74,.45)}
+.cmsg-send{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;flex-shrink:0;background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;font-size:1.1rem;transition:transform .15s}
+.cmsg-send:hover:not(:disabled){transform:scale(1.08)} .cmsg-send:disabled{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
@@ -377,6 +432,8 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
           </div>
         </div>
         <div class="pp-head-btns">
+          <button class="pp-view-btn" id="pp-view-plan-btn">📋 Ver plan</button>
+          <button class="pp-view-btn" id="pp-msg-btn" style="border-color:rgba(201,162,74,.4);background:rgba(201,162,74,.07);color:var(--gold)">💬 Mensajes</button>
           <button class="pp-chat-btn" id="pp-chat-btn">✦ Select for chat</button>
           <div style="position:relative">
             <button class="pp-menu-btn" id="pp-menu-btn">⋯</button>
@@ -411,6 +468,39 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
     </div>
   </main>
 
+</div>
+
+<!-- ═══ CLIENT PLAN VIEWER MODAL ═══ -->
+<div class="cmodal" id="cplan-modal">
+  <div class="cmodal-box">
+    <div class="cmodal-head">
+      <div>
+        <div class="cmodal-title" id="cplan-title">Plan del cliente</div>
+        <div class="cmodal-sub" id="cplan-sub">—</div>
+      </div>
+      <button class="cmodal-close" id="cplan-close">✕</button>
+    </div>
+    <div class="cplan-days" id="cplan-days"></div>
+    <div class="cplan-body" id="cplan-body"></div>
+  </div>
+</div>
+
+<!-- ═══ CLIENT MESSAGING MODAL ═══ -->
+<div class="cmodal" id="cmsg-modal">
+  <div class="cmodal-box cmsg-box">
+    <div class="cmodal-head">
+      <div>
+        <div class="cmodal-title" id="cmsg-title">Mensajes</div>
+        <div class="cmodal-sub" id="cmsg-sub">—</div>
+      </div>
+      <button class="cmodal-close" id="cmsg-close">✕</button>
+    </div>
+    <div class="cmsg-thread" id="cmsg-thread"></div>
+    <div class="cmsg-input-row">
+      <textarea class="cmsg-textarea" id="cmsg-input" rows="1" placeholder="Escribe una respuesta…"></textarea>
+      <button class="cmsg-send" id="cmsg-send" title="Enviar">›</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -487,10 +577,12 @@ function renderClients(list){
     const adhPct   = adhDays ? Math.round(adhDone/adhDays*100) : null;
     const adhColor = adhPct===null?'var(--muted2)':adhPct>=80?'var(--green)':adhPct>=50?'var(--gold)':'#e08080';
     const adhText  = adhPct===null?'—':adhLogged===0?'No logs yet':`${adhDone}/${adhDays} done`;
+    const unread = c.unreadMessages || 0;
+    const unreadBadge = unread > 0 ? `<span class="ci-unread" title="Mensajes sin leer">${unread>9?'9+':unread}</span>` : '';
     div.innerHTML = `
       <div class="ci-avatar">${(c.initials||'').slice(0,2)}</div>
       <div class="ci-info">
-        <div class="ci-name">${c.name}</div>
+        <div class="ci-name">${c.name}${unreadBadge}</div>
         <div class="ci-sub">W${c.currentWeek} · ${c.goal}</div>
       </div>
       <div class="ci-adh" title="Training adherence last 7 days" style="font-size:.6rem;font-weight:700;color:${adhColor};white-space:nowrap;flex-shrink:0">${adhText}</div>`;
@@ -1178,6 +1270,183 @@ document.getElementById('pp-del-from-menu').addEventListener('click', async ()=>
   }catch(e){
     alert('Connection error while deleting.');
   }
+});
+
+// ── Shared helper ─────────────────────────────────────────────
+function escHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── Client plan viewer (read-only, as the client sees it) ─────
+let cplanWeek = null;   // array of 7 day objects
+let cplanDay  = 0;
+
+async function openClientPlan(c){
+  if(!c) return;
+  document.getElementById('cplan-title').textContent = `Plan · ${c.name}`;
+  document.getElementById('cplan-sub').textContent = `${c.goal} · Semana ${c.currentWeek} de ${c.totalWeeks}`;
+  document.getElementById('cplan-days').innerHTML = '';
+  document.getElementById('cplan-body').innerHTML = '<div class="cplan-empty">Cargando plan…</div>';
+  document.getElementById('cplan-modal').classList.add('open');
+
+  try{
+    const r = await fetch(`${BASE}/api/coach/client-plan/${c.id}`, { headers:{ Authorization:`Bearer ${storedToken()}` } });
+    if(!r.ok){
+      document.getElementById('cplan-body').innerHTML = `<div class="cplan-empty">${r.status===404?'Este cliente aún no tiene un plan publicado.':'No se pudo cargar el plan.'}</div>`;
+      return;
+    }
+    const plan = await r.json();
+    cplanWeek = (plan.week && Array.isArray(plan.week)) ? plan.week : null;
+    if(!cplanWeek){ document.getElementById('cplan-body').innerHTML='<div class="cplan-empty">Plan vacío.</div>'; return; }
+    plan._trainingReady = plan.trainingReady !== false;
+    plan._nutritionReady = plan.nutritionReady !== false;
+    cplanReadyFlags = { training:plan._trainingReady, nutrition:plan._nutritionReady };
+    // Default to today if present, else first day
+    const todayAbbr = new Date().toLocaleDateString('en-GB',{weekday:'short'}).slice(0,3);
+    const idx = cplanWeek.findIndex(d=>d.label===todayAbbr);
+    cplanDay = idx>=0 ? idx : 0;
+    buildCplanDays();
+    renderCplanDay(cplanDay);
+  }catch{
+    document.getElementById('cplan-body').innerHTML = '<div class="cplan-empty">Error de conexión.</div>';
+  }
+}
+
+let cplanReadyFlags = { training:true, nutrition:true };
+
+function buildCplanDays(){
+  const wrap = document.getElementById('cplan-days');
+  wrap.innerHTML = '';
+  cplanWeek.forEach((d,i)=>{
+    const chip = document.createElement('div');
+    chip.className = 'cplan-chip' + (i===cplanDay?' active':'');
+    chip.innerHTML = `<span class="cplan-chip-lbl">${d.label}</span><span class="cplan-chip-dot dot-${d.type}"></span>`;
+    chip.addEventListener('click', ()=>{ cplanDay=i; buildCplanDays(); renderCplanDay(i); });
+    wrap.appendChild(chip);
+  });
+}
+
+function renderCplanDay(idx){
+  const d = cplanWeek[idx];
+  const body = document.getElementById('cplan-body');
+  if(!d){ body.innerHTML='<div class="cplan-empty">Día no disponible.</div>'; return; }
+
+  // Training column
+  const t = d.training || {};
+  let tHtml = '';
+  if(!cplanReadyFlags.training){
+    tHtml = '<div class="cplan-empty">Plan de entrenamiento aún no publicado.</div>';
+  } else if(d.type==='rest'){
+    tHtml = (t.activities||[]).map(a=>`<div class="cplan-item"><div class="cplan-item-name">${escHtml(a.name)}</div><div class="cplan-item-detail">${escHtml(a.detail||'')}</div></div>`).join('') || '<div class="cplan-empty">Descanso activo.</div>';
+  } else {
+    tHtml = (t.items||[]).map(ex=>`<div class="cplan-item">${ex.badge?`<span class="cplan-item-badge">${escHtml(ex.badge)}</span>`:''}<div class="cplan-item-name">${escHtml(ex.name)}</div><div class="cplan-item-detail">${escHtml(ex.detail||'')}</div></div>`).join('') || '<div class="cplan-empty">Sin ejercicios.</div>';
+  }
+  if(cplanReadyFlags.training && t.session) tHtml = `<div class="cplan-macros"><span><b>Sesión:</b> ${escHtml(t.session)}</span></div>` + tHtml;
+  if(cplanReadyFlags.training && t.note) tHtml += `<div class="cplan-note"><b>Nota de Erika:</b> ${escHtml(t.note)}</div>`;
+
+  // Nutrition column
+  const n = d.nutrition || {};
+  let nHtml = '';
+  if(!cplanReadyFlags.nutrition){
+    nHtml = '<div class="cplan-empty">Plan de nutrición aún no publicado.</div>';
+  } else if(!n.meals || !n.meals.length || !n.kcal){
+    nHtml = '<div class="cplan-empty">Sin comidas planificadas.</div>';
+  } else {
+    nHtml = `<div class="cplan-macros"><span><b>${(n.kcal||0).toLocaleString()}</b> kcal</span><span>P <b>${n.protein||0}g</b></span><span>C <b>${n.carbs||0}g</b></span><span>G <b>${n.fat||0}g</b></span></div>`;
+    nHtml += (n.meals||[]).map(m=>`<div class="cplan-item"><span class="cplan-item-badge">${m.kcal||0} kcal</span><div class="cplan-item-name">${escHtml(m.time||'')} · ${escHtml(m.name||'')}</div><div class="cplan-item-detail">${escHtml(m.desc||m.ingredients||'')}</div></div>`).join('');
+    if(n.note) nHtml += `<div class="cplan-note"><b>Nota de Dani:</b> ${escHtml(n.note)}</div>`;
+  }
+
+  body.innerHTML = `
+    <div class="cplan-card acc-gold">
+      <div class="cplan-eyebrow">${escHtml(d.fullDate||d.label)}</div>
+      <div class="cplan-ctitle">Entrenamiento</div>
+      ${tHtml}
+    </div>
+    <div class="cplan-card acc-green">
+      <div class="cplan-eyebrow">${escHtml(d.fullDate||d.label)}</div>
+      <div class="cplan-ctitle">Nutrición</div>
+      ${nHtml}
+    </div>`;
+}
+
+function closeCplan(){ document.getElementById('cplan-modal').classList.remove('open'); }
+
+// ── Client messaging (coach side) ─────────────────────────────
+let cmsgClient = null;
+
+async function openMessages(c){
+  if(!c) return;
+  cmsgClient = c;
+  document.getElementById('cmsg-title').textContent = `Mensajes · ${c.name}`;
+  document.getElementById('cmsg-sub').textContent = c.goal || '';
+  document.getElementById('cmsg-thread').innerHTML = '<div class="cmsg-empty">Cargando…</div>';
+  document.getElementById('cmsg-modal').classList.add('open');
+  document.getElementById('cmsg-input').focus();
+  await loadCmsgThread();
+  loadClients(); // refresh sidebar so the unread badge clears
+}
+
+async function loadCmsgThread(){
+  if(!cmsgClient) return;
+  try{
+    const r = await fetch(`${BASE}/api/coach/messages/${cmsgClient.id}`, { headers:{ Authorization:`Bearer ${storedToken()}` } });
+    if(!r.ok){ document.getElementById('cmsg-thread').innerHTML='<div class="cmsg-empty">No se pudo cargar.</div>'; return; }
+    const data = await r.json();
+    renderCmsgThread(data.messages||[]);
+  }catch{ document.getElementById('cmsg-thread').innerHTML='<div class="cmsg-empty">Error de conexión.</div>'; }
+}
+
+function renderCmsgThread(messages){
+  const thread = document.getElementById('cmsg-thread');
+  if(!messages.length){ thread.innerHTML='<div class="cmsg-empty">Aún no hay mensajes con este cliente.</div>'; return; }
+  thread.innerHTML='';
+  messages.forEach(m=>{
+    const div=document.createElement('div');
+    div.className='cmsg-bubble '+(m.fromRole==='coach'?'from-coach':'from-client');
+    const time=m.createdAt ? new Date(m.createdAt.replace(' ','T')+'Z').toLocaleString('es-ES',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    div.innerHTML=`${escHtml(m.text)}<span class="cmsg-meta">${m.fromRole==='coach'?'Coach':'Cliente'} · ${time}</span>`;
+    thread.appendChild(div);
+  });
+  thread.scrollTop=thread.scrollHeight;
+}
+
+async function sendCmsg(){
+  const input=document.getElementById('cmsg-input');
+  const btn=document.getElementById('cmsg-send');
+  const text=input.value.trim();
+  if(!text||!cmsgClient) return;
+  btn.disabled=true;
+  try{
+    const r=await fetch(`${BASE}/api/coach/messages/${cmsgClient.id}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json', Authorization:`Bearer ${storedToken()}`},
+      body:JSON.stringify({text}),
+    });
+    if(r.ok){ input.value=''; input.style.height='auto'; await loadCmsgThread(); }
+  }catch{}
+  finally{ btn.disabled=false; input.focus(); }
+}
+
+function closeCmsg(){ document.getElementById('cmsg-modal').classList.remove('open'); cmsgClient=null; }
+
+// Wire plan + messaging buttons / modals
+document.getElementById('pp-view-plan-btn').addEventListener('click', ()=>{ if(profileClient) openClientPlan(profileClient); });
+document.getElementById('pp-msg-btn').addEventListener('click', ()=>{ if(profileClient) openMessages(profileClient); });
+document.getElementById('cplan-close').addEventListener('click', closeCplan);
+document.getElementById('cmsg-close').addEventListener('click', closeCmsg);
+document.getElementById('cmsg-send').addEventListener('click', sendCmsg);
+document.getElementById('cmsg-input').addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendCmsg(); } });
+document.getElementById('cmsg-input').addEventListener('input', e=>{ e.target.style.height='auto'; e.target.style.height=Math.min(e.target.scrollHeight,120)+'px'; });
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('cplan-modal').classList.contains('open')) closeCplan();
+    if(document.getElementById('cmsg-modal').classList.contains('open')) closeCmsg();
+  }
+});
+// Click on backdrop closes the modal
+[['cplan-modal',closeCplan],['cmsg-modal',closeCmsg]].forEach(([id,fn])=>{
+  document.getElementById(id).addEventListener('click', e=>{ if(e.target.id===id) fn(); });
 });
 
 async function main(){

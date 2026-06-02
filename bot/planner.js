@@ -202,6 +202,9 @@ function parsePlanRow(row) {
   const plan = JSON.parse(row.plan_json);
   plan.trainingReady = row.training_ready === 1;
   plan.nutritionReady = row.nutrition_ready === 1;
+  // Seed/legacy plans were stored without a derived week array. Rebuild it so
+  // every consumer (client portal + coach plan viewer) gets the 7-day view.
+  if (!Array.isArray(plan.week) || plan.week.length === 0) refreshDerived(plan);
   return plan;
 }
 
