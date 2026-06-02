@@ -331,17 +331,10 @@ CLIENTES ACTIVOS:
 ${clientList}
 
 FLUJO PARA CREAR UN PLAN:
-1. Cuando el coach pida un plan, confirma brevemente: cliente y semana (lunes en formato YYYY-MM-DD).
-2. CONFIRMA REQUISITOS antes de seguir (ver abajo). No avances con datos ambiguos.
-3. Cuando cliente, semana y requisitos estén claros, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto.
-4. El coach rellenará la tabla interactiva que aparecerá en el chat.
-5. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.
-
-CONFIRMA REQUISITOS (paso 2) — nunca generes con información incompleta o ambigua:
-${coach.specialty === 'nutrition'
-  ? `• Alergias e intolerancias\n• Objetivo de calorías y proteína (o meta: déficit, mantenimiento, volumen)\n• Preferencias y alimentos a evitar\n• Nº de comidas al día y restricciones (religiosas, viajes, cenas fuera)`
-  : `• Objetivo de la semana (fuerza, hipertrofia, acondicionamiento…)\n• Días disponibles y días de descanso\n• Lesiones o limitaciones de movimiento\n• Material / gimnasio disponible`}
-Si falta algún punto o hay ambigüedad, haz UNA sola pregunta breve y concreta para cerrarlo. Solo cuando todo esté claro, muestra la tabla.
+1. Cuando el coach pida un plan, confirma brevemente cliente y semana (lunes en formato YYYY-MM-DD).
+2. En cuanto tengas cliente y semana, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto.
+3. NO preguntes por alergias, objetivos, macros, preferencias ni restricciones: el coach rellena todo eso directamente en la tabla. Tú solo muestra la tabla.
+4. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.
 
 OTRAS FUNCIONES:
 - Añadir una nota a un plan ya creado: usa add_plan_note (no regenera el plan)
@@ -490,6 +483,41 @@ function sanitizeForPrompt(value, maxLen = 300) {
     .slice(0, maxLen);
 }
 
+// Compute one day's per-meal ingredients, macros, steps and shopping list.
+// Called once PER DAY (in parallel) so every day Mon–Sun is fully processed —
+// a single call across all 7 days truncated / returned only the first day.
+async function computeNutritionDay(day) {
+  try {
+    const resp = await openai.chat.completions.create({
+      model: 'gpt-4o-mini', max_tokens: 2200,
+      response_format: { type: 'json_object' },
+      messages: [{ role: 'user', content: `You are a nutrition planning expert. Process ONE day.
+
+Daily targets — the per-meal macros you output MUST add up to these:
+kcal=${day.kcal} protein=${day.protein}g carbs=${day.carbs}g fat=${day.fat}g
+Day note: "${day.note}"
+
+Meals (${day.meals.length} slots):
+${day.meals.map(m => `{id:${m.id}, name:"${m.name}", time:"${m.time}", dishes:"${m.dishes}"}`).join('\n')}
+
+For EACH meal: identify main ingredients with RAW/UNCOOKED quantities, compute that meal's macros (protein, carbs, fat in grams) and kcal, and write 3-4 clear preparation steps. Then build a day shopping list aggregating every ingredient with its quantity (grams or units).
+
+Return ONLY this JSON, and INCLUDE ALL ${day.meals.length} meals (one object per slot id):
+{
+  "meals": [
+    {"id":0,"name":"Breakfast","time":"08:00","ingredients":"2 eggs, 50g oats, 200ml milk","protein":22,"carbs":48,"fat":12,"kcal":380,"steps":["Boil the eggs","Cook the oats","Combine and serve"]}
+  ],
+  "shopping": [{"item":"Eggs (large)","qty":"2"},{"item":"Oats (raw)","qty":"50g"}]
+}` }],
+    });
+    const parsed = JSON.parse(resp.choices[0].message.content);
+    return { meals: Array.isArray(parsed.meals) ? parsed.meals : [], shopping: Array.isArray(parsed.shopping) ? parsed.shopping : [] };
+  } catch (e) {
+    console.error('[AI nutrition day]', day.dayId, e.message);
+    return { meals: [], shopping: [] };
+  }
+}
+
 app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res) => {
   try {
     const { specialty, clientId, weekOf, days } = req.body;
@@ -523,70 +551,13 @@ app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res)
         }
       });
 
-      // Single AI call: calculate ingredient distribution across 5 meals to hit daily macros
-      let aiResult = { days: [], notes: {} };
-      if (daysForAI.length > 0) {
-        const aiResp = await openai.chat.completions.create({
-          model: 'gpt-4o-mini', max_tokens: 5000,
-          response_format: { type: 'json_object' },
-          messages: [{ role: 'user', content: `You are a nutrition planning expert. For each day, you receive:
-- Daily macros target: kcal, protein (g), carbs (g), fat (g)
-- 5 meal slots with dish names (e.g., "grilled chicken breast, brown rice, broccoli")
-
-Your task:
-1. For each dish, identify the main ingredients
-2. Calculate ingredient quantities (raw, uncooked) to hit the daily macros EXACTLY
-3. Distribute those ingredients logically across the 5 meals (e.g., don't put all protein at breakfast)
-4. For each meal, list: ingredients with quantities, macros (protein/carbs/fat), kcal, and 3-4 preparation steps
-5. Create a complete shopping list for the day with all quantities in grams or units
-
-IMPORTANT: All calculations use RAW/UNCOOKED ingredient values. Ensure meal distribution is realistic and balanced.
-
-DAYS:
-${daysForAI.map(day => `
-day_id=${day.dayId} label="${day.label}" target_kcal=${day.kcal} target_protein=${day.protein}g target_carbs=${day.carbs}g target_fat=${day.fat}g note="${day.note}"
-meals=[${day.meals.map(m => `{id:${m.id},name:"${m.name}",time:"${m.time}",dishes:"${m.dishes}"}`).join(',')}]
-`).join('\n')}
-
-Return ONLY this JSON structure:
-{
-  "days": [
-    {
-      "dayId": 0,
-      "meals": [
-        {
-          "id": 0,
-          "name": "Breakfast",
-          "time": "08:00",
-          "ingredients": "2 eggs, 50g oats, 200ml milk, 1 banana",
-          "protein": 22,
-          "carbs": 48,
-          "fat": 12,
-          "kcal": 380,
-          "steps": ["Boil the eggs...", "Cook the oats...", "Combine and serve"]
-        }
-      ],
-      "dayTotals": {
-        "protein": 160,
-        "carbs": 220,
-        "fat": 70,
-        "kcal": 2100
-      },
-      "shopping": [
-        {"item": "Eggs (large)", "qty": "18"},
-        {"item": "Oats (raw)", "qty": "350g"},
-        {"item": "Whole milk", "qty": "1.4L"},
-        {"item": "Bananas", "qty": "7"}
-      ]
-    }
-  ]
-}` }],
-        });
-        try { aiResult = JSON.parse(aiResp.choices[0].message.content); } catch(e) { console.error('[AI parse]', e); }
-      }
-
+      // One AI call PER DAY, in parallel — guarantees every day Mon–Sun gets
+      // per-meal ingredients/macros. (A single call across all 7 days was
+      // unreliable: gpt-4o-mini often returned only the first day.)
       const aiDays = {};
-      (aiResult.days || []).forEach(d => { aiDays[d.dayId] = d; });
+      await Promise.all(daysForAI.map(async (day) => {
+        aiDays[day.dayId] = await computeNutritionDay(day);
+      }));
 
       const toolInput = {
         clientId, weekOf,
