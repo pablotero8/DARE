@@ -513,10 +513,11 @@ function sanitizeForPrompt(value, maxLen = 300) {
 }
 
 // ── Per-day macro engine ──────────────────────────────────────
-// Sizes the coach's foods (in grams) so the day's totals hit the macro targets,
-// protein-priority and within 2%. Called once PER DAY in parallel. A
-// deterministic check (checkDayTotals) audits the model's arithmetic and
-// triggers ONE corrective re-prompt when it drifts off target.
+// For accuracy the MODEL is used only as a nutrition database — per food it
+// returns standard per-100g macros + a starting portion + prep steps. ALL
+// arithmetic is done in JS: solveDayQuantities sizes the grams to hit the day's
+// targets (protein-priority) and every macro is computed exactly from
+// grams × per-100g density. The model never does the math or target-matching.
 
 const MACRO_TOLERANCE = 0.02; // max 2% deviation per macro (coaching spec)
 
@@ -548,96 +549,145 @@ function checkDayTotals(targets, totals) {
   return { ok: off.length === 0 && !proteinShort, off, proteinShort };
 }
 
-const NUTRITION_RULES = `MANDATORY RULES:
-1. Use ONLY the foods the coach listed for each meal — never add or remove foods.
-2. Assign an EXACT raw/uncooked gram (or unit) quantity to every food so the SUM of all meals meets the daily targets.
-3. PROTEIN IS THE PRIORITY: the day must NEVER end below the protein target. Hit protein first, then calories, then carbs, then fat.
-4. Do NOT spread equal amounts across meals if that misses the targets. Accuracy beats even distribution beats variety.
-5. Every macro and the calorie total must land within 2% of its target.
-6. Compute each food's macros from standard nutrition values; a meal's macros are the sum of its foods; the day is the sum of its meals.
-7. Before returning, ADD UP all meals and check against the targets. If any macro or kcal is off by more than 2% (or protein is below target), re-scale the grams and recompute until it fits.`;
+// The model acts purely as a nutrition database: per food it returns standard
+// per-100g macros + a starting portion; per meal, prep steps. No totals and no
+// per-meal macros — JS computes those exactly.
+function nutritionLookupPrompt(day) {
+  return `You are a nutrition database. For ONE day, return each food with its STANDARD nutrition facts.
 
-function nutritionDayPrompt(day) {
-  return `You are a precision nutrition planner. Process ONE day for a client.
-
-DAILY TARGETS (the sum of all meals MUST match these within 2%):
-calories=${day.kcal} kcal · protein=${day.protein} g · carbs=${day.carbs} g · fat=${day.fat} g
-Day note (context only): "${day.note}"
-
-MEALS (${day.meals.length}) — use exactly these foods, in these slots:
+MEALS (${day.meals.length}) — keep exactly these foods, in these slots:
 ${day.meals.map(m => `{id:${m.id}, name:"${m.name}", time:"${m.time}", foods:"${m.dishes}"}`).join('\n')}
 
-${NUTRITION_RULES}
+For EVERY food in every meal return:
+- "item": food name in English (clean, singular)
+- "grams": a sensible raw/uncooked starting portion in grams (convert counts: "3 eggs" → ~150, "1 banana" → ~120, "1 orange" → ~130)
+- "protein100","carbs100","fat100": grams of protein / carbs / fat per 100 g of that food, from standard nutrition references (raw/uncooked). Be precise — these drive the client's macros.
+Per meal also give 3-4 short "steps". Do NOT output meal or day totals — only per-food facts.
 
-For EACH meal: write the foods WITH their exact grams into "ingredients" (e.g. "150g chicken breast, 80g white rice, 100g broccoli"), give the meal's protein/carbs/fat (grams) and kcal, and 3-4 clear preparation steps. Then return the day "totals" and a "shopping" list aggregating every food with its quantity.
+Daily targets (context only, to pick sensible starting portions): ${day.kcal} kcal · P${day.protein} · C${day.carbs} · F${day.fat} g.
 
-Return ONLY this JSON, including ALL ${day.meals.length} meals (one object per slot id):
+Return ONLY this JSON, including ALL ${day.meals.length} meals:
 {
   "meals": [
-    {"id":0,"name":"Breakfast","time":"08:00","ingredients":"150g eggs, 60g oats, 100g berries","protein":35,"carbs":48,"fat":18,"kcal":520,"steps":["...","..."]}
-  ],
-  "totals": {"protein":160,"carbs":220,"fat":70,"kcal":2100},
-  "shopping": [{"item":"Eggs","qty":"150g"},{"item":"Oats (raw)","qty":"60g"}]
+    {"id":0,"name":"Breakfast","time":"08:00","steps":["...","..."],
+     "foods":[
+       {"item":"Whole eggs","grams":150,"protein100":13,"carbs100":1.1,"fat100":11},
+       {"item":"Oats","grams":60,"protein100":13,"carbs100":67,"fat100":7}
+     ]}
+  ]
 }`;
 }
 
-async function callNutritionModel(content) {
-  const resp = await openai.chat.completions.create({
-    model: NUTRITION_MODEL, max_tokens: 2400,
-    response_format: { type: 'json_object' },
-    messages: [{ role: 'user', content }],
-  });
-  const parsed = JSON.parse(resp.choices[0].message.content);
-  return {
-    meals: Array.isArray(parsed.meals) ? parsed.meals : [],
-    shopping: Array.isArray(parsed.shopping) ? parsed.shopping : [],
-  };
+// Which macro a food predominantly provides (by grams per 100 g) — drives scaling.
+function primaryMacro(f) {
+  const p = Number(f.protein100) || 0, c = Number(f.carbs100) || 0, ft = Number(f.fat100) || 0;
+  if (p >= c && p >= ft) return 'protein';
+  if (c >= p && c >= ft) return 'carbs';
+  return 'fat';
 }
 
-async function computeNutritionDay(day) {
-  try {
-    let { meals, shopping } = await callNutritionModel(nutritionDayPrompt(day));
-    let totals = sumMealMacros(meals);
-    let check = checkDayTotals(day, totals);
-
-    // One deterministic correction pass: feed the exact drift back and re-scale.
-    if (!check.ok && meals.length > 0) {
-      const drift = [
-        `calories: ${Math.round(totals.kcal)} vs target ${day.kcal}`,
-        `protein: ${Math.round(totals.protein)} vs target ${day.protein}${check.proteinShort ? '  ← BELOW target, must increase' : ''}`,
-        `carbs: ${Math.round(totals.carbs)} vs target ${day.carbs}`,
-        `fat: ${Math.round(totals.fat)} vs target ${day.fat}`,
-      ].join('\n');
-      try {
-        const corrected = await callNutritionModel(`${nutritionDayPrompt(day)}
-
-A previous attempt produced these totals, which are OUT OF TOLERANCE:
-${drift}
-
-Re-scale the gram quantities of the SAME foods so every macro and the calorie total land within 2% of target, keeping protein at or above target. Recompute every meal and the day totals, then return the corrected JSON in the same shape.`);
-        if (corrected.meals.length > 0) {
-          const newTotals = sumMealMacros(corrected.meals);
-          const newCheck = checkDayTotals(day, newTotals);
-          // Accept the correction only if it's genuinely better.
-          if (newCheck.ok || (!newCheck.proteinShort && newCheck.off.length <= check.off.length)) {
-            meals = corrected.meals;
-            shopping = corrected.shopping.length ? corrected.shopping : shopping;
-            totals = newTotals; check = newCheck;
-          }
-        }
-      } catch (e) {
-        console.error('[AI nutrition correction]', day.dayId, e.message);
-      }
+// Solve gram quantities so the day's protein/carbs/fat hit their targets, in
+// priority order protein → carbs → fat. Each macro is steered by the foods whose
+// primary macro it is, accounting for what other foods already contribute to it.
+// Iterating resolves cross-coupling (e.g. eggs add fat while being protein-led).
+function solveDayQuantities(foods, targets) {
+  const PER = { protein: 'protein100', carbs: 'carbs100', fat: 'fat100' };
+  const macroTotal = (key) => foods.reduce((s, f) => s + f.grams * (Number(f[key]) || 0) / 100, 0);
+  for (let iter = 0; iter < 14; iter++) {
+    for (const M of ['protein', 'carbs', 'fat']) {          // protein first
+      const tgt = Number(targets[M]) || 0;
+      if (tgt <= 0) continue;
+      const key = PER[M];
+      const group = foods.filter(f => f.primary === M);
+      if (!group.length) continue;
+      const groupContrib = group.reduce((s, f) => s + f.grams * (Number(f[key]) || 0) / 100, 0);
+      if (groupContrib <= 1e-6) continue;
+      const fromOthers = macroTotal(key) - groupContrib;
+      let ratio = (tgt - fromOthers) / groupContrib;
+      ratio = Math.min(5, Math.max(0.1, ratio));            // clamp the per-step change
+      for (const f of group) f.grams = Math.max(0, f.grams * ratio);
     }
+  }
+}
 
+const round0 = (n) => Math.round(Number(n) || 0);
+
+async function computeNutritionDay(day) {
+  const empty = { meals: [], shopping: [], totals: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, ok: false };
+  try {
+    const resp = await openai.chat.completions.create({
+      model: NUTRITION_MODEL, max_tokens: 2600,
+      response_format: { type: 'json_object' },
+      messages: [{ role: 'user', content: nutritionLookupPrompt(day) }],
+    });
+    const parsed = JSON.parse(resp.choices[0].message.content);
+    const rawMeals = Array.isArray(parsed.meals) ? parsed.meals : [];
+    if (!rawMeals.length) return empty;
+
+    // Index the model's meals by id, but drive output off the INPUT meals so ids,
+    // names and times are authoritative (never trust the model to echo them).
+    const byId = {};
+    rawMeals.forEach((m, i) => { const id = Number.isInteger(m?.id) ? m.id : i; if (byId[id] === undefined) byId[id] = m; });
+
+    const foods = [];
+    const mealsRaw = day.meals.map((inMeal, i) => {
+      const src = byId[inMeal.id] ?? rawMeals[i] ?? {};
+      const mealFoods = (Array.isArray(src.foods) ? src.foods : []).map(f => {
+        const food = {
+          item: (String(f.item || '').trim() || 'food'),
+          grams: Math.max(0, Number(f.grams) || 0),
+          protein100: Math.max(0, Number(f.protein100) || 0),
+          carbs100:   Math.max(0, Number(f.carbs100)   || 0),
+          fat100:     Math.max(0, Number(f.fat100)     || 0),
+        };
+        food.primary = primaryMacro(food);
+        foods.push(food);
+        return food;
+      });
+      return { id: inMeal.id, steps: Array.isArray(src.steps) ? src.steps : [], foods: mealFoods };
+    });
+    if (!foods.length) return empty;
+
+    // Size portions to the day targets, then compute every macro EXACTLY.
+    solveDayQuantities(foods, day);
+
+    const meals = mealsRaw.map(m => {
+      let p = 0, c = 0, ft = 0;
+      const parts = m.foods.filter(f => Math.round(f.grams) >= 1).map(f => {
+        const g = Math.round(f.grams);
+        p  += g * f.protein100 / 100;
+        c  += g * f.carbs100   / 100;
+        ft += g * f.fat100     / 100;
+        return `${g}g ${f.item.toLowerCase()}`;
+      });
+      const protein = round0(p), carbs = round0(c), fat = round0(ft);
+      return {
+        id: m.id,
+        ingredients: parts.join(', '),
+        protein, carbs, fat,
+        kcal: round0(protein * 4 + carbs * 4 + fat * 9),
+        steps: m.steps.length ? m.steps : ['Prepare as planned.'],
+      };
+    });
+
+    // Shopping list: aggregate solved grams by food across the whole day.
+    const agg = {};
+    for (const f of foods) {
+      const g = Math.round(f.grams);
+      if (g >= 1) agg[f.item] = (agg[f.item] || 0) + g;
+    }
+    const shopping = Object.entries(agg).map(([item, g]) => ({ item, qty: `${g}g` }));
+
+    const totals = sumMealMacros(meals);
+    const check = checkDayTotals(day, totals);
     if (!check.ok) {
       const detail = check.off.map(o => `${o.macro} ${o.achieved}/${o.target}`).join(', ') || (check.proteinShort ? 'protein below target' : '');
-      console.warn(`[nutrition] day ${day.dayId} still off target: ${detail}`);
+      console.warn(`[nutrition] day ${day.dayId} off target (food set may be infeasible): ${detail}`);
     }
     return { meals, shopping, totals, ok: check.ok };
   } catch (e) {
     console.error('[AI nutrition day]', day.dayId, e.message);
-    return { meals: [], shopping: [], totals: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, ok: false };
+    return empty;
   }
 }
 
