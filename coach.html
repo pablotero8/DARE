@@ -638,9 +638,7 @@ async function populateRecipeDropdowns(wrap){
     list.forEach(rec=>{
       const o=document.createElement('option');
       o.value=rec.name;
-      const kcal=rec.kcal?` · ${Math.round(rec.kcal)} kcal`:'';
-      const used=rec.timesUsed>1?` (×${rec.timesUsed})`:'';
-      o.textContent=(rec.name.length>52?rec.name.slice(0,52)+'…':rec.name)+kcal+used;
+      o.textContent=rec.name.length>52?rec.name.slice(0,52)+'…':rec.name;
       sel.appendChild(o);
     });
   });
