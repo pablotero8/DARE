@@ -377,21 +377,29 @@
         box-shadow: 0 20px 50px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,162,74,0.12);
     }
 
+    /* icon + title side by side */
+    .mpn-protocol-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.4rem;
+    }
+
     .mpn-protocol-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        border-radius: 14px;
         background: rgba(201,162,74,0.1);
         border: 1px solid rgba(201,162,74,0.22);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 1.8rem;
     }
 
     .mpn-protocol-icon svg {
-        width: 26px;
-        height: 26px;
+        width: 24px;
+        height: 24px;
         stroke: rgba(201,162,74,0.95);
         fill: none;
         stroke-width: 1.5;
@@ -399,37 +407,38 @@
         stroke-linejoin: round;
     }
 
+    .mpn-protocol-title {
+        font-family: 'Tulpen One', serif;
+        font-size: clamp(1.7rem, 2.5vw, 2.2rem);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-color);
+        line-height: 1;
+    }
+
     .mpn-protocol-num {
         display: block;
         font-family: 'Tulpen One', serif;
-        font-size: 4.5rem;
+        font-size: 5rem;
         line-height: 1;
         letter-spacing: 0.04em;
-        background: linear-gradient(135deg, rgba(201,162,74,0.2), rgba(166,200,94,0.12));
+        background: linear-gradient(135deg, rgba(201,162,74,0.18), rgba(166,200,94,0.1));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
         position: absolute;
-        bottom: 1.6rem;
-        right: 2rem;
+        bottom: 1.4rem;
+        right: 1.8rem;
         pointer-events: none;
-    }
-
-    .mpn-protocol-title {
-        font-family: 'Tulpen One', serif;
-        font-size: clamp(1.8rem, 2.8vw, 2.4rem);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--text-color);
-        margin-bottom: 0.9rem;
-        line-height: 1;
+        user-select: none;
     }
 
     .mpn-protocol-copy {
-        font-size: 1.05rem;
+        font-size: 1.02rem;
         color: var(--muted);
         line-height: 1.7;
-        max-width: 38ch;
+        /* leave room so text never runs under the ghost number */
+        padding-right: 4.5rem;
     }
 
     /* === EXECUTION FLOW === */
@@ -861,34 +870,46 @@
                 </div>
                 <div class="mpn-protocol">
                     <div class="mpn-protocol-card mpn-fade mpn-fade-delay-1">
-                        <div class="mpn-protocol-icon">
-                            <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        <div class="mpn-protocol-header">
+                            <div class="mpn-protocol-icon">
+                                <!-- person / target icon -->
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>
+                            </div>
+                            <h3 class="mpn-protocol-title">Personalization</h3>
                         </div>
-                        <h3 class="mpn-protocol-title">Personalization</h3>
                         <p class="mpn-protocol-copy">Nutrition built around your goals, lifestyle, preferences and training objectives — never a generic template.</p>
                         <span class="mpn-protocol-num">01</span>
                     </div>
                     <div class="mpn-protocol-card mpn-fade mpn-fade-delay-2">
-                        <div class="mpn-protocol-icon">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <div class="mpn-protocol-header">
+                            <div class="mpn-protocol-icon">
+                                <!-- dumbbell / performance icon -->
+                                <svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4"/></svg>
+                            </div>
+                            <h3 class="mpn-protocol-title">Performance Alignment</h3>
                         </div>
-                        <h3 class="mpn-protocol-title">Performance Alignment</h3>
                         <p class="mpn-protocol-copy">Calorie and macronutrient intake precisely aligned with your training load, session timing and recovery demands.</p>
                         <span class="mpn-protocol-num">02</span>
                     </div>
                     <div class="mpn-protocol-card mpn-fade mpn-fade-delay-1">
-                        <div class="mpn-protocol-icon">
-                            <svg viewBox="0 0 24 24"><path d="m3 11 19-9-9 19-2-8-8-2z"/></svg>
+                        <div class="mpn-protocol-header">
+                            <div class="mpn-protocol-icon">
+                                <!-- refresh / adapt icon -->
+                                <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                            </div>
+                            <h3 class="mpn-protocol-title">Adaptive Nutrition</h3>
                         </div>
-                        <h3 class="mpn-protocol-title">Adaptive Nutrition</h3>
                         <p class="mpn-protocol-copy">As your workload, recovery and activity levels change week to week, your nutrition evolves with them in real time.</p>
                         <span class="mpn-protocol-num">03</span>
                     </div>
                     <div class="mpn-protocol-card mpn-fade mpn-fade-delay-2">
-                        <div class="mpn-protocol-icon">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        <div class="mpn-protocol-header">
+                            <div class="mpn-protocol-icon">
+                                <!-- trending up / optimize icon -->
+                                <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                            </div>
+                            <h3 class="mpn-protocol-title">Continuous Optimization</h3>
                         </div>
-                        <h3 class="mpn-protocol-title">Continuous Optimization</h3>
                         <p class="mpn-protocol-copy">Training data, recovery metrics and progress tracking feed back into the plan weekly — keeping you moving toward your goals.</p>
                         <span class="mpn-protocol-num">04</span>
                     </div>
