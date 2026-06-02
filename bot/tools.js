@@ -145,6 +145,47 @@ export const NUTRITION_TOOL = {
   },
 };
 
+export const FILL_NUTRITION_FROM_TEXT_TOOL = {
+  name: 'fill_nutrition_from_text',
+  description: 'Rellena la tabla interactiva de nutrición a partir de un plan semanal que el coach PEGA como texto libre (varios días con sus comidas, en cualquier idioma). Úsalo SIEMPRE que el coach pegue un plan de comidas de varios días en lugar de pedir una tabla vacía. Para CADA día: identifica el día de la semana, mapea cada comida a uno de los 5 huecos fijos (breakfast, morningSnack, lunch, snack, dinner) y combina los alimentos de esa comida en UN solo texto separado por comas. IMPORTANTE: traduce TODOS los alimentos al INGLÉS (ej: "3 huevos enteros" → "3 whole eggs"; "200 g claras" → "200g egg whites"; "60 g avena sin gluten" → "60g gluten-free oats"; "Ensalada verde" → "Green salad"). NO inventes ni rellenes macros (kcal/proteína/carbos/grasa): el coach los añade a mano después en la tabla.',
+  input_schema: {
+    type: 'object',
+    required: ['clientId', 'weekOf', 'clientName', 'days'],
+    properties: {
+      clientId:   { type: 'string', description: 'ID del cliente (ej: alex-hammond)' },
+      weekOf:     { type: 'string', description: 'Lunes de la semana en formato YYYY-MM-DD' },
+      clientName: { type: 'string', description: 'Nombre completo del cliente' },
+      days: {
+        type: 'array',
+        description: 'Un objeto por cada día presente en el texto (1-7). Los días que NO aparezcan en el texto se omiten y quedan en blanco en la tabla.',
+        items: {
+          type: 'object',
+          required: ['label', 'meals'],
+          properties: {
+            label: {
+              type: 'string',
+              enum: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+              description: 'Día de la semana al que corresponde (Lunes→Mon, Martes→Tue, Miércoles→Wed, Jueves→Thu, Viernes→Fri, Sábado→Sat, Domingo→Sun)',
+            },
+            note: { type: 'string', description: 'Nota del día si el coach escribió alguna (opcional)' },
+            meals: {
+              type: 'object',
+              description: 'Alimentos por hueco de comida, cada uno como UN texto en INGLÉS separado por comas. Omite los huecos sin comida.',
+              properties: {
+                breakfast:    { type: 'string', description: 'Desayuno. Ej: "3 whole eggs, 200g egg whites, 60g gluten-free oats, 100g berries"' },
+                morningSnack: { type: 'string', description: 'Media mañana / almuerzo (si lo hay)' },
+                lunch:        { type: 'string', description: 'Comida del mediodía' },
+                snack:        { type: 'string', description: 'Merienda / snack de tarde' },
+                dinner:       { type: 'string', description: 'Cena' },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 export const RESET_PASSWORD_TOOL = {
   name: 'reset_client_password',
   description: 'Resetea la contraseña de un cliente y devuelve la nueva contraseña temporal. Úsalo cuando un cliente haya olvidado su contraseña.',
