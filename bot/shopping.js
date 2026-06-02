@@ -61,6 +61,17 @@ function categoryFor(name) {
   return 'other';
 }
 
+// Normalize an item name for merge-keying so the same product written slightly
+// differently across days ("Eggs", "Eggs (large)", "eggs ") sums into one line.
+function normalizeItemName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, ' ')      // drop "(large)", "(raw)" qualifiers
+    .replace(/[^a-z0-9áéíóúñü ]/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function formatDisplay(value, unit) {
   if (value == null) return unit === 'unit' ? '' : unit;
   const round = (v) => (Math.round(v * 100) / 100).toString();
@@ -100,12 +111,14 @@ export function buildWeeklyShoppingList(nutritionDays) {
       const conv = CONVERT_TO_BASE[unit];
       const baseUnit = conv ? conv[0] : unit;
       const baseValue = value != null && conv ? value * conv[1] : value;
-      const key = `${raw.name.toLowerCase()}|${baseUnit}`;
+      const key = `${normalizeItemName(raw.name)}|${baseUnit}`;
 
       const existing = merged.get(key);
       if (existing) {
         if (baseValue != null) existing.value = (existing.value ?? 0) + baseValue;
         existing.occurrences += 1;
+        // Keep the shortest readable name seen (usually the cleanest form).
+        if (raw.name && raw.name.length < existing.name.length) existing.name = raw.name;
       } else {
         merged.set(key, { name: raw.name, value: baseValue, unit: baseUnit, occurrences: 1 });
       }

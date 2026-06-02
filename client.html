@@ -935,6 +935,8 @@ async function switchToWeek(weekOf){
     plans.style.opacity='0';
     setTimeout(function(){ plans.style.opacity='1'; },180);
     CURRENT_WEEK_OF=weekOf;
+    ACTIVE_PLAN=null;
+    renderWeeklyShopping(null); // clear last week's shopping list
     var weekNum=weekNumberFor(weekOf);
     updateWeekBtn(weekNum);
     buildWeekDropdown();

@@ -570,6 +570,7 @@ app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res)
             return {
               time: m.time || ['08:00','11:00','14:00','17:00','20:30'][mi],
               name: m.name,
+              dishName: m.dishes, // raw coach input — used as the clean reusable recipe name
               desc: ai.ingredients || m.dishes,
               kcal: ai.kcal || 0,
               protein: ai.protein || 0,
