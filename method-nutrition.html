@@ -725,7 +725,29 @@
         50% { opacity: 1; transform: scaleY(1.6); }
     }
 
+    /* === LIFE FACTORS OUTER WRAPPER === */
+    .mpn-life-outer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 210px;
+        gap: 2.5rem;
+        align-items: center;
+    }
+
+    .mpn-life-deco {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        flex-shrink: 0;
+    }
+
     /* Responsive */
+    @media (max-width: 1200px) {
+        .mpn-life-outer { grid-template-columns: 1fr; }
+        .mpn-life-deco { display: none; }
+    }
+
     @media (max-width: 1024px) {
         .mpn-philosophy { grid-template-columns: 1fr; }
         .mpn-protocol { grid-template-columns: 1fr; }
@@ -922,7 +944,6 @@
         <section class="mpn-statement">
             <div class="p-shell">
                 <div class="mpn-statement-inner mpn-fade">
-                    <div class="mpn-statement-eyebrow">Continuous Monitoring</div>
                     <p class="mpn-statement-text">
                         <em>Recovery, activity levels</em> and training performance
                         are continuously monitored to ensure nutrition remains
@@ -940,53 +961,64 @@
             <div class="p-shell">
                 <div class="mpn-section-head mpn-fade">
                     <span class="mpn-section-kicker">Mapped Into Your Life</span>
-                    <h2 class="mpn-section-title">What We<br>Account For</h2>
+                    <h2 class="mpn-section-title">What Do We <br>Take Into Account</h2>
                     <p class="mpn-section-sub">Nutrition that requires a perfect routine will fail. We build it to hold under real conditions.</p>
                 </div>
-                <div class="mpn-life-grid">
-                    <div class="mpn-life-item mpn-fade mpn-fade-delay-1">
-                        <div class="mpn-life-dot"></div>
-                        <div class="mpn-life-content">
-                            <h4>International Travel</h4>
-                            <p>Time zones, flight nutrition and country-specific food availability all pre-planned before departure.</p>
+                <div class="mpn-protocol">
+
+                        <!-- 01 Social Dining -->
+                        <div class="mpn-protocol-card mpn-fade mpn-fade-delay-1">
+                            <div class="mpn-protocol-header">
+                                <div class="mpn-protocol-icon">
+                                    <!-- users icon -->
+                                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                </div>
+                                <h3 class="mpn-protocol-title">Social Dining</h3>
+                            </div>
+                            <p class="mpn-protocol-copy">Restaurant meals, business dinners and social events are integrated into the process. Simply share what you've eaten and we'll recalibrate the wider nutrition strategy accordingly.</p>
+                            <span class="mpn-protocol-num">01</span>
                         </div>
-                    </div>
-                    <div class="mpn-life-item mpn-fade mpn-fade-delay-2">
-                        <div class="mpn-life-dot"></div>
-                        <div class="mpn-life-content">
-                            <h4>Social Dining</h4>
-                            <p>Restaurant ordering strategy, social event frameworks and post-event recalibration built in.</p>
+
+                        <!-- 02 Culinary Preferences -->
+                        <div class="mpn-protocol-card mpn-fade mpn-fade-delay-2">
+                            <div class="mpn-protocol-header">
+                                <div class="mpn-protocol-icon">
+                                    <!-- coffee / taste icon -->
+                                    <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+                                </div>
+                                <h3 class="mpn-protocol-title">Culinary Preferences</h3>
+                            </div>
+                            <p class="mpn-protocol-copy">Meals are built around your tastes, preferred cuisines and eating habits, creating a nutrition strategy that feels natural to follow long term.</p>
+                            <span class="mpn-protocol-num">02</span>
                         </div>
-                    </div>
-                    <div class="mpn-life-item mpn-fade mpn-fade-delay-3">
-                        <div class="mpn-life-dot"></div>
-                        <div class="mpn-life-content">
-                            <h4>Religious &amp; Cultural Requirements</h4>
-                            <p>Ramadan protocols, halal standards, fasting windows and cultural food preferences fully integrated.</p>
+
+                        <!-- 03 International Travel -->
+                        <div class="mpn-protocol-card mpn-fade mpn-fade-delay-1">
+                            <div class="mpn-protocol-header">
+                                <div class="mpn-protocol-icon">
+                                    <!-- globe icon -->
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                </div>
+                                <h3 class="mpn-protocol-title">International Travel</h3>
+                            </div>
+                            <p class="mpn-protocol-copy">Frequent travel, changing schedules and time zone shifts are planned for in advance, helping you maintain consistency wherever work or life takes you.</p>
+                            <span class="mpn-protocol-num">03</span>
                         </div>
-                    </div>
-                    <div class="mpn-life-item mpn-fade mpn-fade-delay-1">
-                        <div class="mpn-life-dot"></div>
-                        <div class="mpn-life-content">
-                            <h4>Allergies &amp; Intolerances</h4>
-                            <p>Comprehensive allergy mapping with nutrient-equivalent substitutions — never a degraded plan.</p>
+
+                        <!-- 04 Allergies & Intolerances -->
+                        <div class="mpn-protocol-card mpn-fade mpn-fade-delay-2">
+                            <div class="mpn-protocol-header">
+                                <div class="mpn-protocol-icon">
+                                    <!-- shield-check icon -->
+                                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                                </div>
+                                <h3 class="mpn-protocol-title">Allergies &amp; Intolerances</h3>
+                            </div>
+                            <p class="mpn-protocol-copy">Nutrition plans are adapted around allergies, intolerances and dietary restrictions while maintaining nutritional quality and performance outcomes.</p>
+                            <span class="mpn-protocol-num">04</span>
                         </div>
-                    </div>
-                    <div class="mpn-life-item mpn-fade mpn-fade-delay-2">
-                        <div class="mpn-life-dot"></div>
-                        <div class="mpn-life-content">
-                            <h4>Staff Delegation</h4>
-                            <p>Chef-ready recipe packs with prep guides for household staff to execute without your direct involvement.</p>
-                        </div>
-                    </div>
-                    <div class="mpn-life-item mpn-fade mpn-fade-delay-3">
-                        <div class="mpn-life-dot"></div>
-                        <div class="mpn-life-content">
-                            <h4>Culinary Preferences</h4>
-                            <p>Flavour profiles, textures, cuisines and meal formats matched to what you actually want to eat — not what's convenient to plan.</p>
-                        </div>
-                    </div>
-                </div>
+
+                    </div><!-- /.mpn-protocol -->
             </div>
         </section>
 
