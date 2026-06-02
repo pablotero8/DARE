@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan, savePlan, updatePlanDay, appendPlanNote } from './planner.js';
 import { PlanValidationError } from './validators.js';
 import { shoppingListForPlan } from './shopping.js';
+import { listRecipes, listRecipesGrouped, backfillRecipesIfEmpty } from './recipes.js';
 import {
   verifyClientPassword, getClientById, getClientByEmail,
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
@@ -785,6 +786,19 @@ app.get('/api/plans/:clientId/week/:weekOf/shopping', requireAuth, (req, res) =>
   res.json(shoppingList);
 });
 
+// ── Recipe library (coach) ────────────────────────────────────
+// Powers the "reuse previous recipe" dropdown per meal slot in the plan table.
+// ?mealType=Breakfast → list for that slot; omitted → grouped by meal type.
+app.get('/api/coach/recipes', requireCoach, (req, res) => {
+  try {
+    const { mealType } = req.query;
+    res.json(mealType ? { mealType, recipes: listRecipes(mealType) } : { grouped: listRecipesGrouped() });
+  } catch (err) {
+    console.error('[recipes]', err);
+    res.status(500).json({ error: 'Error al cargar recetas' });
+  }
+});
+
 // ── Health ────────────────────────────────────────────────────
 
 app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
@@ -909,5 +923,6 @@ app.listen(PORT, async () => {
   await seedCoaches();
   await seedDemoClient();
   await seedDemoPlan();
+  backfillRecipesIfEmpty();
   scheduleDailyReminders();
 });

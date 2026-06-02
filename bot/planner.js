@@ -1,7 +1,8 @@
 import db from './db.js';
 import { archivePlanVersion } from './logs.js';
 import { validatePlan, validateTrainingDay, validateNutritionDay, isValidWeekOf, PlanValidationError } from './validators.js';
-import { shoppingListForPlan } from './shopping.js';
+import { shoppingListForPlan, extractNutritionDays } from './shopping.js';
+import { saveRecipesFromNutritionDays } from './recipes.js';
 
 const PLAN_TYPE_FOR = { save_training_plan: 'training', save_nutrition_plan: 'nutrition' };
 
@@ -49,6 +50,10 @@ export function savePlan(toolName, input) {
 
   refreshDerived(plan);
   upsertPlan(clientId, weekOf, plan);
+
+  // Feed the reusable recipe library from every nutrition save.
+  if (planType === 'nutrition') saveRecipesFromNutritionDays(input.days);
+
   console.log(`[planner] saved ${toolName} for ${clientId} week ${weekOf}`);
   return plan;
 }
@@ -88,6 +93,10 @@ export function updatePlanDay(clientId, weekOf, planType, dayIndex, dayData) {
 
   refreshDerived(plan);
   upsertPlan(clientId, weekOf, plan);
+
+  // An edited nutrition day may contain new recipes — capture them too.
+  if (planType === 'nutrition') saveRecipesFromNutritionDays([day]);
+
   console.log(`[planner] updated ${planType} day ${DAY_LABELS[dayIndex]} for ${clientId} week ${weekOf}`);
   return plan;
 }
@@ -127,6 +136,8 @@ export function seedPlan(clientId, weekOf, week, { force = false } = {}) {
   plan.shoppingList = shoppingListForPlan(plan);
 
   upsertPlan(clientId, weekOf, plan);
+  // Seed the recipe library too, so the reuse dropdown isn't empty on a fresh DB.
+  saveRecipesFromNutritionDays(extractNutritionDays(plan));
   console.log(`[planner] ${force ? 're-seeded' : 'seeded'} demo plan for ${clientId} week ${weekOf}`);
   return true;
 }
