@@ -13,7 +13,7 @@ import {
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
-import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL } from './tools.js';
+import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL, FILL_NUTRITION_FROM_TEXT_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { sendPasswordReset } from './mailer.js';
 import { sendWelcomeNotifications, scheduleDailyReminders, sendDailyReminders, sendTestEmail } from './notifier.js';
@@ -310,6 +310,27 @@ app.delete('/api/coach/clients/:clientId', requireCoach, (req, res) => {
   res.json({ ok: true });
 });
 
+// Build the 7-day scaffold (Spanish display label + short Mon–Sun label + full
+// English date) for a week starting at weekOf. Shared by show_plan_template and
+// fill_nutrition_from_text so both render the same interactive table structure.
+function buildTemplateDays(weekOf) {
+  const dayNames = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  const shortLabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(weekOf + 'T12:00:00Z');
+    d.setUTCDate(d.getUTCDate() + i);
+    const fullDateEn = d.toLocaleDateString('en-GB', {
+      weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC'
+    });
+    return {
+      label: `${dayNames[i]} ${d.getUTCDate()} ${months[d.getUTCMonth()]}`,
+      shortLabel: shortLabels[i],
+      fullDate: fullDateEn,
+    };
+  });
+}
+
 app.post('/api/coach/chat', aiLimiter, requireCoach, async (req, res) => {
   const { messages = [] } = req.body;
   const coach = req.client;
@@ -324,6 +345,13 @@ app.post('/api/coach/chat', aiLimiter, requireCoach, async (req, res) => {
     .join('\n') || '(Sin clientes todavía)';
 
   const specialtyLabel = coach.specialty === 'training' ? 'entrenamiento' : 'nutrición';
+  const pasteFlow = coach.specialty === 'nutrition' ? `
+
+SI EL COACH PEGA UN PLAN SEMANAL EN TEXTO (varios días con sus comidas):
+- Llama a fill_nutrition_from_text para parsearlo y rellenar la tabla automáticamente (necesitas cliente y semana, igual que con show_plan_template).
+- Mapea cada comida a su hueco: Desayuno→breakfast, media mañana/almuerzo→morningSnack, Comida→lunch, Merienda/Snack→snack, Cena→dinner.
+- Combina los alimentos de cada comida en un solo texto y TRADÚCELOS AL INGLÉS.
+- NO inventes macros (kcal/proteína/carbos/grasa): el coach los añade a mano en la tabla.` : '';
   const systemPrompt = `Eres ${coach.name}, coach de ${specialtyLabel} en DARE.
 Hoy es ${today}. La próxima semana empieza el lunes ${nextMon}.
 
@@ -334,7 +362,7 @@ FLUJO PARA CREAR UN PLAN:
 1. Cuando el coach pida un plan, confirma brevemente cliente y semana (lunes en formato YYYY-MM-DD).
 2. En cuanto tengas cliente y semana, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto.
 3. NO preguntes por alergias, objetivos, macros, preferencias ni restricciones: el coach rellena todo eso directamente en la tabla. Tú solo muestra la tabla.
-4. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.
+4. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.${pasteFlow}
 
 OTRAS FUNCIONES:
 - Añadir una nota a un plan ya creado: usa add_plan_note (no regenera el plan)
@@ -346,6 +374,7 @@ OTRAS FUNCIONES:
   const tools = [
     toFn(SHOW_TEMPLATE_TOOL),
     toFn(coach.specialty === 'training' ? TRAINING_TOOL : NUTRITION_TOOL),
+    ...(coach.specialty === 'nutrition' ? [toFn(FILL_NUTRITION_FROM_TEXT_TOOL)] : []),
     toFn(ADD_NOTE_TOOL),
     toFn(CREATE_CLIENT_TOOL),
     toFn(RESET_PASSWORD_TOOL),
@@ -388,24 +417,24 @@ OTRAS FUNCIONES:
     let action = null;
 
     if (toolName === 'show_plan_template') {
-      // Build 7-day labels from weekOf
-      const dayNames = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
-      const shortLabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-      const days = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(toolInput.weekOf + 'T12:00:00Z');
-        d.setUTCDate(d.getUTCDate() + i);
-        const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-        const fullDateEn = d.toLocaleDateString('en-GB', {
-          weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC'
-        });
-        return {
-          label: `${dayNames[i]} ${d.getUTCDate()} ${months[d.getUTCMonth()]}`,
-          shortLabel: shortLabels[i],
-          fullDate: fullDateEn,
-        };
-      });
+      const days = buildTemplateDays(toolInput.weekOf);
       action = { type: 'show_template', specialty: coach.specialty, clientId: toolInput.clientId, weekOf: toolInput.weekOf, clientName: toolInput.clientName, days };
       toolResultContent = JSON.stringify({ success: true, message: 'Tabla interactiva mostrada al coach.' });
+    } else if (toolName === 'fill_nutrition_from_text') {
+      // Parsed a pasted weekly plan: render the same nutrition table but with the
+      // dishes pre-filled. Macros are left blank for the coach to add by hand.
+      const days = buildTemplateDays(toolInput.weekOf);
+      const parsedByLabel = {};
+      (toolInput.days || []).forEach(d => { if (d?.label) parsedByLabel[d.label] = d; });
+      let filled = 0;
+      days.forEach(day => {
+        const parsed = parsedByLabel[day.shortLabel];
+        if (!parsed) return;
+        if (parsed.meals && typeof parsed.meals === 'object') { day.meals = parsed.meals; filled++; }
+        if (typeof parsed.note === 'string' && parsed.note.trim()) day.note = parsed.note.trim();
+      });
+      action = { type: 'show_template', specialty: 'nutrition', prefilled: true, clientId: toolInput.clientId, weekOf: toolInput.weekOf, clientName: toolInput.clientName, days };
+      toolResultContent = JSON.stringify({ success: true, message: 'Plan parseado y tabla pre-rellenada.', daysFilled: filled });
     } else if (toolName === 'save_training_plan' || toolName === 'save_nutrition_plan') {
       try {
         savePlan(toolName, toolInput);

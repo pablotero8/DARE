@@ -627,6 +627,8 @@ function ptIn(ph, narrow, data){
 
 const MEAL_NAMES=['Breakfast','Morning Snack','Lunch','Snack','Dinner'];
 const MEAL_TIMES=['08:00','11:00','14:00','17:00','20:30'];
+// Slot keys used by fill_nutrition_from_text to pre-fill dishes from pasted text.
+const MEAL_SLOT_KEYS=['breakfast','morningSnack','lunch','snack','dinner'];
 
 // ── Recipe library (reuse previous recipes per meal slot) ─────
 const normalizeMealKey = (s)=>String(s||'').trim().toLowerCase();
@@ -701,6 +703,8 @@ function buildNutritionTable(action){
       const dishRow=document.createElement('div'); dishRow.className='pt-row';
       dishRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Dishes'}));
       const dishIn=ptIn('e.g. grilled chicken breast, brown rice, broccoli',false,{field:'dishes',day:di,meal:mi});
+      const prefillDishes=day.meals&&day.meals[MEAL_SLOT_KEYS[mi]];
+      if(prefillDishes) dishIn.value=prefillDishes;
       dishRow.appendChild(dishIn);
       mb.appendChild(dishRow);
 
@@ -723,7 +727,9 @@ function buildNutritionTable(action){
     // Daniel's Note
     const noteDiv=document.createElement('div'); noteDiv.className='pt-note-row';
     noteDiv.innerHTML=`<div class="pt-note-label">📝 Daniel's Note</div>`;
-    noteDiv.appendChild(ptIn('Write your note — AI will translate and refine it',false,{field:'note',day:di}));
+    const noteIn=ptIn('Write your note — AI will translate and refine it',false,{field:'note',day:di});
+    if(day.note) noteIn.value=day.note;
+    noteDiv.appendChild(noteIn);
     body.appendChild(noteDiv);
 
     block.appendChild(hdr); block.appendChild(body); wrap.appendChild(block);
