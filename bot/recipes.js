@@ -14,9 +14,26 @@ export function normalizeMealType(name) {
   return String(name || '').trim().toLowerCase() || 'other';
 }
 
-// A recipe's display label: prefer the dish/ingredient summary, fall back to slot.
+// Remove quantities and units from a dish string so the reusable recipe name
+// is just the ingredients, e.g. "2 eggs, 50g oats, 200ml milk" → "eggs, oats, milk".
+const UNIT_WORDS = 'g|kg|mg|ml|cl|l|oz|lb|lbs|tbsp|tsp|cup|cups|scoop|scoops|unit|units|u|pc|pcs|piece|pieces|slice|slices|clove|cloves|handful|handfuls|serving|servings|can|cans|cucharada|cucharadita|taza|tazas|ud|uds|gramo|gramos|kcal|cal';
+export function stripQuantities(s) {
+  return String(s || '')
+    .replace(/\([^)]*\)/g, ' ')                                          // drop "(30g)" notes
+    .replace(new RegExp(`\\b\\d+(?:[.,]\\d+)?\\s*(?:${UNIT_WORDS})\\b\\.?`, 'gi'), ' ') // qty+unit
+    .replace(/\b\d+(?:[.,]\d+)?\b/g, ' ')                                // standalone numbers
+    .replace(/\s*,\s*/g, ', ')                                           // tidy commas
+    .replace(/,(?:\s*,)+/g, ',')                                         // collapse empty commas
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^[\s,&+·.\-]+|[\s,&+·.\-]+$/g, '')                         // trim junk edges
+    .trim();
+}
+
+// A recipe's display label: ingredients only, no weights/units. Prefer the raw
+// dish the coach typed (dishName), then the ingredient summary, then the slot.
 function recipeName(meal) {
-  return String(meal?.desc || meal?.name || '').trim().slice(0, 200);
+  const raw = meal?.dishName || meal?.desc || meal?.name || '';
+  return stripQuantities(raw).slice(0, 200);
 }
 
 function mapRow(r) {
@@ -88,11 +105,22 @@ export function backfillRecipesIfEmpty() {
 }
 
 // All recipes grouped by meal type: { breakfast: [...], lunch: [...], … }.
+// Names are stripped of weights/units and de-duplicated (case-insensitive),
+// so legacy rows stored with quantities still show clean, unique entries.
 export function listRecipesGrouped(limit = 400) {
   const rows = db.prepare(
     `SELECT * FROM recipes ORDER BY meal_type, times_used DESC, last_used_at DESC LIMIT ?`
   ).all(limit).map(mapRow);
   const out = {};
-  for (const r of rows) (out[r.mealType] = out[r.mealType] || []).push(r);
+  const seen = {}; // mealType → Set of lowercased clean names already added
+  for (const r of rows) {
+    const cleanName = stripQuantities(r.name);
+    if (!cleanName) continue;
+    const key = cleanName.toLowerCase();
+    const seenForType = (seen[r.mealType] = seen[r.mealType] || new Set());
+    if (seenForType.has(key)) continue; // skip duplicates (e.g. same dish, diff weights)
+    seenForType.add(key);
+    (out[r.mealType] = out[r.mealType] || []).push({ ...r, name: cleanName });
+  }
   return out;
 }
