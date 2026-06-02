@@ -13,6 +13,27 @@ const TRAINING_TYPES = new Set(['strength', 'cardio', 'rest']);
 const isNonEmptyString = (v) => typeof v === 'string' && v.trim().length > 0;
 const isFiniteNumber = (v) => typeof v === 'number' && Number.isFinite(v);
 
+// ── "Pending" (intentionally blank) days ──────────────────────
+// A coach can leave a day empty; it shows as "still planning" on the client.
+// Such days are skipped by validation (neither blocked nor required to be full).
+
+// Nutrition day is empty when there are no macros and no meals.
+export function isEmptyNutritionDay(day) {
+  if (!day || typeof day !== 'object') return true;
+  const noMacros = !(day.kcal > 0) && !(day.protein > 0) && !(day.carbs > 0) && !(day.fat > 0);
+  const noMeals = !Array.isArray(day.meals) || day.meals.length === 0;
+  return noMacros && noMeals;
+}
+
+// Training day is empty when there are no exercises, no activities and no note.
+export function isEmptyTrainingDay(day) {
+  if (!day || typeof day !== 'object') return true;
+  const noItems = !Array.isArray(day.items) || day.items.length === 0;
+  const noActivities = !Array.isArray(day.activities) || day.activities.length === 0;
+  const noNote = !isNonEmptyString(day.note);
+  return noItems && noActivities && noNote;
+}
+
 // weekOf must be an ISO date (YYYY-MM-DD) that lands on a Monday.
 export function isValidWeekOf(weekOf) {
   if (!isNonEmptyString(weekOf) || !/^\d{4}-\d{2}-\d{2}$/.test(weekOf)) return false;
@@ -126,11 +147,16 @@ export function validateTrainingPlan(input) {
   const errors = validatePlanShell(input);
   const warnings = [];
   if (Array.isArray(input?.days) && input.days.length === 7) {
+    let filledDays = 0;
     input.days.forEach((d, i) => {
+      // Skip intentionally-blank days — coach can leave the week partial.
+      if (isEmptyTrainingDay(d)) return;
+      filledDays++;
       const r = validateTrainingDay(d, i);
       errors.push(...r.errors);
       warnings.push(...r.warnings);
     });
+    if (filledDays === 0) errors.push('El plan está vacío — rellena al menos un día');
   }
   return { ok: errors.length === 0, errors, warnings };
 }
@@ -139,11 +165,16 @@ export function validateNutritionPlan(input) {
   const errors = validatePlanShell(input);
   const warnings = [];
   if (Array.isArray(input?.days) && input.days.length === 7) {
+    let filledDays = 0;
     input.days.forEach((d, i) => {
+      // Skip intentionally-blank days — coach can leave the week partial.
+      if (isEmptyNutritionDay(d)) return;
+      filledDays++;
       const r = validateNutritionDay(d, i);
       errors.push(...r.errors);
       warnings.push(...r.warnings);
     });
+    if (filledDays === 0) errors.push('El plan está vacío — rellena al menos un día');
   }
   return { ok: errors.length === 0, errors, warnings };
 }

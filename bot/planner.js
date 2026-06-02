@@ -195,18 +195,28 @@ function upsertPlan(clientId, weekOf, plan) {
 
 // ── Queries ───────────────────────────────────────────────────
 
+// Parse a plan row, forcing the readiness flags to match the DB columns
+// (source of truth) rather than trusting whatever is in the stored JSON.
+function parsePlanRow(row) {
+  if (!row) return null;
+  const plan = JSON.parse(row.plan_json);
+  plan.trainingReady = row.training_ready === 1;
+  plan.nutritionReady = row.nutrition_ready === 1;
+  return plan;
+}
+
 export function getLatestPlan(clientId) {
   const row = db.prepare(
-    'SELECT plan_json FROM plans WHERE client_id = ? ORDER BY week_of DESC LIMIT 1'
+    'SELECT plan_json, training_ready, nutrition_ready FROM plans WHERE client_id = ? ORDER BY week_of DESC LIMIT 1'
   ).get(clientId);
-  return row ? JSON.parse(row.plan_json) : null;
+  return parsePlanRow(row);
 }
 
 export function getPlanByWeek(clientId, weekOf) {
   const row = db.prepare(
-    'SELECT plan_json FROM plans WHERE client_id = ? AND week_of = ?'
+    'SELECT plan_json, training_ready, nutrition_ready FROM plans WHERE client_id = ? AND week_of = ?'
   ).get(clientId, weekOf);
-  return row ? JSON.parse(row.plan_json) : null;
+  return parsePlanRow(row);
 }
 
 export function listPlanWeeks(clientId) {
