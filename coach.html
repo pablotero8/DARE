@@ -194,6 +194,8 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 .pt-in:focus{border-color:rgba(201,162,74,.5);background:rgba(201,162,74,.04)}
 .pt-in::placeholder{color:var(--muted2)}
 .pt-in.narrow{flex:0 0 58px;width:58px;text-align:center}
+.pt-in.pt-in-error{border-color:#e0524d;background:rgba(224,82,77,.12);color:#ffb4b0}
+.pt-macro-warn{margin-top:.45rem;font-size:.66rem;font-weight:600;color:#e0746f;letter-spacing:.01em}
 .pt-select{
   background:rgba(255,255,255,.05);border:1px solid rgba(244,241,232,.1);
   border-radius:6px;padding:.32rem .5rem;color:var(--text);
@@ -658,16 +660,24 @@ function buildNutritionTable(action){
     const totRow=document.createElement('div'); totRow.className='pt-totals-block';
     totRow.innerHTML=`<div style="font-weight:700;color:var(--gold);margin-bottom:.35rem;font-size:.75rem">Daily Totals</div>`;
     const macRow=document.createElement('div'); macRow.className='pt-macro-row';
+    const macInputs={};
     ['kcal','Protein','Carbs','Fat'].forEach((label,li)=>{
+      const field=['kcal','protein','carbs','fat'][li];
       const grp=document.createElement('div'); grp.className='pt-macro-grp';
       const unit = label==='kcal' ? '' : ' (g)';
       grp.innerHTML=`<span class="pt-macro-lbl">${label}${unit}</span>`;
-      const ph = label==='kcal' ? '2100' : label==='Protein' ? '160' : label==='Carbs' ? '220' : '70';
-      grp.appendChild(ptIn(ph,true,{field:['kcal','protein','carbs','fat'][li],day:di,type:'daily'}));
+      const inp=ptIn(label==='kcal'?'2100':label==='Protein'?'160':label==='Carbs'?'220':'70',true,{field,day:di,type:'daily'});
+      macInputs[field]=inp;
+      grp.appendChild(inp);
       macRow.appendChild(grp);
     });
     totRow.appendChild(macRow);
+    const macWarn=document.createElement('div'); macWarn.className='pt-macro-warn'; macWarn.style.display='none';
+    totRow.appendChild(macWarn);
     body.appendChild(totRow);
+    // Live macro/kcal coherence check (P×4 + C×4 + F×9 must ≈ kcal)
+    const checkMacros=()=>validateDayMacros(macInputs,macWarn);
+    Object.values(macInputs).forEach(inp=>inp.addEventListener('input',checkMacros));
 
     // 5 fixed meals with dishes/ingredients
     MEAL_NAMES.forEach((mName,mi)=>{
@@ -768,6 +778,15 @@ function buildSaveRow(action, specialty){
   div.appendChild(btn); div.appendChild(status);
 
   btn.addEventListener('click', async ()=>{
+    // Block save when any day's macros don't add up to its kcal.
+    if(specialty==='nutrition'){
+      const bad=collectMacroErrors(div.closest('.plan-table-wrap'));
+      if(bad.length){
+        status.className='pt-status err';
+        status.textContent=`❌ g macros do not correspond to kcal — check ${bad.join(', ')}`;
+        return;
+      }
+    }
     btn.disabled=true; status.className='pt-status'; status.textContent='Saving — AI is perfecting names and generating details…';
     try{
       const days = specialty==='nutrition' ? collectNutrition(div.closest('.plan-table-wrap'),action) : collectTraining(div.closest('.plan-table-wrap'),action);
@@ -800,6 +819,45 @@ function q(wrap,field,day,extra){
     ? `[data-field="${field}"][data-day="${day}"][data-${extra[0]}="${extra[1]}"]`
     : `[data-field="${field}"][data-day="${day}"]`;
   return (wrap.querySelector(sel)||{}).value||'';
+}
+
+// ── Macro ↔ kcal coherence ────────────────────────────────────
+// Protein 4 kcal/g · Carbs 4 kcal/g · Fat 9 kcal/g.
+const MACRO_TOL = (kcal)=>Math.max(25, kcal*0.05); // allow ±5% or ±25 kcal
+
+// Live check for one day's totals. Returns true when coherent (or not yet
+// fillable). Paints the 4 cells red + shows the message when it doesn't add up.
+function validateDayMacros(inputs, warnEl){
+  const kcal=parseFloat(inputs.kcal.value)||0;
+  const p=parseFloat(inputs.protein.value)||0;
+  const c=parseFloat(inputs.carbs.value)||0;
+  const f=parseFloat(inputs.fat.value)||0;
+  const ready = kcal>0 && (p>0||c>0||f>0);
+  if(!ready){ paintMacros(inputs,warnEl,false); return true; }
+  const computed=p*4+c*4+f*9;
+  const ok=Math.abs(computed-kcal)<=MACRO_TOL(kcal);
+  paintMacros(inputs,warnEl,!ok,computed,kcal);
+  return ok;
+}
+function paintMacros(inputs,warnEl,isError,computed,kcal){
+  Object.values(inputs).forEach(i=>i.classList.toggle('pt-in-error',!!isError));
+  if(isError){
+    warnEl.textContent=`g macros do not correspond to kcal — ${Math.round(computed)} kcal from macros vs ${Math.round(kcal)} target`;
+    warnEl.style.display='';
+  } else {
+    warnEl.style.display='none';
+  }
+}
+// Returns the labels of days whose macros don't match kcal (skips empty days).
+function collectMacroErrors(wrap){
+  const bad=[];
+  wrap.querySelectorAll('.pt-day-block').forEach(block=>{
+    const get=(field)=>{const el=block.querySelector(`.pt-in[data-type="daily"][data-field="${field}"]`);return el?parseFloat(el.value)||0:0;};
+    const kcal=get('kcal'),p=get('protein'),c=get('carbs'),f=get('fat');
+    if(!(kcal>0 && (p>0||c>0||f>0))) return; // skip empty days
+    if(Math.abs((p*4+c*4+f*9)-kcal)>MACRO_TOL(kcal)) bad.push(block.querySelector('.pt-day-label')?.textContent||'?');
+  });
+  return bad;
 }
 
 function collectNutrition(wrap,action){
