@@ -8,8 +8,13 @@ const PLAN_TYPE_FOR = { save_training_plan: 'training', save_nutrition_plan: 'nu
 
 // Load the stored plan object for a client+week, or null.
 function loadPlan(clientId, weekOf) {
-  const row = db.prepare('SELECT plan_json FROM plans WHERE client_id = ? AND week_of = ?').get(clientId, weekOf);
-  return row ? JSON.parse(row.plan_json) : null;
+  const row = db.prepare('SELECT plan_json, training_ready, nutrition_ready FROM plans WHERE client_id = ? AND week_of = ?').get(clientId, weekOf);
+  if (!row) return null;
+  const plan = JSON.parse(row.plan_json);
+  // Ensure flags are set from DB, not just from JSON (fallback in case JSON is stale)
+  plan.trainingReady = plan.trainingReady ?? (row.training_ready === 1);
+  plan.nutritionReady = plan.nutritionReady ?? (row.nutrition_ready === 1);
+  return plan;
 }
 
 // Recompute derived fields (week array, shopping list, published flag) after
@@ -39,6 +44,9 @@ export function savePlan(toolName, input) {
   const now = new Date().toISOString();
 
   let plan = loadPlan(clientId, weekOf) ?? { clientId, weekOf, createdAt: now };
+  // Ensure flags exist (default to false for the other type if not set)
+  if (!plan.trainingReady) plan.trainingReady = false;
+  if (!plan.nutritionReady) plan.nutritionReady = false;
 
   // Archive the previous version of this half before overwriting it.
   const previous = plan[planType];
@@ -124,10 +132,34 @@ export function seedPlan(clientId, weekOf, week, { force = false } = {}) {
   const existing = db.prepare('SELECT client_id FROM plans WHERE client_id = ? AND week_of = ?').get(clientId, weekOf);
   if (existing && !force) return false; // already seeded
 
+  // Separate training and nutrition from the week structure
+  const training = week.map(d => ({
+    label: d.label,
+    fullDate: d.fullDate,
+    type: d.type,
+    session: d.training?.session || 'Training',
+    note: d.training?.note || '',
+    noteType: d.training?.noteType || d.type,
+    ...(d.training?.items ? { items: d.training.items } : {}),
+    ...(d.training?.activities ? { activities: d.training.activities } : {}),
+  }));
+
+  const nutrition = week.map(d => ({
+    label: d.label,
+    fullDate: d.fullDate,
+    kcal: d.nutrition?.kcal || 0,
+    protein: d.nutrition?.protein || 0,
+    carbs: d.nutrition?.carbs || 0,
+    fat: d.nutrition?.fat || 0,
+    meals: d.nutrition?.meals || [],
+    note: d.nutrition?.note || '',
+  }));
+
   const plan = {
     clientId,
     weekOf,
-    week,
+    training,
+    nutrition,
     trainingReady: true,
     nutritionReady: true,
     publishedAt: new Date().toISOString(),
