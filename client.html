@@ -1344,11 +1344,24 @@ function renderDay(idx){
     const prefix=when?`My plan for ${when}, `:'My plan for ';
     planLabel.textContent=prefix+d.fullDate;
   }
-  document.getElementById('training-content').innerHTML=renderTraining(d.training,d.type);
-  document.getElementById('nutrition-content').innerHTML=renderNutrition(d.nutrition);
+  // A whole half (training or nutrition) may not be uploaded yet by its coach.
+  const trainingReady  = !ACTIVE_PLAN || ACTIVE_PLAN.trainingReady  !== false;
+  const nutritionReady = !ACTIVE_PLAN || ACTIVE_PLAN.nutritionReady !== false;
+
+  if(!trainingReady){
+    badge.textContent='PLAN PENDING';
+    badge.className='day-type-badge badge-rest';
+  }
+
+  document.getElementById('training-content').innerHTML = trainingReady
+    ? renderTraining(d.training,d.type)
+    : '<div class="still-planning">Erika has not created your plan yet — it will be ready shortly!</div>';
+  document.getElementById('nutrition-content').innerHTML = nutritionReady
+    ? renderNutrition(d.nutrition)
+    : '<div class="still-planning">Dani has not created your plan yet — it will be ready shortly!</div>';
   setupAccordions();
-  // Load existing log state for this day
-  if(CURRENT_LOG_DATE) loadDayLogs(CURRENT_LOG_DATE, d.training, d.type);
+  // Load existing log state for this day (only for halves that are ready)
+  if(CURRENT_LOG_DATE) loadDayLogs(CURRENT_LOG_DATE, d.training, d.type, trainingReady, nutritionReady);
 }
 
 function renderTraining(t,type){
@@ -1543,7 +1556,7 @@ function renderLogSection(containerId, type, logDate, existingLog){
   c.appendChild(div);
 }
 
-async function loadDayLogs(logDate, training, dayType){
+async function loadDayLogs(logDate, training, dayType, trainingReady=true, nutritionReady=true){
   const client=getAuthClient();
   if(!client||!logDate) return;
   const token=getAuthToken();
@@ -1553,11 +1566,11 @@ async function loadDayLogs(logDate, training, dayType){
       fetch(`${apiUrl}/api/logs/${client.id}/${logDate}/training`,{headers:{Authorization:'Bearer '+token}}).then(r=>r.ok?r.json():null),
       fetch(`${apiUrl}/api/logs/${client.id}/${logDate}/nutrition`,{headers:{Authorization:'Bearer '+token}}).then(r=>r.ok?r.json():null),
     ]);
-    // Training log section
+    // Only show a log form for a half the coach has actually published.
     const tCont=document.getElementById('training-content');
-    if(tCont) renderLogSection('training-content','training',logDate,trainLog);
+    if(tCont && trainingReady) renderLogSection('training-content','training',logDate,trainLog);
     const nCont=document.getElementById('nutrition-content');
-    if(nCont) renderLogSection('nutrition-content','nutrition',logDate,nutLog);
+    if(nCont && nutritionReady) renderLogSection('nutrition-content','nutrition',logDate,nutLog);
   }catch(e){}
 }
 

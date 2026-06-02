@@ -296,7 +296,6 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 .pp-dropdown button:hover{background:rgba(255,255,255,.07)}
 .pp-dropdown button.danger{color:#f08080}
 .pp-dropdown button.danger:hover{background:rgba(220,60,60,.15)}
-.pp-del-btn{display:none}
 .pp-body{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.5rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 .pp-sec-label{font-size:.62rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem}
 .pp-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem}
@@ -975,8 +974,7 @@ async function openProfile(c){
   document.getElementById('pp-av').textContent    = (c.initials||'').slice(0,2);
   document.getElementById('pp-cname').textContent = c.name;
   document.getElementById('pp-csub').textContent  = `${c.goal} · Week ${c.currentWeek} of ${c.totalWeeks}`;
-  const delBtn = document.getElementById('pp-del-btn');
-  delBtn.disabled = false; delBtn.textContent = '🗑 Delete';
+  document.getElementById('pp-dropdown').classList.remove('open');
   document.getElementById('pp-body').innerHTML    = '<div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.8rem">Loading profile…</div>';
   document.getElementById('profile-panel').classList.add('open');
 
