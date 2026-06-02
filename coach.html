@@ -597,6 +597,17 @@ function appendMsg(role, content, action){
     loadClients(); // refresh sidebar
   }
 
+  if(action?.type === 'macro_verify'){
+    const card = document.createElement('div');
+    card.className = 'action-card';
+    const rows = (action.verification||[]).map(v=>{
+      const t=v.totals, g=v.targets;
+      return `<div class="ac-row">${v.ok?'✅':'⚠️'} <strong>${v.label}</strong> — ${t.kcal}/${g.kcal} kcal · P ${t.protein}/${g.protein} · C ${t.carbs}/${g.carbs} · F ${t.fat}/${g.fat} g</div>`;
+    }).join('');
+    card.innerHTML = `<div class="ac-head"><span class="ac-icon">📊</span><span class="ac-title">Macro check — achieved / target (±2%)</span></div>${rows}`;
+    bubble.appendChild(card);
+  }
+
   wrap.appendChild(av);
   wrap.appendChild(bubble);
 
@@ -824,6 +835,9 @@ function buildSaveRow(action, specialty){
         const confirmMsg=`${specialty==='nutrition'?'Nutrition':'Training'} plan saved for ${action.clientName} — week of ${action.weekOf}.`;
         appendMsg('assistant', confirmMsg);
         chatHistory.push({role:'assistant', content: confirmMsg});
+        if(specialty==='nutrition' && Array.isArray(data.verification) && data.verification.length){
+          appendMsg('assistant','Macro verification:',{type:'macro_verify',verification:data.verification});
+        }
       } else {
         status.textContent='❌ '+(data.error||'Failed to save.'); status.className='pt-status err';
         btn.disabled=false;
