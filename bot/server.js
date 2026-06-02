@@ -15,6 +15,7 @@ import {
 import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL, FILL_NUTRITION_FROM_TEXT_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
+import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
 import { sendWelcomeNotifications, scheduleDailyReminders, sendDailyReminders, sendTestEmail } from './notifier.js';
 import { randomBytes } from 'crypto';
@@ -259,15 +260,58 @@ app.get('/api/checkins/:clientId', requireAuth, (req, res) => {
   res.json(getCheckIns(clientId));
 });
 
+// ── Messaging (client side) ───────────────────────────────────
+// Shared thread between the client and their coaches. Clients only ever see
+// their own thread (scoped to req.client.id).
+
+app.get('/api/messages', requireAuth, (req, res) => {
+  if (req.client.role !== 'client') return res.status(403).json({ error: 'Solo clientes' });
+  markRead(req.client.id, 'coach');           // client is reading → coach msgs read
+  res.json({ messages: getThread(req.client.id), unread: 0 });
+});
+
+// Lightweight unread poll (does NOT mark anything read) for the floating badge.
+app.get('/api/messages/unread', requireAuth, (req, res) => {
+  if (req.client.role !== 'client') return res.status(403).json({ error: 'Solo clientes' });
+  res.json({ unread: unreadCount(req.client.id, 'coach') });
+});
+
+app.post('/api/messages', requireAuth, (req, res) => {
+  if (req.client.role !== 'client') return res.status(403).json({ error: 'Solo clientes' });
+  const text = String(req.body?.text || '').trim();
+  if (!text) return res.status(400).json({ error: 'Mensaje vacío' });
+  const msg = addMessage(req.client.id, 'client', text, null);
+  res.json({ ok: true, message: msg });
+});
+
 // ── Coach API ─────────────────────────────────────────────────
 
 app.get('/api/coach/clients', requireCoach, (req, res) => {
   const clients = listClients().filter(c => c.role === 'client');
+  const unread = unreadByClientForCoach();
   res.json(clients.map(c => ({
     id: c.id, name: c.name, initials: c.initials, email: c.email,
     goal: c.goal, currentWeek: c.currentWeek, totalWeeks: c.totalWeeks,
     adherence: getAdherenceSummary(c.id, 7),
+    unreadMessages: unread[c.id] || 0,
   })));
+});
+
+// ── Messaging (coach side) ────────────────────────────────────
+app.get('/api/coach/messages/:clientId', requireCoach, (req, res) => {
+  const client = getClientById(req.params.clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  markRead(req.params.clientId, 'client');    // coach is reading → client msgs read
+  res.json({ messages: getThread(req.params.clientId) });
+});
+
+app.post('/api/coach/messages/:clientId', requireCoach, (req, res) => {
+  const client = getClientById(req.params.clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  const text = String(req.body?.text || '').trim();
+  if (!text) return res.status(400).json({ error: 'Mensaje vacío' });
+  const msg = addMessage(req.params.clientId, 'coach', text, req.client.id);
+  res.json({ ok: true, message: msg });
 });
 
 // Send a single diagnostic email and return Resend's raw response (coach only)
@@ -298,6 +342,19 @@ app.get('/api/coach/clients/:clientId', requireCoach, (req, res) => {
   const client = getClientById(req.params.clientId);
   if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
   res.json(client);
+});
+
+// Current weekly plan of a client, exactly as the client sees it in client.html.
+// Lets coaches review a published plan before deciding whether to readjust it.
+// Optional ?weekOf=YYYY-MM-DD to inspect a specific week (defaults to latest).
+app.get('/api/coach/client-plan/:clientId', requireCoach, (req, res) => {
+  const client = getClientById(req.params.clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  const { weekOf } = req.query;
+  const plan = weekOf ? getPlanByWeek(req.params.clientId, weekOf) : getLatestPlan(req.params.clientId);
+  if (!plan) return res.status(404).json({ error: 'Sin planes todavía' });
+  if (!plan.shoppingList) plan.shoppingList = shoppingListForPlan(plan); // legacy plans
+  res.json(plan);
 });
 
 // Delete a client (coach only — clients only, never another coach)
