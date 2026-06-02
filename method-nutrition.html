@@ -606,6 +606,86 @@
         box-shadow: 0 0 0 6px rgba(201,162,74,0.10);
     }
 
+    /* === STATEMENT BAND === */
+    .mpn-statement {
+        padding: 10vh 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .mpn-statement::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 80% 60% at 15% 50%, rgba(201,162,74,0.07) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 80% at 85% 50%, rgba(166,200,94,0.06) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    .mpn-statement-inner {
+        position: relative;
+        border-top: 1px solid rgba(201,162,74,0.18);
+        border-bottom: 1px solid rgba(201,162,74,0.18);
+        padding: 5vh 0;
+    }
+    .mpn-statement-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.68rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(201,162,74,0.7);
+        margin-bottom: 2rem;
+    }
+    .mpn-statement-eyebrow::before,
+    .mpn-statement-eyebrow::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(201,162,74,0.2);
+    }
+    .mpn-statement-text {
+        font-family: 'Tulpen One', 'Times New Roman', serif;
+        font-size: clamp(2.2rem, 5vw, 4.2rem);
+        line-height: 1.05;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+        color: rgba(244,241,232,0.88);
+    }
+    .mpn-statement-text em {
+        font-style: normal;
+        background: linear-gradient(135deg, rgba(201,162,74,1) 0%, rgba(166,200,94,0.9) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    .mpn-statement-pulse {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 2.2rem;
+    }
+    .mpn-statement-pulse span {
+        display: block;
+        height: 3px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, rgba(201,162,74,0.6), rgba(166,200,94,0.5));
+        animation: pulse-bar 2.4s ease-in-out infinite;
+    }
+    .mpn-statement-pulse span:nth-child(1) { width: 18px; animation-delay: 0s; }
+    .mpn-statement-pulse span:nth-child(2) { width: 36px; animation-delay: 0.3s; }
+    .mpn-statement-pulse span:nth-child(3) { width: 54px; animation-delay: 0.6s; }
+    .mpn-statement-pulse span:nth-child(4) { width: 36px; animation-delay: 0.9s; }
+    .mpn-statement-pulse span:nth-child(5) { width: 18px; animation-delay: 1.2s; }
+    @keyframes pulse-bar {
+        0%, 100% { opacity: 0.3; transform: scaleY(1); }
+        50% { opacity: 1; transform: scaleY(1.6); }
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
         .mpn-philosophy { grid-template-columns: 1fr; }
@@ -783,6 +863,23 @@
         </section>
 
         
+        <!-- ─── STATEMENT BAND ────────────────────────────────────── -->
+        <section class="mpn-statement">
+            <div class="p-shell">
+                <div class="mpn-statement-inner mpn-fade">
+                    <div class="mpn-statement-eyebrow">Continuous Monitoring</div>
+                    <p class="mpn-statement-text">
+                        <em>Recovery, activity levels</em> and training performance
+                        are continuously monitored to ensure nutrition remains
+                        <em>aligned with the demands</em> placed on your body.
+                    </p>
+                    <div class="mpn-statement-pulse">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ─── LIFE FACTORS ───────────────────────────────────────── -->
         <section class="mpn-section" style="padding-top: 2vh;">
             <div class="p-shell">
