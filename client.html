@@ -1409,20 +1409,44 @@ function renderNutrition(n){
   const pP=Math.round(n.protein*4/n.kcal*100);
   const cP=Math.round(n.carbs*4/n.kcal*100);
   const fP=Math.round(n.fat*9/n.kcal*100);
+  // Per-meal macros / verification only render when real macro data exists
+  // (saved plans carry per-meal protein/carbs/fat; demo data carries kcal only).
+  const hasMealMacros = n.meals.some(m=>(Number(m.protein)||0)||(Number(m.carbs)||0)||(Number(m.fat)||0));
+  let verifyHtml='';
+  if(hasMealMacros){
+    const sum=n.meals.reduce((t,m)=>({
+      kcal:t.kcal+(Number(m.kcal)||0), protein:t.protein+(Number(m.protein)||0),
+      carbs:t.carbs+(Number(m.carbs)||0), fat:t.fat+(Number(m.fat)||0),
+    }),{kcal:0,protein:0,carbs:0,fat:0});
+    const vRow=(label,got,tgt,unit)=>{
+      const within = tgt>0 ? Math.abs(got-tgt)/tgt<=0.02 : true;
+      return `<div style="display:flex;justify-content:space-between;font-size:.72rem;padding:.18rem 0">
+        <span style="color:var(--muted)">${label}</span>
+        <span style="color:var(--text)">${Math.round(got)}${unit} <span style="color:var(--muted)">/ ${tgt}${unit}</span> <span style="color:${within?'#a6c85e':'var(--muted)'}">${tgt>0?(within?'✓':'•'):''}</span></span>
+      </div>`;
+    };
+    verifyHtml=`<div style="margin:.2rem 0 1.1rem;padding:.55rem .8rem;border:1px solid rgba(201,162,74,.18);border-radius:10px;background:rgba(201,162,74,.05)">
+      <div style="font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem">Daily total · achieved / target</div>
+      ${vRow('Calories',sum.kcal,n.kcal,'')}${vRow('Protein',sum.protein,n.protein,'g')}${vRow('Carbs',sum.carbs,n.carbs,'g')}${vRow('Fat',sum.fat,n.fat,'g')}
+    </div>`;
+  }
   let h=`<span class="pill-spacer"></span><div class="kcal-row"><span class="kcal-num">${n.kcal.toLocaleString()}</span><span class="kcal-label">kcal target</span></div>
     <div class="macro-bars">
       <div class="macro-row"><span class="macro-name">Protein</span><div class="macro-track"><div class="macro-fill" style="width:${pP}%;background:linear-gradient(90deg,#a6c85e,#8fb85a)"></div></div><span class="macro-g">${n.protein}g</span></div>
       <div class="macro-row"><span class="macro-name">Carbs</span><div class="macro-track"><div class="macro-fill" style="width:${cP}%;background:linear-gradient(90deg,#c9a24a,#b8922a)"></div></div><span class="macro-g">${n.carbs}g</span></div>
       <div class="macro-row"><span class="macro-name">Fat</span><div class="macro-track"><div class="macro-fill" style="width:${fP}%;background:linear-gradient(90deg,rgba(217,212,200,.7),rgba(180,175,160,.6))"></div></div><span class="macro-g">${n.fat}g</span></div>
     </div>
+    ${verifyHtml}
     <hr class="divider">
     <div class="meal-list">`;
   n.meals.forEach(m=>{
-    const steps=m.steps.map(s=>`<li>${s}</li>`).join('');
+    const steps=(m.steps||[]).map(s=>`<li>${s}</li>`).join('');
+    const mMacros = ((Number(m.protein)||0)||(Number(m.carbs)||0)||(Number(m.fat)||0))
+      ? `<div class="meal-macros" style="font-size:.66rem;color:var(--muted);margin-top:.2rem;letter-spacing:.02em">P ${Math.round(m.protein)}g · C ${Math.round(m.carbs)}g · F ${Math.round(m.fat)}g</div>` : '';
     h+=`<div class="meal-item">
       <div class="meal-header">
         <span class="meal-time">${m.time}</span>
-        <div class="meal-body"><div class="meal-name">${m.name}</div><div class="meal-desc">${m.desc}</div></div>
+        <div class="meal-body"><div class="meal-name">${m.name}</div><div class="meal-desc">${m.desc}</div>${mMacros}</div>
         <div class="meal-right"><span class="meal-kcal">${m.kcal} kcal</span><span class="meal-toggle">+</span></div>
       </div>
       <div class="meal-steps"><ol>${steps}</ol></div>

@@ -1,4 +1,4 @@
-import './env.js';
+import { CHAT_MODEL, NUTRITION_MODEL, TRAINING_MODEL } from './env.js';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import OpenAI from 'openai';
@@ -397,7 +397,7 @@ OTRAS FUNCIONES:
     ];
 
     const first = await openai.chat.completions.create({
-      model: 'gpt-4-turbo', max_tokens: 4096,
+      model: CHAT_MODEL, max_tokens: 4096,
       messages: openaiMessages, tools, tool_choice: 'auto',
     });
 
@@ -480,7 +480,7 @@ OTRAS FUNCIONES:
 
     // Get AI confirmation message (reuse cached system prompt and recent history)
     const second = await openai.chat.completions.create({
-      model: 'gpt-4-turbo', max_tokens: 512,
+      model: CHAT_MODEL, max_tokens: 512,
       messages: [
         {
           role: 'system',
@@ -512,38 +512,132 @@ function sanitizeForPrompt(value, maxLen = 300) {
     .slice(0, maxLen);
 }
 
-// Compute one day's per-meal ingredients, macros, steps and shopping list.
-// Called once PER DAY (in parallel) so every day Mon–Sun is fully processed —
-// a single call across all 7 days truncated / returned only the first day.
-async function computeNutritionDay(day) {
-  try {
-    const resp = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', max_tokens: 2200,
-      response_format: { type: 'json_object' },
-      messages: [{ role: 'user', content: `You are a nutrition planning expert. Process ONE day.
+// ── Per-day macro engine ──────────────────────────────────────
+// Sizes the coach's foods (in grams) so the day's totals hit the macro targets,
+// protein-priority and within 2%. Called once PER DAY in parallel. A
+// deterministic check (checkDayTotals) audits the model's arithmetic and
+// triggers ONE corrective re-prompt when it drifts off target.
 
-Daily targets — the per-meal macros you output MUST add up to these:
-kcal=${day.kcal} protein=${day.protein}g carbs=${day.carbs}g fat=${day.fat}g
-Day note: "${day.note}"
+const MACRO_TOLERANCE = 0.02; // max 2% deviation per macro (coaching spec)
 
-Meals (${day.meals.length} slots):
-${day.meals.map(m => `{id:${m.id}, name:"${m.name}", time:"${m.time}", dishes:"${m.dishes}"}`).join('\n')}
+// Sum the per-meal macros into a day total. Source of truth for verification —
+// we never trust the model's own "totals", we recompute from the meals.
+function sumMealMacros(meals) {
+  return (meals || []).reduce((t, m) => ({
+    protein: t.protein + (Number(m.protein) || 0),
+    carbs:   t.carbs   + (Number(m.carbs)   || 0),
+    fat:     t.fat     + (Number(m.fat)     || 0),
+    kcal:    t.kcal    + (Number(m.kcal)    || 0),
+  }), { protein: 0, carbs: 0, fat: 0, kcal: 0 });
+}
 
-For EACH meal: identify main ingredients with RAW/UNCOOKED quantities, compute that meal's macros (protein, carbs, fat in grams) and kcal, and write 3-4 clear preparation steps. Then build a day shopping list aggregating every ingredient with its quantity (grams or units).
+// Compare achieved totals to targets. Returns the macros that drift > 2% and a
+// flag for protein landing below target (never allowed). Macros with no target
+// (0) are not constrained.
+function checkDayTotals(targets, totals) {
+  const off = [];
+  for (const k of ['kcal', 'protein', 'carbs', 'fat']) {
+    const target = Number(targets[k]) || 0;
+    if (target <= 0) continue;
+    const achieved = Number(totals[k]) || 0;
+    const pct = Math.abs(achieved - target) / target;
+    if (pct > MACRO_TOLERANCE) off.push({ macro: k, achieved: Math.round(achieved), target, pct });
+  }
+  const pTarget = Number(targets.protein) || 0;
+  const proteinShort = pTarget > 0 && (Number(totals.protein) || 0) < pTarget * (1 - MACRO_TOLERANCE);
+  return { ok: off.length === 0 && !proteinShort, off, proteinShort };
+}
 
-Return ONLY this JSON, and INCLUDE ALL ${day.meals.length} meals (one object per slot id):
+const NUTRITION_RULES = `MANDATORY RULES:
+1. Use ONLY the foods the coach listed for each meal — never add or remove foods.
+2. Assign an EXACT raw/uncooked gram (or unit) quantity to every food so the SUM of all meals meets the daily targets.
+3. PROTEIN IS THE PRIORITY: the day must NEVER end below the protein target. Hit protein first, then calories, then carbs, then fat.
+4. Do NOT spread equal amounts across meals if that misses the targets. Accuracy beats even distribution beats variety.
+5. Every macro and the calorie total must land within 2% of its target.
+6. Compute each food's macros from standard nutrition values; a meal's macros are the sum of its foods; the day is the sum of its meals.
+7. Before returning, ADD UP all meals and check against the targets. If any macro or kcal is off by more than 2% (or protein is below target), re-scale the grams and recompute until it fits.`;
+
+function nutritionDayPrompt(day) {
+  return `You are a precision nutrition planner. Process ONE day for a client.
+
+DAILY TARGETS (the sum of all meals MUST match these within 2%):
+calories=${day.kcal} kcal · protein=${day.protein} g · carbs=${day.carbs} g · fat=${day.fat} g
+Day note (context only): "${day.note}"
+
+MEALS (${day.meals.length}) — use exactly these foods, in these slots:
+${day.meals.map(m => `{id:${m.id}, name:"${m.name}", time:"${m.time}", foods:"${m.dishes}"}`).join('\n')}
+
+${NUTRITION_RULES}
+
+For EACH meal: write the foods WITH their exact grams into "ingredients" (e.g. "150g chicken breast, 80g white rice, 100g broccoli"), give the meal's protein/carbs/fat (grams) and kcal, and 3-4 clear preparation steps. Then return the day "totals" and a "shopping" list aggregating every food with its quantity.
+
+Return ONLY this JSON, including ALL ${day.meals.length} meals (one object per slot id):
 {
   "meals": [
-    {"id":0,"name":"Breakfast","time":"08:00","ingredients":"2 eggs, 50g oats, 200ml milk","protein":22,"carbs":48,"fat":12,"kcal":380,"steps":["Boil the eggs","Cook the oats","Combine and serve"]}
+    {"id":0,"name":"Breakfast","time":"08:00","ingredients":"150g eggs, 60g oats, 100g berries","protein":35,"carbs":48,"fat":18,"kcal":520,"steps":["...","..."]}
   ],
-  "shopping": [{"item":"Eggs (large)","qty":"2"},{"item":"Oats (raw)","qty":"50g"}]
-}` }],
-    });
-    const parsed = JSON.parse(resp.choices[0].message.content);
-    return { meals: Array.isArray(parsed.meals) ? parsed.meals : [], shopping: Array.isArray(parsed.shopping) ? parsed.shopping : [] };
+  "totals": {"protein":160,"carbs":220,"fat":70,"kcal":2100},
+  "shopping": [{"item":"Eggs","qty":"150g"},{"item":"Oats (raw)","qty":"60g"}]
+}`;
+}
+
+async function callNutritionModel(content) {
+  const resp = await openai.chat.completions.create({
+    model: NUTRITION_MODEL, max_tokens: 2400,
+    response_format: { type: 'json_object' },
+    messages: [{ role: 'user', content }],
+  });
+  const parsed = JSON.parse(resp.choices[0].message.content);
+  return {
+    meals: Array.isArray(parsed.meals) ? parsed.meals : [],
+    shopping: Array.isArray(parsed.shopping) ? parsed.shopping : [],
+  };
+}
+
+async function computeNutritionDay(day) {
+  try {
+    let { meals, shopping } = await callNutritionModel(nutritionDayPrompt(day));
+    let totals = sumMealMacros(meals);
+    let check = checkDayTotals(day, totals);
+
+    // One deterministic correction pass: feed the exact drift back and re-scale.
+    if (!check.ok && meals.length > 0) {
+      const drift = [
+        `calories: ${Math.round(totals.kcal)} vs target ${day.kcal}`,
+        `protein: ${Math.round(totals.protein)} vs target ${day.protein}${check.proteinShort ? '  ← BELOW target, must increase' : ''}`,
+        `carbs: ${Math.round(totals.carbs)} vs target ${day.carbs}`,
+        `fat: ${Math.round(totals.fat)} vs target ${day.fat}`,
+      ].join('\n');
+      try {
+        const corrected = await callNutritionModel(`${nutritionDayPrompt(day)}
+
+A previous attempt produced these totals, which are OUT OF TOLERANCE:
+${drift}
+
+Re-scale the gram quantities of the SAME foods so every macro and the calorie total land within 2% of target, keeping protein at or above target. Recompute every meal and the day totals, then return the corrected JSON in the same shape.`);
+        if (corrected.meals.length > 0) {
+          const newTotals = sumMealMacros(corrected.meals);
+          const newCheck = checkDayTotals(day, newTotals);
+          // Accept the correction only if it's genuinely better.
+          if (newCheck.ok || (!newCheck.proteinShort && newCheck.off.length <= check.off.length)) {
+            meals = corrected.meals;
+            shopping = corrected.shopping.length ? corrected.shopping : shopping;
+            totals = newTotals; check = newCheck;
+          }
+        }
+      } catch (e) {
+        console.error('[AI nutrition correction]', day.dayId, e.message);
+      }
+    }
+
+    if (!check.ok) {
+      const detail = check.off.map(o => `${o.macro} ${o.achieved}/${o.target}`).join(', ') || (check.proteinShort ? 'protein below target' : '');
+      console.warn(`[nutrition] day ${day.dayId} still off target: ${detail}`);
+    }
+    return { meals, shopping, totals, ok: check.ok };
   } catch (e) {
     console.error('[AI nutrition day]', day.dayId, e.message);
-    return { meals: [], shopping: [] };
+    return { meals: [], shopping: [], totals: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, ok: false };
   }
 }
 
@@ -559,6 +653,8 @@ app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res)
     if (!targetClient || targetClient.role !== 'client') {
       return res.status(400).json({ error: 'Invalid clientId' });
     }
+
+    let verification = null; // nutrition only: per-day achieved-vs-target macro check
 
     if (specialty === 'nutrition') {
       // Collect days with daily macros and meal dishes
@@ -623,6 +719,22 @@ app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res)
       };
       savePlan('save_nutrition_plan', toolInput);
 
+      // Per-day macro verification (achieved vs target) for the coach's confirmation.
+      verification = toolInput.days
+        .filter(d => d.meals.length > 0 && d.kcal > 0)
+        .map(d => {
+          const totals = sumMealMacros(d.meals);
+          const chk = checkDayTotals(d, totals);
+          return {
+            label: d.label, ok: chk.ok,
+            targets: { kcal: d.kcal, protein: d.protein, carbs: d.carbs, fat: d.fat },
+            totals: {
+              kcal: Math.round(totals.kcal), protein: Math.round(totals.protein),
+              carbs: Math.round(totals.carbs), fat: Math.round(totals.fat),
+            },
+          };
+        });
+
     } else if (specialty === 'training') {
       // Collect exercises and notes for AI
       const exsForAI = [];
@@ -643,7 +755,7 @@ app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res)
       let aiResult = { exercises: [], notes: {} };
       if (exsForAI.length > 0 || notesForAI.length > 0) {
         const aiResp = await openai.chat.completions.create({
-          model: 'gpt-4o-mini', max_tokens: 3000,
+          model: TRAINING_MODEL, max_tokens: 3000,
           response_format: { type: 'json_object' },
           messages: [{ role: 'user', content: `You are a fitness training assistant. Process this data and return JSON.
 
@@ -698,7 +810,7 @@ Return ONLY this JSON:
       return res.status(400).json({ error: 'Invalid specialty' });
     }
 
-    res.json({ success: true, weekOf, clientId });
+    res.json({ success: true, weekOf, clientId, verification });
   } catch (err) {
     if (err instanceof PlanValidationError) {
       // 422: the table is missing required data — tell the coach exactly what.

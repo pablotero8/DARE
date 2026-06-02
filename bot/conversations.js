@@ -7,6 +7,7 @@ import { TRAINING_TOOL, NUTRITION_TOOL } from './tools.js';
 import { sendMessage } from './whatsapp.js';
 import { savePlan } from './planner.js';
 import { PlanValidationError } from './validators.js';
+import { CHAT_MODEL } from './env.js';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const STATE_DIR = join(__dir, 'state');
@@ -311,7 +312,7 @@ Recuerda firmar las notas con tu voz (${user.name === 'Erika' ? 'Erika' : 'Danie
     ];
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo',
+      model: CHAT_MODEL,
       max_tokens: 4096,
       messages: messagesWithSystem,
       tools: [toolDef],
@@ -487,7 +488,7 @@ export async function handleIncoming(from, body) {
   ];
 
   const chatResponse = await openai.chat.completions.create({
-    model: 'gpt-4-turbo',
+    model: CHAT_MODEL,
     max_tokens: 1024,
     messages: messagesWithSystem,
   });
