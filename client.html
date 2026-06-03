@@ -766,6 +766,7 @@ const I18N = {
     'plan.for':'My plan for ','plan.today':'today','plan.tomorrow':'tomorrow','plan.yesterday':'yesterday','suffix.today':' · TODAY',
     'note.erika':"Erika's note:",'note.daniel':"Daniel's note:",
     'still.training':'Erika has not created your plan yet — it will be ready shortly!','still.nutrition':'Dani has not created your plan yet — it will be ready shortly!','still.meals':'Daniel is still planning your meals.',
+    'no.training':"Erika hasn't planned anything for you yet!",'no.nutrition':"Dani hasn't planned anything for you yet!",
     'nut.kcalTarget':'kcal target','nut.protein':'Protein','nut.carbs':'Carbs','nut.fat':'Fat',
     'nut.dailyTotal':'Daily total · achieved / target','nut.calories':'Calories','nut.kcal':'kcal',
     'msg.title':'Your coach','msg.sub':'Erika & Dani','msg.placeholder':'Write a message…','msg.empty':'No messages yet.<br>Write to Erika or Dani — they\'ll get back to you here.','msg.you':'You','msg.coach':'Coach',
@@ -798,6 +799,7 @@ const I18N = {
     'plan.for':'Mi plan para ','plan.today':'hoy','plan.tomorrow':'mañana','plan.yesterday':'ayer','suffix.today':' · HOY',
     'note.erika':'Nota de Erika:','note.daniel':'Nota de Dani:',
     'still.training':'Erika aún no ha creado tu plan — ¡estará listo en breve!','still.nutrition':'Dani aún no ha creado tu plan — ¡estará listo en breve!','still.meals':'Dani aún está planificando tus comidas.',
+    'no.training':'¡Erika aún no ha planificado nada para ti!','no.nutrition':'¡Dani aún no ha planificado nada para ti!',
     'nut.kcalTarget':'kcal objetivo','nut.protein':'Proteína','nut.carbs':'Carbohid.','nut.fat':'Grasa',
     'nut.dailyTotal':'Total diario · conseguido / objetivo','nut.calories':'Calorías','nut.kcal':'kcal',
     'msg.title':'Tu coach','msg.sub':'Erika y Dani','msg.placeholder':'Escribe un mensaje…','msg.empty':'Aún no hay mensajes.<br>Escribe a Erika o Dani — te responderán aquí.','msg.you':'Tú','msg.coach':'Coach',
@@ -1547,6 +1549,18 @@ function logDateFor(weekOf, dayIdx){
 let CURRENT_DAY_IDX=0;
 let CURRENT_LOG_DATE='';
 
+// A day is "unplanned" when its coach left it blank in a partial week.
+function isEmptyTrainingDay(tr){
+  if(!tr) return true;
+  const noItems=!Array.isArray(tr.items)||tr.items.length===0;
+  const noActs=!Array.isArray(tr.activities)||tr.activities.length===0;
+  return noItems && noActs;
+}
+function isEmptyNutritionDay(n){
+  if(!n) return true;
+  return !n.kcal || !Array.isArray(n.meals) || n.meals.length===0;
+}
+
 function renderDay(idx){
   if(!ACTIVE_WEEK) return;
   CURRENT_DAY_IDX=idx;
@@ -1583,26 +1597,33 @@ function renderDay(idx){
   // A whole half (training or nutrition) may not be uploaded yet by its coach.
   const trainingReady  = !ACTIVE_PLAN || ACTIVE_PLAN.trainingReady  !== false;
   const nutritionReady = !ACTIVE_PLAN || ACTIVE_PLAN.nutritionReady !== false;
+  // In a partial week a coach may have left this specific day blank.
+  const trEmpty = isEmptyTrainingDay(d.training);
+  const nuEmpty = isEmptyNutritionDay(d.nutrition);
 
-  if(!trainingReady){
+  if(!trainingReady || trEmpty){
     badge.textContent=t('badge.pending');
     badge.className='day-type-badge badge-rest';
   }
 
-  document.getElementById('training-content').innerHTML = trainingReady
-    ? renderTraining(d.training,d.type)
-    : `<div class="still-planning">${t('still.training')}</div>`;
-  document.getElementById('nutrition-content').innerHTML = nutritionReady
-    ? renderNutrition(d.nutrition)
-    : `<div class="still-planning">${t('still.nutrition')}</div>`;
+  document.getElementById('training-content').innerHTML = !trainingReady
+    ? `<div class="still-planning">${t('still.training')}</div>`
+    : trEmpty
+      ? `<div class="still-planning">${t('no.training')}</div>`
+      : renderTraining(d.training,d.type);
+  document.getElementById('nutrition-content').innerHTML = !nutritionReady
+    ? `<div class="still-planning">${t('still.nutrition')}</div>`
+    : nuEmpty
+      ? `<div class="still-planning">${t('no.nutrition')}</div>`
+      : renderNutrition(d.nutrition);
   // Re-trigger the premium entrance animation on each day render
   ['training-card','nutrition-card'].forEach(id=>{
     const c=document.getElementById(id);
     if(c){ c.classList.remove('animate-in'); void c.offsetWidth; c.classList.add('animate-in'); }
   });
   setupAccordions();
-  // Load existing log state for this day (only for halves that are ready)
-  if(CURRENT_LOG_DATE) loadDayLogs(CURRENT_LOG_DATE, d.training, d.type, trainingReady, nutritionReady);
+  // Load existing log state — only for halves that are ready AND actually planned.
+  if(CURRENT_LOG_DATE) loadDayLogs(CURRENT_LOG_DATE, d.training, d.type, trainingReady && !trEmpty, nutritionReady && !nuEmpty);
 }
 
 function renderTraining(t,type){
@@ -1618,13 +1639,13 @@ function renderTraining(t,type){
   }
   if(type==='rest'){
     h+='<div class="act-list">';
-    t.activities.forEach(a=>{
+    (t.activities||[]).forEach(a=>{
       h+=`<div class="act-item"><span class="act-icon">◆</span><div><div class="act-name">${a.name}</div><div class="act-detail">${a.detail}</div></div></div>`;
     });
     h+='</div>';
   } else {
     h+='<div class="ex-list">';
-    t.items.forEach(ex=>{
+    (t.items||[]).forEach(ex=>{
       const bc=(type==='cardio'||ex.gold)?'ex-badge gold':'ex-badge';
       h+=`<div class="ex-item"><div><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail}</div></div><span class="${bc}">${ex.badge}</span></div>`;
     });
