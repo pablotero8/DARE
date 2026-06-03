@@ -212,6 +212,64 @@ export const SHOW_TEMPLATE_TOOL = {
   },
 };
 
+export const PREFILL_PLAN_TABLE_TOOL = {
+  name: 'prefill_plan_table',
+  description: `Rellena la tabla interactiva del plan EN BLOQUE a partir de una instrucción del coach, y la muestra para revisar y guardar. Úsalo para comandos como "rellena todos los días con 1600 kcal, 125 proteína, 155 carbos, 55 grasas", "pon 2200 kcal de lunes a viernes", "copia el desayuno a toda la semana", o para preparar la edición de un plan existente. Incluye SOLO los días que el coach quiera tocar (los demás quedan en blanco o conservan el plan existente). Si ya existe un plan esa semana, tus valores se superponen sobre él. El cálculo exacto de gramos por ingrediente se hace al guardar — tú solo fijas los objetivos diarios y, si los menciona, los platos.`,
+  input_schema: {
+    type: 'object',
+    required: ['clientId', 'weekOf', 'clientName', 'days'],
+    properties: {
+      clientId:   { type: 'string', description: 'ID del cliente (ej: alex-hammond)' },
+      weekOf:     { type: 'string', description: 'Lunes de la semana en formato YYYY-MM-DD' },
+      clientName: { type: 'string', description: 'Nombre completo del cliente' },
+      days: {
+        type: 'array',
+        description: 'Un objeto por cada día que quieras rellenar (1-7). Omite los días que deben quedar en blanco.',
+        items: {
+          type: 'object',
+          required: ['label'],
+          properties: {
+            label: { type: 'string', enum: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+            // ── Nutrición ──
+            kcal:    { type: 'number', description: 'Objetivo de kcal del día (solo nutrición)' },
+            protein: { type: 'number', description: 'Gramos de proteína objetivo (solo nutrición)' },
+            carbs:   { type: 'number', description: 'Gramos de carbohidratos objetivo (solo nutrición)' },
+            fat:     { type: 'number', description: 'Gramos de grasa objetivo (solo nutrición)' },
+            meals: {
+              type: 'object',
+              description: 'Platos por hueco, cada uno como UN texto en INGLÉS separado por comas (solo nutrición). Omite los huecos vacíos.',
+              properties: {
+                breakfast:    { type: 'string' },
+                morningSnack: { type: 'string' },
+                lunch:        { type: 'string' },
+                snack:        { type: 'string' },
+                dinner:       { type: 'string' },
+              },
+            },
+            // ── Entrenamiento ──
+            type:    { type: 'string', enum: ['strength', 'cardio', 'rest'], description: 'Tipo de día (solo entrenamiento)' },
+            session: { type: 'string', description: 'Nombre de la sesión, ej: Upper Body Push (solo entrenamiento)' },
+            exercises: {
+              type: 'array',
+              description: 'Ejercicios del día (solo entrenamiento)',
+              items: {
+                type: 'object',
+                required: ['name'],
+                properties: {
+                  name:     { type: 'string' },
+                  setsReps: { type: 'string', description: 'Ej: 4×8 @70%' },
+                  notes:    { type: 'string', description: 'Técnica, descanso, tempo' },
+                },
+              },
+            },
+            note: { type: 'string', description: 'Nota del coach para el día' },
+          },
+        },
+      },
+    },
+  },
+};
+
 export const ADD_NOTE_TOOL = {
   name: 'add_plan_note',
   description: 'Añade una nota libre a un plan YA creado (logística, recordatorios, contexto del cliente) sin regenerar el plan. Úsalo cuando el coach quiera anotar algo sobre un plan existente.',

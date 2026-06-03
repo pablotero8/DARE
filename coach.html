@@ -257,6 +257,17 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 
 /* input area */
+.quickpick{
+  padding:.55rem 1.25rem 0;background:rgba(5,5,7,.8);flex-shrink:0;
+}
+.quickpick-input{
+  width:100%;background:rgba(201,162,74,.06);border:1px solid rgba(201,162,74,.18);
+  border-radius:10px;padding:.5rem .85rem;color:var(--text);
+  font-family:'Manrope',sans-serif;font-size:.78rem;outline:none;
+  transition:border-color .2s;
+}
+.quickpick-input:focus{border-color:rgba(201,162,74,.5)}
+.quickpick-input::placeholder{color:var(--muted2)}
 .chat-input-area{
   padding:.85rem 1.25rem;border-top:1px solid var(--border);
   background:rgba(5,5,7,.8);flex-shrink:0;
@@ -460,6 +471,11 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
         <h2 id="welcome-name">Hello</h2>
         <p>Select a client from the sidebar and tell me what plan you need, or ask me to create a new client.</p>
       </div>
+    </div>
+
+    <div class="quickpick" id="quickpick" style="display:none">
+      <input class="quickpick-input" id="quickpick-input" list="quickpick-list" placeholder="🔍 Insert…" autocomplete="off">
+      <datalist id="quickpick-list"></datalist>
     </div>
 
     <div class="chat-input-area">
@@ -787,6 +803,7 @@ function buildNutritionTable(action){
       const unit = label==='kcal' ? '' : ' (g)';
       grp.innerHTML=`<span class="pt-macro-lbl">${label}${unit}</span>`;
       const inp=ptIn(label==='kcal'?'2100':label==='Protein'?'160':label==='Carbs'?'220':'70',true,{field,day:di,type:'daily'});
+      if(day[field]!=null && Number(day[field])>0) inp.value=day[field]; // prefill (bulk-fill / edit)
       macInputs[field]=inp;
       grp.appendChild(inp);
       macRow.appendChild(grp);
@@ -798,6 +815,7 @@ function buildNutritionTable(action){
     // Live macro/kcal coherence check (P×4 + C×4 + F×9 must ≈ kcal)
     const checkMacros=()=>validateDayMacros(macInputs,macWarn);
     Object.values(macInputs).forEach(inp=>inp.addEventListener('input',checkMacros));
+    checkMacros(); // validate any prefilled macros immediately
 
     // 5 fixed meals with dishes/ingredients
     MEAL_NAMES.forEach((mName,mi)=>{
@@ -860,24 +878,32 @@ function buildTrainingTable(action){
     [['strength','Strength'],['cardio','Cardio'],['rest','Rest / Recovery']].forEach(([v,l])=>{
       const o=document.createElement('option'); o.value=v; o.textContent=l; sel.appendChild(o);
     });
+    if(day.type) sel.value=day.type; // prefill (edit / bulk-fill)
     topRow.appendChild(sel);
     topRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Session',style:'margin-left:.5rem'}));
-    topRow.appendChild(ptIn('e.g. Upper Body Push',false,{field:'session',day:di}));
+    const sessIn=ptIn('e.g. Upper Body Push',false,{field:'session',day:di});
+    if(day.session) sessIn.value=day.session;
+    topRow.appendChild(sessIn);
     body.appendChild(topRow);
 
-    // 6 exercise slots
+    // 6 exercise slots (prefilled from an existing/bulk plan when provided)
+    const exPrefill=Array.isArray(day.exercises)?day.exercises:[];
     for(let ei=0;ei<6;ei++){
+      const ex=exPrefill[ei]||{};
       const exBlock=document.createElement('div'); exBlock.className='pt-meal-block';
       exBlock.innerHTML=`<div class="pt-meal-name">Exercise ${ei+1}</div>`;
       const nameRow=document.createElement('div'); nameRow.className='pt-row';
       nameRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Name'}));
-      nameRow.appendChild(ptIn('e.g. bench press',false,{field:'exname',day:di,ex:ei}));
+      const nameIn=ptIn('e.g. bench press',false,{field:'exname',day:di,ex:ei}); if(ex.name)nameIn.value=ex.name;
+      nameRow.appendChild(nameIn);
       exBlock.appendChild(nameRow);
       const detailRow=document.createElement('div'); detailRow.className='pt-row';
       detailRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Sets × Reps'}));
-      detailRow.appendChild(ptIn('e.g. 4×8 @70%',false,{field:'setsreps',day:di,ex:ei}));
+      const srIn=ptIn('e.g. 4×8 @70%',false,{field:'setsreps',day:di,ex:ei}); if(ex.setsReps)srIn.value=ex.setsReps;
+      detailRow.appendChild(srIn);
       detailRow.appendChild(Object.assign(document.createElement('span'),{className:'pt-row-label',textContent:'Notes',style:'margin-left:.5rem'}));
-      detailRow.appendChild(ptIn('Technique, rest, tempo…',false,{field:'exnote',day:di,ex:ei}));
+      const exNoteIn=ptIn('Technique, rest, tempo…',false,{field:'exnote',day:di,ex:ei}); if(ex.notes)exNoteIn.value=ex.notes;
+      detailRow.appendChild(exNoteIn);
       exBlock.appendChild(detailRow);
       body.appendChild(exBlock);
     }
@@ -885,7 +911,9 @@ function buildTrainingTable(action){
     // Erika's Note
     const noteDiv=document.createElement('div'); noteDiv.className='pt-note-row';
     noteDiv.innerHTML=`<div class="pt-note-label">📝 Erika's Note</div>`;
-    noteDiv.appendChild(ptIn('Write your note — AI will translate and refine it',false,{field:'note',day:di}));
+    const tNoteIn=ptIn('Write your note — AI will translate and refine it',false,{field:'note',day:di});
+    if(day.note) tNoteIn.value=day.note;
+    noteDiv.appendChild(tNoteIn);
     body.appendChild(noteDiv);
 
     block.appendChild(hdr); block.appendChild(body); wrap.appendChild(block);
@@ -922,6 +950,7 @@ function buildSaveRow(action, specialty){
       const data=await r.json();
       if(r.ok){
         if(specialty==='nutrition') RECIPE_CACHE=null; // new recipes were just stored
+        refreshQuickPick(); // newly-used exercises/dishes appear in the quick-pick
         status.textContent='✅ Plan saved to client portal.'; status.className='pt-status ok';
         btn.textContent='Saved ✓';
         const confirmMsg=`${specialty==='nutrition'?'Nutrition':'Training'} plan saved for ${action.clientName} — week of ${action.weekOf}.`;
@@ -1083,6 +1112,64 @@ inputEl.addEventListener('input', () => {
   inputEl.style.height = 'auto';
   inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
 });
+
+// ── Quick-pick dropdown (insert known exercise / dish into the chat input) ──
+// Training coach → exercises used so far; nutrition coach → previous dishes.
+async function fetchQuickPickItems(){
+  const headers={ Authorization:`Bearer ${storedToken()}` };
+  if(me?.specialty === 'training'){
+    try{
+      const r=await fetch(`${BASE}/api/coach/exercises`,{headers});
+      if(!r.ok) return [];
+      return (await r.json()).exercises || [];
+    }catch{ return []; }
+  }
+  // Nutrition: flatten the grouped recipe library into a unique, sorted name list.
+  try{
+    const r=await fetch(`${BASE}/api/coach/recipes`,{headers});
+    if(!r.ok) return [];
+    const grouped=(await r.json()).grouped || {};
+    const seen=new Set(); const out=[];
+    Object.values(grouped).forEach(list=>(list||[]).forEach(rec=>{
+      const n=(rec.name||'').trim(); const k=n.toLowerCase();
+      if(n && !seen.has(k)){ seen.add(k); out.push(n); }
+    }));
+    return out.sort((a,b)=>a.localeCompare(b));
+  }catch{ return []; }
+}
+
+function insertQuickPick(value){
+  const v=(value||'').trim();
+  if(!v) return;
+  const cur=inputEl.value;
+  inputEl.value = cur.trim() ? cur.replace(/\s*$/,'')+', '+v : v;
+  inputEl.dispatchEvent(new Event('input'));
+  inputEl.focus();
+}
+
+// Repopulate the datalist (called on init and after each plan save, when new
+// exercises/recipes may have been stored). Reveals the bar once it has options.
+async function refreshQuickPick(){
+  if(!me) return;
+  const items=await fetchQuickPickItems();
+  const datalist=document.getElementById('quickpick-list');
+  datalist.innerHTML='';
+  items.forEach(name=>{
+    const o=document.createElement('option'); o.value=name; datalist.appendChild(o);
+  });
+  if(items.length) document.getElementById('quickpick').style.display='';
+}
+
+function initQuickPick(){
+  if(!me) return;
+  const qpInput=document.getElementById('quickpick-input');
+  qpInput.placeholder = me.specialty==='training' ? '🔍 Insert exercise…' : '🔍 Insert dish…';
+  const commit=()=>{ if(qpInput.value){ insertQuickPick(qpInput.value); qpInput.value=''; } };
+  // datalist selection fires 'change'; manual typing + Enter is also supported.
+  qpInput.addEventListener('change', commit);
+  qpInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); commit(); } });
+  refreshQuickPick();
+}
 
 // ── Client Profile Panel ──────────────────────────────────────
 let profileClient = null;
@@ -1454,6 +1541,7 @@ async function main(){
   if(!ok) return;
   initUI();
   loadClients();
+  initQuickPick();
 }
 main();
 

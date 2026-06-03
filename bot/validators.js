@@ -137,8 +137,9 @@ function validatePlanShell(input) {
   if (!isValidWeekOf(input?.weekOf)) errors.push('weekOf debe ser un lunes en formato YYYY-MM-DD');
   if (!Array.isArray(input?.days)) {
     errors.push('days ausente');
-  } else if (input.days.length !== 7) {
-    errors.push(`Se requieren exactamente 7 días (recibidos: ${input.days.length})`);
+  } else if (input.days.length < 1 || input.days.length > 7) {
+    // A plan may be partial (1-6 days) — the coach can leave days blank.
+    errors.push(`Se requieren entre 1 y 7 días (recibidos: ${input.days.length})`);
   }
   return errors;
 }
@@ -146,13 +147,16 @@ function validatePlanShell(input) {
 export function validateTrainingPlan(input) {
   const errors = validatePlanShell(input);
   const warnings = [];
-  if (Array.isArray(input?.days) && input.days.length === 7) {
+  if (Array.isArray(input?.days) && input.days.length >= 1 && input.days.length <= 7) {
+    // Positional label check only applies to a full Mon–Sun week; for partial
+    // weeks we just validate each day's label is a valid weekday.
+    const positional = input.days.length === 7;
     let filledDays = 0;
     input.days.forEach((d, i) => {
       // Skip intentionally-blank days — coach can leave the week partial.
       if (isEmptyTrainingDay(d)) return;
       filledDays++;
-      const r = validateTrainingDay(d, i);
+      const r = validateTrainingDay(d, positional ? i : null);
       errors.push(...r.errors);
       warnings.push(...r.warnings);
     });
@@ -164,13 +168,16 @@ export function validateTrainingPlan(input) {
 export function validateNutritionPlan(input) {
   const errors = validatePlanShell(input);
   const warnings = [];
-  if (Array.isArray(input?.days) && input.days.length === 7) {
+  if (Array.isArray(input?.days) && input.days.length >= 1 && input.days.length <= 7) {
+    // Positional label check only applies to a full Mon–Sun week; for partial
+    // weeks we just validate each day's label is a valid weekday.
+    const positional = input.days.length === 7;
     let filledDays = 0;
     input.days.forEach((d, i) => {
       // Skip intentionally-blank days — coach can leave the week partial.
       if (isEmptyNutritionDay(d)) return;
       filledDays++;
-      const r = validateNutritionDay(d, i);
+      const r = validateNutritionDay(d, positional ? i : null);
       errors.push(...r.errors);
       warnings.push(...r.warnings);
     });

@@ -241,7 +241,9 @@ function weekdayFull(weekOf, offset) {
 }
 
 function buildWeek(weekOf, trainingDays, nutritionDays) {
-  const len = (trainingDays || nutritionDays || []).length || 7;
+  // A week is always Mon–Sun. Even if a half is partial (coach left days blank),
+  // we always emit 7 days so the client week strip never reads an undefined day.
+  const len = 7;
   return Array.from({ length: len }, (_, i) => {
     const t = trainingDays?.[i];
     const n = nutritionDays?.[i];

@@ -8,12 +8,13 @@ import { getLatestPlan, getPlanByWeek, listPlanWeeks, seedPlan, savePlan, update
 import { PlanValidationError } from './validators.js';
 import { shoppingListForPlan } from './shopping.js';
 import { listRecipes, listRecipesGrouped, backfillRecipesIfEmpty } from './recipes.js';
+import { listExercises } from './exercises.js';
 import {
   verifyClientPassword, getClientById, getClientByEmail,
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
-import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL, FILL_NUTRITION_FROM_TEXT_TOOL } from './tools.js';
+import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL, FILL_NUTRITION_FROM_TEXT_TOOL, PREFILL_PLAN_TABLE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
@@ -388,6 +389,40 @@ function buildTemplateDays(weekOf) {
   });
 }
 
+// Map a saved meal name to one of the 5 fixed table slots.
+const MEAL_NAME_TO_SLOT = {
+  'breakfast': 'breakfast', 'morning snack': 'morningSnack', 'lunch': 'lunch',
+  'snack': 'snack', 'dinner': 'dinner',
+};
+
+// Overlay a saved plan onto the empty template days (keyed by short label), so
+// the interactive table opens pre-filled — used for editing an existing plan.
+function prefillTemplateFromPlan(templateDays, plan, specialty) {
+  if (!plan) return templateDays;
+  const halves = specialty === 'nutrition' ? plan.nutrition : plan.training;
+  if (!Array.isArray(halves)) return templateDays;
+  const byLabel = {};
+  halves.forEach(d => { if (d?.label) byLabel[d.label] = d; });
+
+  return templateDays.map(td => {
+    const src = byLabel[td.shortLabel];
+    if (!src) return td;
+    if (specialty === 'nutrition') {
+      const meals = {};
+      (src.meals || []).forEach((m, i) => {
+        const slot = MEAL_NAME_TO_SLOT[String(m.name || '').trim().toLowerCase()]
+          || ['breakfast', 'morningSnack', 'lunch', 'snack', 'dinner'][i];
+        if (slot) meals[slot] = m.dishName || m.desc || '';
+      });
+      return { ...td, kcal: src.kcal || 0, protein: src.protein || 0, carbs: src.carbs || 0, fat: src.fat || 0, meals, note: src.note || '' };
+    }
+    // training
+    const exItems = src.type === 'rest' ? (src.activities || []) : (src.items || []);
+    const exercises = exItems.map(e => ({ name: e.name || '', setsReps: e.badge || '', notes: e.detail || '' }));
+    return { ...td, type: src.type || 'rest', session: src.session || '', exercises, note: src.note || '' };
+  });
+}
+
 app.post('/api/coach/chat', aiLimiter, requireCoach, async (req, res) => {
   const { messages = [] } = req.body;
   const coach = req.client;
@@ -417,9 +452,17 @@ ${clientList}
 
 FLUJO PARA CREAR UN PLAN:
 1. Cuando el coach pida un plan, confirma brevemente cliente y semana (lunes en formato YYYY-MM-DD).
-2. En cuanto tengas cliente y semana, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto.
+2. En cuanto tengas cliente y semana, llama INMEDIATAMENTE a show_plan_template — NUNCA escribas una plantilla de texto. Si ya existe un plan esa semana, la tabla se abre con el plan actual cargado para editarlo.
 3. NO preguntes por alergias, objetivos, macros, preferencias ni restricciones: el coach rellena todo eso directamente en la tabla. Tú solo muestra la tabla.
-4. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.${pasteFlow}
+4. Cuando el coach diga que ya guardó o que necesita algo más, responde con normalidad.
+
+DÍAS OPCIONALES: el coach NO tiene que rellenar los 7 días. Puede planificar solo lunes a viernes, por ejemplo. Los días que deje en blanco aparecen al cliente como "aún sin planificar". Nunca insistas en completar toda la semana.
+
+COMANDOS EN BLOQUE (usa prefill_plan_table): cuando el coach pida rellenar varios días a la vez, llama a prefill_plan_table con SOLO los días pedidos. Ejemplos:
+- "rellena todos los días de esta semana con 1600 kcal, 125 de proteína, 155 de carbos, 55 de grasas" → days = los 7 días, cada uno con esos macros.
+- "pon 2200 kcal de lunes a viernes" → days = Mon..Fri con kcal 2200 (y los macros si los da).
+- "necesito editar la comida del martes" → llama a show_plan_template (carga el plan existente); el coach edita ese hueco en la tabla y guarda.
+Tras prefill_plan_table, la tabla aparece pre-rellenada; el coach revisa y pulsa Guardar (las cantidades exactas por ingrediente se calculan al guardar).${pasteFlow}
 
 OTRAS FUNCIONES:
 - Añadir una nota a un plan ya creado: usa add_plan_note (no regenera el plan)
@@ -430,6 +473,7 @@ OTRAS FUNCIONES:
   const toFn = t => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.input_schema } });
   const tools = [
     toFn(SHOW_TEMPLATE_TOOL),
+    toFn(PREFILL_PLAN_TABLE_TOOL),
     toFn(coach.specialty === 'training' ? TRAINING_TOOL : NUTRITION_TOOL),
     ...(coach.specialty === 'nutrition' ? [toFn(FILL_NUTRITION_FROM_TEXT_TOOL)] : []),
     toFn(ADD_NOTE_TOOL),
@@ -474,9 +518,49 @@ OTRAS FUNCIONES:
     let action = null;
 
     if (toolName === 'show_plan_template') {
-      const days = buildTemplateDays(toolInput.weekOf);
-      action = { type: 'show_template', specialty: coach.specialty, clientId: toolInput.clientId, weekOf: toolInput.weekOf, clientName: toolInput.clientName, days };
-      toolResultContent = JSON.stringify({ success: true, message: 'Tabla interactiva mostrada al coach.' });
+      let days = buildTemplateDays(toolInput.weekOf);
+      // If a plan already exists for this week, open the table pre-filled so the
+      // coach can edit a specific day/meal instead of starting from scratch.
+      const existing = getPlanByWeek(toolInput.clientId, toolInput.weekOf);
+      const editing = !!existing;
+      if (editing) days = prefillTemplateFromPlan(days, existing, coach.specialty);
+      action = { type: 'show_template', specialty: coach.specialty, prefilled: editing, clientId: toolInput.clientId, weekOf: toolInput.weekOf, clientName: toolInput.clientName, days };
+      toolResultContent = JSON.stringify({ success: true, message: editing ? 'Tabla mostrada con el plan existente para editar.' : 'Tabla interactiva mostrada al coach.' });
+    } else if (toolName === 'prefill_plan_table') {
+      // Bulk fill: apply the AI's per-day values onto the template (layered on top
+      // of any existing plan), then show the table for review + save. The exact
+      // macro math still happens on save (save-plan-table), so macros stay precise.
+      let days = buildTemplateDays(toolInput.weekOf);
+      const existing = getPlanByWeek(toolInput.clientId, toolInput.weekOf);
+      if (existing) days = prefillTemplateFromPlan(days, existing, coach.specialty);
+      const byLabel = {};
+      (toolInput.days || []).forEach(d => { if (d?.label) byLabel[d.label] = d; });
+      let filled = 0;
+      days = days.map(td => {
+        const src = byLabel[td.shortLabel];
+        if (!src) return td;
+        filled++;
+        if (coach.specialty === 'nutrition') {
+          return {
+            ...td,
+            kcal: src.kcal != null ? src.kcal : td.kcal,
+            protein: src.protein != null ? src.protein : td.protein,
+            carbs: src.carbs != null ? src.carbs : td.carbs,
+            fat: src.fat != null ? src.fat : td.fat,
+            meals: { ...(td.meals || {}), ...(src.meals || {}) },
+            note: src.note != null ? src.note : td.note,
+          };
+        }
+        return {
+          ...td,
+          type: src.type || td.type,
+          session: src.session != null ? src.session : td.session,
+          exercises: Array.isArray(src.exercises) ? src.exercises : td.exercises,
+          note: src.note != null ? src.note : td.note,
+        };
+      });
+      action = { type: 'show_template', specialty: coach.specialty, prefilled: true, clientId: toolInput.clientId, weekOf: toolInput.weekOf, clientName: toolInput.clientName, days };
+      toolResultContent = JSON.stringify({ success: true, message: 'Tabla pre-rellenada en bloque.', daysFilled: filled });
     } else if (toolName === 'fill_nutrition_from_text') {
       // Parsed a pasted weekly plan: render the same nutrition table but with the
       // dishes pre-filled. Macros are left blank for the coach to add by hand.
@@ -1016,6 +1100,18 @@ app.get('/api/coach/recipes', requireCoach, (req, res) => {
   } catch (err) {
     console.error('[recipes]', err);
     res.status(500).json({ error: 'Error al cargar recetas' });
+  }
+});
+
+// ── Exercise library (coach) ──────────────────────────────────
+// Unique exercise names from every saved/archived training plan. Powers the
+// quick-pick dropdown above the chat input for the training coach.
+app.get('/api/coach/exercises', requireCoach, (req, res) => {
+  try {
+    res.json({ exercises: listExercises() });
+  } catch (err) {
+    console.error('[exercises]', err);
+    res.status(500).json({ error: 'Error al cargar ejercicios' });
   }
 });
 
