@@ -18,7 +18,7 @@ import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL,
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
-import { sendWelcomeNotifications, scheduleDailyReminders, sendDailyReminders, sendTestEmail } from './notifier.js';
+import { sendWelcomeNotifications, sendTestEmail } from './notifier.js';
 import { randomBytes } from 'crypto';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -324,17 +324,6 @@ app.post('/api/coach/test-email', requireCoach, async (req, res) => {
   } catch (err) {
     console.error('[test-email]', err.message);
     res.status(500).json({ ok: false, error: err.message });
-  }
-});
-
-// Manually trigger the daily reminder emails (for testing — coach only)
-app.post('/api/coach/test-reminders', requireCoach, async (req, res) => {
-  try {
-    await sendDailyReminders();
-    res.json({ ok: true, message: 'Reminder emails sent.' });
-  } catch (err) {
-    console.error('[test-reminders]', err.message);
-    res.status(500).json({ error: err.message });
   }
 });
 
@@ -1240,5 +1229,4 @@ app.listen(PORT, async () => {
   await seedDemoClient();
   await seedDemoPlan();
   backfillRecipesIfEmpty();
-  scheduleDailyReminders();
 });
