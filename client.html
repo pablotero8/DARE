@@ -787,9 +787,8 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 <script>
 (function(){
 
-// Bot API URL — localhost in dev, Railway in production
-const _isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.endsWith('.up.railway.app'));
-window.DARE_API_URL = _isLocal ? window.location.origin : 'https://dare-production-2636.up.railway.app';
+// The API is served by the same app (darehabits.com is Railway) — always same-origin.
+window.DARE_API_URL = window.location.origin;
 
 /* ═══ I18N — auto Spanish when the device language is Spanish ═══
  * No framework. navigator.language drives it; English is the fallback.

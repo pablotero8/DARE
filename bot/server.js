@@ -68,9 +68,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS allowlist. The public site is served by GitHub Pages on darehabits.com
-// and its client portal calls this Railway API cross-origin, so both the
-// custom domain and the app's own origin must be allowed — nothing else.
+// CORS allowlist. darehabits.com (+ www) and this Railway app are the same
+// deployment, so requests are same-origin in practice — this allowlist is a
+// defensive backstop, not a required cross-origin bridge.
 const ALLOWED_ORIGINS = new Set([
   APP_ORIGIN,
   'https://darehabits.com',
