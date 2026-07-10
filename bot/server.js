@@ -18,7 +18,7 @@ import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL,
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
-import { sendWelcomeNotifications, sendTestEmail } from './notifier.js';
+import { sendWelcomeNotifications, sendTestEmail, sendWelcomeEmail } from './notifier.js';
 import { createContractForClient, getLatestContractForClient, generateContractPdf } from './contract.js';
 import { scheduleDailyBackups, runBackup, latestBackupPath } from './backup.js';
 import { randomBytes } from 'crypto';
@@ -463,6 +463,23 @@ app.delete('/api/coach/clients/:clientId', requireCoach, (req, res) => {
   const ok = deleteClient(client.id);
   if (!ok) return res.status(500).json({ error: 'No se pudo eliminar el cliente' });
   console.log(`[coach] ${req.client.email} deleted client ${client.email}`);
+  res.json({ ok: true });
+});
+
+// Regenerate a client's password and email it to them directly. The welcome
+// email sent on account creation carries the signed contract instead of the
+// password, so this is the only way a client actually receives credentials.
+app.post('/api/coach/clients/:clientId/send-credentials', requireCoach, async (req, res) => {
+  const client = getClientById(req.params.clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  const newPwd = await resetClientPassword(client.id);
+  if (!newPwd) return res.status(500).json({ error: 'No se pudo generar la contraseña' });
+  try {
+    await sendWelcomeEmail(client, newPwd);
+  } catch (err) {
+    return res.status(502).json({ error: 'Contraseña actualizada pero el envío del email falló: ' + err.message });
+  }
+  console.log(`[coach] ${req.client.email} sent credentials to ${client.email}`);
   res.json({ ok: true });
 });
 

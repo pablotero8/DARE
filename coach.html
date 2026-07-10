@@ -501,6 +501,7 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
           <div style="position:relative">
             <button class="pp-menu-btn" id="pp-menu-btn">⋯</button>
             <div class="pp-dropdown" id="pp-dropdown">
+              <button id="pp-sendcreds-from-menu">🔑 Send credentials</button>
               <button id="pp-del-from-menu" class="danger">🗑 Delete</button>
             </div>
           </div>
@@ -1609,6 +1610,23 @@ menuBtn.addEventListener('click', ()=>dropdown.classList.toggle('open'));
 document.addEventListener('click', (e)=>{
   if(!e.target.closest('#pp-menu-btn') && !e.target.closest('#pp-dropdown')){
     dropdown.classList.remove('open');
+  }
+});
+
+document.getElementById('pp-sendcreds-from-menu').addEventListener('click', async ()=>{
+  if(!profileClient) return;
+  const c = profileClient;
+  dropdown.classList.remove('open');
+  if(!confirm(`Send new login credentials to ${c.name} (${c.email})? This resets their current password.`)) return;
+  try{
+    const r = await fetch(`${BASE}/api/coach/clients/${c.id}/send-credentials`, {
+      method:'POST', headers:{ Authorization:`Bearer ${storedToken()}` }
+    });
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok){ alert('Could not send credentials: ' + (data.error || r.status)); return; }
+    alert(`Credentials sent to ${c.email}.`);
+  }catch(e){
+    alert('Connection error while sending credentials.');
   }
 });
 

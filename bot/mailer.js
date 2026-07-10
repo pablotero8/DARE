@@ -96,7 +96,7 @@ export async function sendContractWithWelcome(toEmail, toName, contractPdfStream
             <p style="margin:0;font-size:13px;color:rgba(244,241,232,.7);line-height:1.6">
               <strong style="color:#a6c85e">Next steps:</strong><br>
               1. Review the attached agreement<br>
-              2. Print and sign both copies (one for you, one for DARE)<br>
+              2. Sign it<br>
               3. Return the signed agreement to <strong>hello@darehabits.com</strong>
             </p>
           </div>
