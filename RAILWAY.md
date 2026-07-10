@@ -39,8 +39,8 @@ En el servicio → pestaña **Variables** → añade estas:
 | `OPENAI_API_KEY` | _(tu clave — está en tu `bot/.env` local)_ |
 | `JWT_SECRET` | _(el valor de tu `bot/.env` local — IMPORTANTE: usa SIEMPRE el mismo, si cambia se cierran todas las sesiones)_ |
 | `DATA_DIR` | `/data` |
-| `ERIKA_PASSWORD` | `erika2026` _(o la que quieras)_ |
-| `DANI_PASSWORD` | `dani2026` _(o la que quieras)_ |
+| `ERIKA_PASSWORD` | `SET_VIA_ENV` _(o la que quieras)_ |
+| `DANI_PASSWORD` | `SET_VIA_ENV` _(o la que quieras)_ |
 
 > `PORT` lo inyecta Railway automáticamente — **no lo añadas**.
 
@@ -92,7 +92,7 @@ Ahora `DATA_DIR=/data` (del paso 3) apunta al volumen → la BD vive ahí perman
 ## ✅ Verificación final
 
 1. Abre `https://tu-url.railway.app/coach.html`
-2. Login: `silvaepao@gmail.com` / `erika2026`
+2. Login: `silvaepao@gmail.com` / `SET_VIA_ENV`
 3. Pide un plan → recibes la plantilla rellenable
 4. Crea un cliente de prueba
 5. **Haz un redeploy** (push cualquier cambio) → el cliente sigue ahí ✅ (volumen funciona)

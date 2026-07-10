@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /client.html
+Disallow: /coach.html
+Disallow: /reset.html
+Disallow: /data/
+Disallow: /bot/
+
+Sitemap: https://darehabits.com/sitemap.xml

@@ -30,9 +30,9 @@ npm start
 
 | Role | URL | Email | Password |
 |------|-----|-------|----------|
-| **Coach (Training)** | http://localhost:3001/coach.html | silvaepao@gmail.com | erika2026 |
-| **Coach (Nutrition)** | http://localhost:3001/coach.html | daniotero15@gmail.com | dani2026 |
-| **Client (Demo)** | http://localhost:3001/client.html | client@dare.ae | dare2026 |
+| **Coach (Training)** | http://localhost:3001/coach.html | silvaepao@gmail.com | SET_VIA_ENV |
+| **Coach (Nutrition)** | http://localhost:3001/coach.html | daniotero15@gmail.com | SET_VIA_ENV |
+| **Client (Demo)** | http://localhost:3001/client.html | client@dare.ae | SET_VIA_ENV |
 
 ## 🗂️ Project Structure
 
@@ -192,8 +192,8 @@ OPENAI_API_KEY=sk-proj-...          # Your OpenAI API key
 PORT=3001                           # Server port (default: 3001)
 NODE_ENV=production                 # Environment (development/production)
 DATA_DIR=./data                     # Database directory (default: ./data)
-ERIKA_PASSWORD=erika2026           # Coach 1 password (default: erika2026)
-DANI_PASSWORD=dani2026             # Coach 2 password (default: dani2026)
+ERIKA_PASSWORD=SET_VIA_ENV           # Coach 1 password (default: SET_VIA_ENV)
+DANI_PASSWORD=SET_VIA_ENV             # Coach 2 password (default: SET_VIA_ENV)
 ```
 
 ## 🎓 Learn More

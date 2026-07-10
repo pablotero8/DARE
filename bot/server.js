@@ -13,12 +13,13 @@ import {
   verifyClientPassword, getClientById, getClientByEmail,
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
 } from './clients.js';
-import { signToken, verifyToken, persistSession, revokeSession, isSessionValid } from './auth.js';
+import { signToken, verifyToken, persistSession, revokeSession, isSessionValid, passwordPolicyError, verifyPassword, hashPassword } from './auth.js';
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL, FILL_NUTRITION_FROM_TEXT_TOOL, PREFILL_PLAN_TABLE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
 import { sendWelcomeNotifications, sendTestEmail } from './notifier.js';
+import { scheduleDailyBackups, runBackup, latestBackupPath } from './backup.js';
 import { randomBytes } from 'crypto';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -51,16 +52,43 @@ const aiLimiter = rateLimit({
   message: { error: 'Demasiadas peticiones. Espera unos segundos.' },
 });
 
+const APP_ORIGIN = (process.env.APP_URL || 'https://dare-production-2636.up.railway.app').replace(/\/$/, '');
+const IS_PROD = process.env.NODE_ENV === 'production';
+
+// Force HTTPS behind the Railway proxy + security headers on every response.
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  if (IS_PROD && req.headers['x-forwarded-proto'] === 'http') {
+    return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
+  }
+  if (IS_PROD) res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('X-Frame-Options', 'DENY');
+  res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
+// CORS: the frontend is served same-origin by this server, so only the app's
+// own origin is allowed (dev tools / localhost work because same-origin
+// requests never send a cross-origin preflight).
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && origin === APP_ORIGIN) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  }
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
 
-// Static files
+// Static files — never serve server code, runtime data or database files.
 app.use('/bot', (req, res) => res.status(404).end());
+app.use('/data', (req, res) => res.status(404).end());
+app.use((req, res, next) => {
+  if (/\.(db|db-shm|db-wal|sqlite|env)$/i.test(req.path)) return res.status(404).end();
+  next();
+});
 app.use(express.static(ROOT, { index: 'index.html', dotfiles: 'ignore' }));
 
 // ── Auth middleware ───────────────────────────────────────────
@@ -112,11 +140,11 @@ app.post('/api/auth/forgot-password', loginLimiter, async (req, res) => {
   }
 });
 
-app.post('/api/auth/reset-password', async (req, res) => {
+app.post('/api/auth/reset-password', loginLimiter, async (req, res) => {
   const { token, password } = req.body || {};
-  if (!token || !password || password.length < 8) {
-    return res.status(400).json({ error: 'Token and password (min 8 chars) are required.' });
-  }
+  if (!token) return res.status(400).json({ error: 'Token is required.' });
+  const policyErr = passwordPolicyError(password);
+  if (policyErr) return res.status(400).json({ error: policyErr });
   try {
     const db = (await import('./db.js')).default;
     const row = db.prepare('SELECT * FROM password_reset_tokens WHERE token = ?').get(token);
@@ -155,8 +183,42 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
       specialty: client.specialty, currentWeek: client.currentWeek,
       totalWeeks: client.totalWeeks, weight: client.weight,
       bodyFat: client.bodyFat, lean: client.lean, height: client.height,
+      consentRequired: client.role === 'client' && !client.healthConsentAt,
     },
   });
+});
+
+// Change own password (any logged-in user). Requires the current password,
+// enforces the password policy and revokes every other active session.
+app.post('/api/auth/change-password', loginLimiter, requireAuth, async (req, res) => {
+  const { currentPassword, newPassword } = req.body || {};
+  if (!currentPassword) return res.status(400).json({ error: 'La contraseña actual es obligatoria.' });
+  const policyErr = passwordPolicyError(newPassword);
+  if (policyErr) return res.status(400).json({ error: policyErr });
+  try {
+    const verified = await verifyClientPassword(req.client.email, currentPassword);
+    if (!verified) return res.status(401).json({ error: 'La contraseña actual no es correcta.' });
+    const db = (await import('./db.js')).default;
+    const hash = await hashPassword(newPassword);
+    db.prepare('UPDATE clients SET password_hash = ? WHERE id = ?').run(hash, req.client.id);
+    // Keep this session alive, kill the rest.
+    db.prepare('DELETE FROM sessions WHERE client_id = ? AND token != ?').run(req.client.id, req.token);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[change-password]', err.message);
+    res.status(500).json({ error: 'No se pudo cambiar la contraseña.' });
+  }
+});
+
+// Explicit GDPR consent for processing health data (art. 9.2.a). Recorded with
+// timestamp + policy version. The client portal blocks usage until accepted.
+const PRIVACY_POLICY_VERSION = '2026-07-10';
+app.post('/api/auth/consent', requireAuth, async (req, res) => {
+  if (req.body?.accept !== true) return res.status(400).json({ error: 'Consent must be explicitly accepted.' });
+  const db = (await import('./db.js')).default;
+  db.prepare("UPDATE clients SET health_consent_at = datetime('now'), health_consent_version = ? WHERE id = ?")
+    .run(PRIVACY_POLICY_VERSION, req.client.id);
+  res.json({ ok: true, version: PRIVACY_POLICY_VERSION });
 });
 
 app.post('/api/auth/logout', requireAuth, (req, res) => {
@@ -171,6 +233,7 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
     goal: c.goal, role: c.role, specialty: c.specialty,
     currentWeek: c.currentWeek, totalWeeks: c.totalWeeks,
     weight: c.weight, bodyFat: c.bodyFat, lean: c.lean, height: c.height,
+    consentRequired: c.role === 'client' && !c.healthConsentAt,
   });
 });
 
@@ -1104,6 +1167,20 @@ app.get('/api/coach/exercises', requireCoach, (req, res) => {
   }
 });
 
+// ── Backups ───────────────────────────────────────────────────
+// Off-site copy path: a coach downloads the encrypted-at-rest DB backup from
+// time to time. Complements (not replaces) Railway volume backups.
+app.get('/api/coach/backup', requireCoach, async (req, res) => {
+  try {
+    const path = (await runBackup()) || latestBackupPath();
+    if (!path) return res.status(404).json({ error: 'No hay backups todavía' });
+    res.download(path, path.split('/').pop());
+  } catch (err) {
+    console.error('[backup] download failed:', err.message);
+    res.status(500).json({ error: 'No se pudo generar el backup' });
+  }
+});
+
 // ── Health ────────────────────────────────────────────────────
 
 app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
@@ -1154,6 +1231,9 @@ async function seedCoaches() {
 }
 
 async function seedDemoClient() {
+  // Never create the demo account in production unless explicitly requested —
+  // it has a known weak password and would expose the coach message thread.
+  if (IS_PROD && process.env.SEED_DEMO !== 'true') return;
   if (getClientByEmail('client@dare.ae')) return;
   await createClient({
     name: 'Alex Hammond', email: 'client@dare.ae', password: 'dare2026',
@@ -1204,6 +1284,7 @@ function buildDemoWeek(weekOf) {
 }
 
 async function seedDemoPlan() {
+  if (IS_PROD && process.env.SEED_DEMO !== 'true') return;
   const clientId = 'alex-hammond';
   for (const weekOf of [currentMondayStr(), nextMondayStr()]) {
     try {
@@ -1229,4 +1310,5 @@ app.listen(PORT, async () => {
   await seedDemoClient();
   await seedDemoPlan();
   backfillRecipesIfEmpty();
+  scheduleDailyBackups();
 });

@@ -8,7 +8,7 @@ bot/data/
 bot/data/*.db
 bot/data/*.db-shm
 bot/data/*.db-wal
-# Stray runtime DB dir (the bot actually uses bot/data/ — DATA_DIR unset)
+# Runtime DB dir (.env sets DATA_DIR=./data, resolved against the repo root)
 /data/
 *.db
 *.db-shm

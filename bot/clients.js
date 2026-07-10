@@ -23,6 +23,8 @@ function toClient(row) {
     specialty: row.specialty ?? null,
     createdAt: row.created_at,
     lastLoginAt: row.last_login_at,
+    healthConsentAt: row.health_consent_at ?? null,
+    healthConsentVersion: row.health_consent_version ?? null,
   };
 }
 

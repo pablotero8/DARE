@@ -4,8 +4,21 @@ import { randomBytes } from 'crypto';
 import db from './db.js';
 
 const SALT_ROUNDS = 10;
-const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production-please-' + randomBytes(16).toString('hex');
-const TOKEN_TTL_DAYS = 30;
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be set in production — refusing to start with an ephemeral secret.');
+}
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-' + randomBytes(16).toString('hex');
+const TOKEN_TTL_DAYS = 7;
+
+// Password policy for user-chosen passwords (reset / change): at least 10
+// chars, with at least one letter and one number. Returns null if OK,
+// otherwise a human-readable error message.
+export function passwordPolicyError(password) {
+  const p = String(password || '');
+  if (p.length < 10) return 'La contraseña debe tener al menos 10 caracteres.';
+  if (!/[a-zA-Z]/.test(p) || !/[0-9]/.test(p)) return 'La contraseña debe incluir letras y números.';
+  return null;
+}
 
 // ── Password hashing ──────────────────────────────────────────
 

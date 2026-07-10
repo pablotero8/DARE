@@ -5,6 +5,7 @@
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coach | DARE</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="./images/favicon.svg">
     
 <link rel="apple-touch-icon" href="./images/dare-logo.jpg">
@@ -531,6 +532,16 @@ function storedToken(){ return sessionStorage.getItem('dare_token') }
 function logout(){ sessionStorage.clear(); location.href = BASE + '/client.html?logout'; }
 
 document.getElementById('logout-btn').addEventListener('click', logout);
+
+// Auto-logout after 30 minutes of inactivity (health data on screen)
+(function(){
+  var IDLE_MS = 30*60*1000, timer = null;
+  function reset(){ if(timer) clearTimeout(timer); timer = setTimeout(logout, IDLE_MS); }
+  ['click','keydown','scroll','touchstart','mousemove'].forEach(function(ev){
+    document.addEventListener(ev, reset, {passive:true});
+  });
+  reset();
+})();
 
 // Token is read from sessionStorage (same-origin, persists across navigation).
 // We intentionally do NOT accept tokens via URL (?t=) so they can't leak into

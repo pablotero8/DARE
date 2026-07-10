@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Client Area | DARE</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="./images/favicon.svg">
     
 <link rel="apple-touch-icon" href="./images/dare-logo.jpg">
@@ -705,6 +706,61 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       <button class="log-save-btn" id="ci-save-btn" data-i18n="checkin.save">Save check-in</button>
       <span class="log-status" id="ci-status"></span>
     </div>
+
+    <!-- Change password -->
+    <div class="checkin-section">
+      <div class="checkin-title" data-i18n="pwd.title">🔒 Change password</div>
+      <div class="checkin-grid">
+        <div class="checkin-field">
+          <label class="checkin-label" data-i18n="pwd.current">Current password</label>
+          <input id="cp-current" type="password" class="checkin-input" autocomplete="current-password">
+        </div>
+        <div class="checkin-field">
+          <label class="checkin-label" data-i18n="pwd.new">New password (min. 10 chars, letters + numbers)</label>
+          <input id="cp-new" type="password" class="checkin-input" autocomplete="new-password">
+        </div>
+        <div class="checkin-field">
+          <label class="checkin-label" data-i18n="pwd.repeat">Repeat new password</label>
+          <input id="cp-repeat" type="password" class="checkin-input" autocomplete="new-password">
+        </div>
+      </div>
+      <button class="log-save-btn" id="cp-save-btn" data-i18n="pwd.save">Change password</button>
+      <span class="log-status" id="cp-status"></span>
+    </div>
+
+    <!-- Privacy links -->
+    <p style="text-align:center;font-size:.7rem;color:rgba(244,241,232,.3);margin:1.6rem 0 .4rem">
+      <a href="/privacy.html" target="_blank" rel="noopener" style="color:rgba(201,162,74,.7);text-decoration:none" data-i18n="legal.privacy">Privacy Policy</a>
+      &nbsp;·&nbsp;
+      <a href="/legal.html" target="_blank" rel="noopener" style="color:rgba(201,162,74,.7);text-decoration:none" data-i18n="legal.terms">Terms &amp; Legal Notice</a>
+    </p>
+  </div>
+</div>
+
+<!-- ═══ GDPR HEALTH-DATA CONSENT (blocks portal until accepted) ═══ -->
+<div id="consent-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(5,5,7,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.2rem">
+  <div class="glass" style="max-width:520px;width:100%;max-height:86vh;overflow-y:auto;border-radius:22px;padding:2.2rem 2rem;box-shadow:var(--shadow)">
+    <div style="font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.7rem" data-i18n="consent.eyebrow">Data protection</div>
+    <h2 style="font-size:1.35rem;font-weight:800;margin-bottom:1rem" data-i18n="consent.title">Consent to process your health data</h2>
+    <div style="font-size:.82rem;line-height:1.65;color:var(--muted)" data-i18n-html="consent.body">
+      To coach you, DARE processes <strong>health-related data</strong>: weight, body composition,
+      nutrition logs, training logs and any conditions you share with your coaches. This is
+      sensitive data under the UAE data-protection law (PDPL) and "special category" data under
+      the EU GDPR, and we only process it with your <strong>explicit consent</strong>.<br><br>
+      Please read the <a href="/privacy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy Policy</a>.
+      You can withdraw consent at any time by contacting your coach — your account and data
+      will be deleted.<br><br>
+      <strong>Important:</strong> DARE coaching is not medical advice. You confirm that you have
+      disclosed any relevant medical condition, and that you will consult a doctor before
+      following the plans if you have (or suspect) any pathology.
+    </div>
+    <label style="display:flex;gap:.6rem;align-items:flex-start;margin:1.4rem 0;font-size:.8rem;color:var(--text);cursor:pointer">
+      <input type="checkbox" id="consent-check" autocomplete="off" style="margin-top:.2rem;width:16px;height:16px;accent-color:#c9a24a">
+      <span data-i18n="consent.check">I give my explicit consent to the processing of my health data as described in the Privacy Policy.</span>
+    </label>
+    <div class="login-error" id="consent-error" data-i18n="consent.error">You must tick the box to continue.</div>
+    <button class="login-btn" id="consent-accept" data-i18n="consent.accept">Accept and continue</button>
+    <button id="consent-decline" style="width:100%;margin-top:.7rem;padding:.85rem;border:1px solid var(--border2);border-radius:999px;background:transparent;color:var(--muted);font-family:'Manrope',sans-serif;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer" data-i18n="consent.decline">Decline and log out</button>
   </div>
 </div>
 
@@ -761,6 +817,14 @@ const I18N = {
     'chart.currentEyebrow':'Current State','chart.compositionTitle':'BODY COMPOSITION','chart.muscle':'Muscle Mass','chart.water':'Water','chart.bone':'Bone & Other',
     'checkin.title':'📊 Weekly Check-In — Log your measurements','checkin.weight':'Weight (kg)','checkin.bodyfat':'Body Fat (%)','checkin.notes':'Notes (optional)','checkin.notesPh':'Feeling good…','checkin.save':'Save check-in',
     'checkin.enterOne':'Enter at least weight or body fat.','checkin.saving':'Saving…','checkin.saved':'✓ Check-in saved!','checkin.errSave':'Error saving.','checkin.errConn':'Connection error.',
+    'pwd.title':'🔒 Change password','pwd.current':'Current password','pwd.new':'New password (min. 10 chars, letters + numbers)','pwd.repeat':'Repeat new password','pwd.save':'Change password',
+    'pwd.mismatch':'The new passwords do not match.','pwd.fillAll':'Fill in all fields.','pwd.saving':'Changing…','pwd.saved':'✓ Password changed!',
+    'legal.privacy':'Privacy Policy','legal.terms':'Terms & Legal Notice',
+    'consent.eyebrow':'Data protection','consent.title':'Consent to process your health data',
+    'consent.body':'To coach you, DARE processes <strong>health-related data</strong>: weight, body composition, nutrition logs, training logs and any conditions you share with your coaches. This is sensitive data under the UAE data-protection law (PDPL) and "special category" data under the EU GDPR, and we only process it with your <strong>explicit consent</strong>.<br><br>Please read the <a href="/privacy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy Policy</a>. You can withdraw consent at any time by contacting your coach — your account and data will be deleted.<br><br><strong>Important:</strong> DARE coaching is not medical advice. You confirm that you have disclosed any relevant medical condition, and that you will consult a doctor before following the plans if you have (or suspect) any pathology.',
+    'consent.check':'I give my explicit consent to the processing of my health data as described in the Privacy Policy.',
+    'consent.error':'You must tick the box to continue.','consent.accept':'Accept and continue','consent.decline':'Decline and log out',
+    'idle.loggedOut':'You were logged out after 30 minutes of inactivity.',
     // dynamic render
     'badge.strength':'STRENGTH','badge.cardio':'CARDIO','badge.rest':'ACTIVE REST','badge.pending':'PLAN PENDING',
     'plan.for':'My plan for ','plan.today':'today','plan.tomorrow':'tomorrow','plan.yesterday':'yesterday','suffix.today':' · TODAY',
@@ -794,6 +858,14 @@ const I18N = {
     'chart.currentEyebrow':'Estado Actual','chart.compositionTitle':'COMPOSICIÓN CORPORAL','chart.muscle':'Masa Muscular','chart.water':'Agua','chart.bone':'Hueso y Otros',
     'checkin.title':'📊 Control Semanal — Registra tus medidas','checkin.weight':'Peso (kg)','checkin.bodyfat':'Grasa Corporal (%)','checkin.notes':'Notas (opcional)','checkin.notesPh':'Me siento bien…','checkin.save':'Guardar control',
     'checkin.enterOne':'Introduce al menos peso o grasa corporal.','checkin.saving':'Guardando…','checkin.saved':'✓ ¡Control guardado!','checkin.errSave':'Error al guardar.','checkin.errConn':'Error de conexión.',
+    'pwd.title':'🔒 Cambiar contraseña','pwd.current':'Contraseña actual','pwd.new':'Nueva contraseña (mín. 10 caracteres, letras + números)','pwd.repeat':'Repite la nueva contraseña','pwd.save':'Cambiar contraseña',
+    'pwd.mismatch':'Las nuevas contraseñas no coinciden.','pwd.fillAll':'Rellena todos los campos.','pwd.saving':'Cambiando…','pwd.saved':'✓ ¡Contraseña cambiada!',
+    'legal.privacy':'Política de Privacidad','legal.terms':'Aviso Legal y Condiciones',
+    'consent.eyebrow':'Protección de datos','consent.title':'Consentimiento para tratar tus datos de salud',
+    'consent.body':'Para poder entrenarte, DARE trata <strong>datos relacionados con tu salud</strong>: peso, composición corporal, registros de nutrición y entrenamiento y las patologías que compartas con tus coaches. Son datos sensibles según la ley de protección de datos de EAU (PDPL) y de "categoría especial" según el RGPD europeo, y solo los tratamos con tu <strong>consentimiento explícito</strong>.<br><br>Lee la <a href="/es/privacidad.html" target="_blank" rel="noopener" style="color:var(--gold)">Política de Privacidad</a>. Puedes retirar el consentimiento en cualquier momento contactando con tu coach — tu cuenta y tus datos serán eliminados.<br><br><strong>Importante:</strong> el coaching de DARE no es consejo médico. Confirmas que has comunicado cualquier patología relevante y que consultarás a un médico antes de seguir los planes si tienes (o sospechas) alguna patología.',
+    'consent.check':'Doy mi consentimiento explícito al tratamiento de mis datos de salud según la Política de Privacidad.',
+    'consent.error':'Debes marcar la casilla para continuar.','consent.accept':'Aceptar y continuar','consent.decline':'Rechazar y salir',
+    'idle.loggedOut':'Se cerró tu sesión tras 30 minutos de inactividad.',
     // dynamic render
     'badge.strength':'FUERZA','badge.cardio':'CARDIO','badge.rest':'DESCANSO ACTIVO','badge.pending':'PLAN PENDIENTE',
     'plan.for':'Mi plan para ','plan.today':'hoy','plan.tomorrow':'mañana','plan.yesterday':'ayer','suffix.today':' · HOY',
@@ -1254,6 +1326,10 @@ async function showDash(){
   const client = getAuthClient();
   applyClientToUI(client);
 
+  // GDPR gate: block the portal until health-data consent is given
+  if(client && client.consentRequired) showConsentOverlay();
+  startIdleLogout();
+
   // ── Step 1: fetch available weeks ────────────────────────────
   WEEK_LIST = await fetchWeekList();   // [{weekOf:'YYYY-MM-DD'}, …]
   let planLoaded = false;
@@ -1333,7 +1409,63 @@ function showLogin(){
   app.classList.remove('visible'); loginScreen.classList.remove('hidden');
   const fab=document.getElementById('msg-fab'); if(fab) fab.classList.remove('visible');
   const mp=document.getElementById('msg-panel'); if(mp) mp.classList.remove('open');
+  stopIdleLogout();
 }
+
+/* ═══ GDPR HEALTH-DATA CONSENT GATE ═══ */
+
+function showConsentOverlay(){
+  var ov=document.getElementById('consent-overlay');
+  if(!ov) return;
+  ov.style.display='flex';
+  // GDPR: the consent box must start unchecked — defeat browser form restore.
+  document.getElementById('consent-check').checked=false;
+  var err=document.getElementById('consent-error');
+  document.getElementById('consent-accept').onclick=async function(){
+    if(!document.getElementById('consent-check').checked){ err.classList.add('visible'); return; }
+    err.classList.remove('visible');
+    try{
+      var r=await fetch(window.DARE_API_URL+'/api/auth/consent',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',Authorization:'Bearer '+getAuthToken()},
+        body:JSON.stringify({accept:true})
+      });
+      if(!r.ok) throw new Error();
+      var me=getAuthClient(); if(me){ me.consentRequired=false; sessionStorage.setItem('dare_client',JSON.stringify(me)); }
+      ov.style.display='none';
+    }catch(e){ err.textContent=t('checkin.errConn'); err.classList.add('visible'); }
+  };
+  document.getElementById('consent-decline').onclick=async function(){
+    try{ await fetch(window.DARE_API_URL+'/api/auth/logout',{method:'POST',headers:{Authorization:'Bearer '+getAuthToken()}}); }catch(e){}
+    sessionStorage.clear();
+    ov.style.display='none';
+    showLogin();
+  };
+}
+
+/* ═══ AUTO-LOGOUT AFTER 30 MIN OF INACTIVITY ═══ */
+
+var IDLE_LIMIT_MS=30*60*1000, idleTimer=null, idleEventsWired=false;
+function resetIdleTimer(){
+  if(idleTimer) clearTimeout(idleTimer);
+  idleTimer=setTimeout(function(){
+    try{ fetch(window.DARE_API_URL+'/api/auth/logout',{method:'POST',headers:{Authorization:'Bearer '+getAuthToken()}}); }catch(e){}
+    sessionStorage.clear();
+    showLogin();
+    var le=document.getElementById('login-error');
+    if(le){ le.textContent=t('idle.loggedOut'); le.classList.add('visible'); }
+  },IDLE_LIMIT_MS);
+}
+function startIdleLogout(){
+  if(!idleEventsWired){
+    ['click','keydown','scroll','touchstart','mousemove'].forEach(function(ev){
+      document.addEventListener(ev,function(){ if(idleTimer) resetIdleTimer(); },{passive:true});
+    });
+    idleEventsWired=true;
+  }
+  resetIdleTimer();
+}
+function stopIdleLogout(){ if(idleTimer){ clearTimeout(idleTimer); idleTimer=null; } }
 
 /* ═══ NEXT-WEEK PLAN NOTIFICATION ═══ */
 
@@ -1409,7 +1541,8 @@ document.getElementById('login-btn').addEventListener('click', async ()=>{
   sessionStorage.setItem('dare_token', result.token);
   sessionStorage.setItem('dare_client', JSON.stringify(result.client));
   loginError.classList.remove('visible');
-  if(result.client.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html?t=' + encodeURIComponent(result.token); return; }
+  // Token travels via sessionStorage only — never in the URL (history/Referer leak).
+  if(result.client.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html'; return; }
   showDash();
 });
 document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-btn').click(); });
@@ -1896,6 +2029,36 @@ document.getElementById('ci-save-btn').addEventListener('click',async()=>{
       const me=getAuthClient(); if(me){ if(w) me.weight=Number(w); if(f) me.bodyFat=Number(f); sessionStorage.setItem('dare_client',JSON.stringify(me)); }
     }else{ document.getElementById('ci-status').textContent=t('checkin.errSave'); btn.disabled=false; }
   }catch{ document.getElementById('ci-status').textContent=t('checkin.errConn'); btn.disabled=false; }
+});
+
+/* ═══ CHANGE PASSWORD ═══ */
+document.getElementById('cp-save-btn').addEventListener('click',async()=>{
+  const cur=document.getElementById('cp-current').value;
+  const nw=document.getElementById('cp-new').value;
+  const rep=document.getElementById('cp-repeat').value;
+  const st=document.getElementById('cp-status');
+  st.className='log-status';
+  if(!cur||!nw||!rep){ st.textContent=t('pwd.fillAll'); return; }
+  if(nw!==rep){ st.textContent=t('pwd.mismatch'); return; }
+  const btn=document.getElementById('cp-save-btn'); btn.disabled=true;
+  st.textContent=t('pwd.saving');
+  try{
+    const r=await fetch(window.DARE_API_URL+'/api/auth/change-password',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+getAuthToken()},
+      body:JSON.stringify({currentPassword:cur,newPassword:nw})
+    });
+    const data=await r.json().catch(()=>({}));
+    if(r.ok){
+      st.textContent=t('pwd.saved'); st.className='log-status ok';
+      document.getElementById('cp-current').value='';
+      document.getElementById('cp-new').value='';
+      document.getElementById('cp-repeat').value='';
+    }else{
+      st.textContent=data.error||t('checkin.errSave');
+    }
+  }catch{ st.textContent=t('checkin.errConn'); }
+  btn.disabled=false;
 });
 
 /* ═══ PROFILE CHARTS ═══ */

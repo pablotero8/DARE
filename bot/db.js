@@ -1,10 +1,16 @@
+import './env.js'; // load .env before reading DATA_DIR, whoever the entry point is
 import Database from 'better-sqlite3';
 import { mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve, isAbsolute } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = process.env.DATA_DIR || join(__dir, 'data');
+// A relative DATA_DIR (e.g. "./data" in .env) is resolved against the REPO
+// ROOT, never the process cwd — otherwise the server and any script run from
+// a different directory would silently open two different databases.
+export const DATA_DIR = process.env.DATA_DIR
+  ? (isAbsolute(process.env.DATA_DIR) ? process.env.DATA_DIR : resolve(__dir, '..', process.env.DATA_DIR))
+  : join(__dir, 'data');
 mkdirSync(DATA_DIR, { recursive: true });
 
 const DB_PATH = join(DATA_DIR, 'dare.db');
@@ -153,6 +159,11 @@ db.exec(`
 for (const sql of [
   `ALTER TABLE clients ADD COLUMN role TEXT NOT NULL DEFAULT 'client'`,
   `ALTER TABLE clients ADD COLUMN specialty TEXT`,
+  // GDPR art. 9: explicit consent to process health data, recorded with
+  // timestamp + policy version so consent can be evidenced and re-requested
+  // when the privacy policy changes.
+  `ALTER TABLE clients ADD COLUMN health_consent_at TEXT`,
+  `ALTER TABLE clients ADD COLUMN health_consent_version TEXT`,
 ]) {
   try { db.exec(sql); } catch {} // column already exists — fine
 }

@@ -2525,6 +2525,14 @@ body {
     opacity: 0.7;
 }
 
+.p-footer-legal a {
+    color: var(--muted-2);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.p-footer-legal a:hover { color: var(--gold, #c9a24a); }
+
 @media (max-width: 860px) {
     .p-footer-grid {
         grid-template-columns: minmax(0, 1fr);
@@ -2629,7 +2637,7 @@ body {
     filter: saturate(1.04) contrast(1.02);
 }
 .p-accord-panel--training  .p-accord-bg { background-image: url('./images/rackslide.jpg'); }
-.p-accord-panel--system    .p-accord-bg { background-image: url('./images/playa.png'); background-position: center; }
+.p-accord-panel--system    .p-accord-bg { background-image: url('./images/playa.jpg'); background-position: center; }
 .p-accord-panel--nutrition .p-accord-bg { background-image: url('./images/foodslide.jpg'); }
 .p-accord-panel.is-active  .p-accord-bg { transform: scale(1.06); }
 

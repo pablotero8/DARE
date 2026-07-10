@@ -5,6 +5,7 @@
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reset Password · DARE</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Tulpen+One&display=swap" rel="stylesheet">
 <style>
@@ -54,7 +55,7 @@
     <h2>Choose a new password</h2>
     <p class="subtitle">Your link is valid for 15 minutes. Pick something strong.</p>
     <label for="pw1">New password</label>
-    <input type="password" id="pw1" placeholder="Minimum 8 characters" autocomplete="new-password">
+    <input type="password" id="pw1" placeholder="Min. 10 characters, letters + numbers" autocomplete="new-password">
     <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
     <label for="pw2">Confirm password</label>
     <input type="password" id="pw2" placeholder="Repeat password" autocomplete="new-password">
@@ -99,7 +100,7 @@ document.getElementById('req-btn').addEventListener('click', async () => {
 // ── Step 2: set new password ───────────────────────────────────
 document.getElementById('pw1').addEventListener('input', e => {
   const pw = e.target.value;
-  const score = Math.min(4, [pw.length>=8, /[A-Z]/.test(pw), /[0-9]/.test(pw), /[^a-zA-Z0-9]/.test(pw)].filter(Boolean).length);
+  const score = Math.min(4, [pw.length>=10, /[A-Z]/.test(pw), /[0-9]/.test(pw), /[^a-zA-Z0-9]/.test(pw)].filter(Boolean).length);
   const colors = ['#e08080','#c9a24a','#c9a24a','#a6c85e','#a6c85e'];
   const fill = document.getElementById('strength-fill');
   fill.style.width = (score * 25) + '%';
@@ -111,7 +112,7 @@ document.getElementById('reset-btn').addEventListener('click', async () => {
   const pw2 = document.getElementById('pw2').value;
   const btn = document.getElementById('reset-btn');
   const msg = document.getElementById('reset-msg');
-  if (pw1.length < 8) { showMsg(msg, 'err', 'Password must be at least 8 characters.'); return; }
+  if (pw1.length < 10 || !/[a-zA-Z]/.test(pw1) || !/[0-9]/.test(pw1)) { showMsg(msg, 'err', 'Password must be at least 10 characters and include letters and numbers.'); return; }
   if (pw1 !== pw2)    { showMsg(msg, 'err', 'Passwords do not match.'); return; }
   btn.disabled = true; btn.textContent = 'Saving…';
   try {

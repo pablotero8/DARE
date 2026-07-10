@@ -24,9 +24,9 @@ Access the app:
 - **Client portal:** http://localhost:3001/client.html
 
 **Demo credentials:**
-- Coach (Training): `silvaepao@gmail.com` / `erika2026`
-- Coach (Nutrition): `daniotero15@gmail.com` / `dani2026`
-- Client: `client@dare.ae` / `dare2026`
+- Coach (Training): `silvaepao@gmail.com` / `SET_VIA_ENV`
+- Coach (Nutrition): `daniotero15@gmail.com` / `SET_VIA_ENV`
+- Client: `client@dare.ae` / `SET_VIA_ENV`
 
 ---
 
@@ -205,8 +205,8 @@ cp /opt/dare/data/dare.db /opt/dare/data/dare.db.backup.$(date +%Y%m%d)
 - [ ] Dependencies installed (npm install completed)
 - [ ] .env file created with OPENAI_API_KEY
 - [ ] Server starts without errors (npm start)
-- [ ] Can login as coach (silvaepao@gmail.com / erika2026)
-- [ ] Can login as client (client@dare.ae / dare2026)
+- [ ] Can login as coach (silvaepao@gmail.com / SET_VIA_ENV)
+- [ ] Can login as client (client@dare.ae / SET_VIA_ENV)
 - [ ] Plans load and display correctly
 - [ ] Coach chat works and calls OpenAI
 - [ ] Database file exists at ./data/dare.db or $DATA_DIR/dare.db
