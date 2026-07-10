@@ -414,7 +414,8 @@ app.post('/api/coach/clients', requireCoach, async (req, res) => {
       bodyFat: bodyFat ? Number(bodyFat) : null, notes: notes?.trim() || null,
     });
     const contract = createContractForClient(client);
-    sendWelcomeNotifications(client, generatedPassword).catch(err =>
+    const contractPdf = generateContractPdf(contract);
+    sendWelcomeNotifications(client, generatedPassword, contractPdf).catch(err =>
       console.error('[notifier] welcome notifications failed:', err.message)
     );
     console.log(`[coach] ${req.client.email} created client ${client.email} (contract #${contract.id})`);
@@ -688,9 +689,10 @@ OTRAS FUNCIONES:
     } else if (toolName === 'create_client') {
       const { client, generatedPassword } = await createClient(toolInput);
       const contract = createContractForClient(client);
+      const contractPdf = generateContractPdf(contract);
       action = { type: 'client_created', client, password: generatedPassword, contractId: contract.id };
       toolResultContent = JSON.stringify({ success: true, name: client.name, email: client.email, password: generatedPassword });
-      sendWelcomeNotifications(client, generatedPassword).catch(err =>
+      sendWelcomeNotifications(client, generatedPassword, contractPdf).catch(err =>
         console.error('[notifier] welcome notifications failed:', err.message)
       );
     } else if (toolName === 'add_plan_note') {

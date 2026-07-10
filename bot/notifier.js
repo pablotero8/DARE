@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { sendContractWithWelcome } from './mailer.js';
 
 const CLIENT_URL = process.env.APP_URL || 'https://darehabits.com';
 const FROM = process.env.EMAIL_FROM || 'DARE <onboarding@resend.dev>';
@@ -85,9 +86,13 @@ export async function sendWelcomeEmail(client, password) {
   if (error) throw new Error('Welcome email failed: ' + JSON.stringify(error));
 }
 
-export async function sendWelcomeNotifications(client, password) {
+export async function sendWelcomeNotifications(client, password, contractPdfStream) {
   try {
-    await sendWelcomeEmail(client, password);
+    if (contractPdfStream) {
+      await sendContractWithWelcome(client.email, client.name, contractPdfStream);
+    } else {
+      await sendWelcomeEmail(client, password);
+    }
   } catch (err) {
     console.error('[notifier] welcome error:', err.message);
   }
