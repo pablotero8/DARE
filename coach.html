@@ -201,8 +201,6 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 .pt-in:focus{border-color:rgba(201,162,74,.5);background:rgba(201,162,74,.04)}
 .pt-in::placeholder{color:var(--muted2)}
 .pt-in.narrow{flex:0 0 58px;width:58px;text-align:center}
-.pt-in.pt-in-error{border-color:#e0524d;background:rgba(224,82,77,.12);color:#ffb4b0}
-.pt-macro-warn{margin-top:.45rem;font-size:.66rem;font-weight:600;color:#e0746f;letter-spacing:.01em}
 .pt-select{
   background:rgba(255,255,255,.05);border:1px solid rgba(244,241,232,.1);
   border-radius:6px;padding:.32rem .5rem;color:var(--text);
@@ -215,9 +213,35 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
   background:rgba(201,162,74,.08);border:1px solid rgba(201,162,74,.15);
   border-radius:10px;padding:.6rem .65rem;margin-bottom:.6rem;
 }
-.pt-macro-row{display:flex;gap:.5rem;margin-bottom:0;flex-wrap:wrap}
+.pt-macro-row{display:flex;gap:.7rem;margin-bottom:0;flex-wrap:wrap;align-items:flex-start}
 .pt-macro-grp{display:flex;flex-direction:column;align-items:center;flex:1;min-width:70px}
-.pt-macro-lbl{font-size:.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;font-weight:700}
+.pt-macro-grp.kcal-grp{flex:0 0 64px}
+.pt-macro-grp.pt-macro-slider-grp{flex:1 1 130px;min-width:120px;align-items:stretch}
+.pt-macro-lbl{font-size:.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;font-weight:700;text-align:center}
+.pt-macro-slider-grp .pt-macro-lbl{text-align:left}
+.pt-macro-slider{
+  --mc:var(--gold);-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;
+  outline:none;cursor:pointer;margin:.3rem 0 .25rem;background:rgba(255,255,255,.08);
+  background-image:linear-gradient(to right,var(--mc),var(--mc));background-repeat:no-repeat;
+  background-size:var(--fill,0%) 100%;flex:none;
+}
+.pt-macro-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--mc);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--mc);cursor:pointer;margin-top:0;
+}
+.pt-macro-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--mc);border:2px solid var(--bg);cursor:pointer}
+.pt-macro-slider::-moz-range-track{background:transparent}
+.pt-macro-slider.mc-protein{--mc:var(--green)}
+.pt-macro-slider.mc-carbs{--mc:var(--gold)}
+.pt-macro-slider.mc-fat{--mc:#cf8b5c}
+.pt-macro-readout{font-size:.64rem;color:var(--muted);text-align:center;white-space:nowrap}
+.pt-macro-readout b{color:var(--text);font-weight:700}
+.pt-macro-summary{display:flex;align-items:center;gap:.55rem;margin-top:.6rem;font-size:.64rem;color:var(--muted);white-space:nowrap}
+.pt-macro-summary-track{flex:1;height:6px;border-radius:3px;overflow:hidden;display:flex;background:rgba(255,255,255,.06)}
+.pt-macro-summary-seg{height:100%;transition:width .15s}
+.pt-macro-summary-seg.protein{background:var(--green)}
+.pt-macro-summary-seg.carbs{background:var(--gold)}
+.pt-macro-summary-seg.fat{background:#cf8b5c}
 .pt-meal-block{
   background:rgba(255,255,255,.025);border:1px solid rgba(244,241,232,.06);
   border-radius:10px;padding:.5rem .65rem;margin-bottom:.45rem;
@@ -991,26 +1015,50 @@ function buildNutritionTable(action){
     const totRow=document.createElement('div'); totRow.className='pt-totals-block';
     totRow.innerHTML=`<div style="font-weight:700;color:var(--gold);margin-bottom:.35rem;font-size:.75rem">Daily Totals</div>`;
     const macRow=document.createElement('div'); macRow.className='pt-macro-row';
-    const macInputs={};
-    ['kcal','Protein','Carbs','Fat'].forEach((label,li)=>{
-      const field=['kcal','protein','carbs','fat'][li];
-      const grp=document.createElement('div'); grp.className='pt-macro-grp';
-      const unit = label==='kcal' ? '' : ' (g)';
-      grp.innerHTML=`<span class="pt-macro-lbl">${label}${unit}</span>`;
-      const inp=ptIn(label==='kcal'?'2100':label==='Protein'?'160':label==='Carbs'?'220':'70',true,{field,day:di,type:'daily'});
-      if(day[field]!=null && Number(day[field])>0) inp.value=day[field]; // prefill (bulk-fill / edit)
-      macInputs[field]=inp;
-      grp.appendChild(inp);
+
+    const kcalGrp=document.createElement('div'); kcalGrp.className='pt-macro-grp kcal-grp';
+    kcalGrp.innerHTML=`<span class="pt-macro-lbl">kcal</span>`;
+    const kcalIn=ptIn('2100',true,{field:'kcal',day:di,type:'daily'});
+    if(day.kcal!=null && Number(day.kcal)>0) kcalIn.value=day.kcal; // prefill (bulk-fill / edit)
+    kcalGrp.appendChild(kcalIn);
+    macRow.appendChild(kcalGrp);
+
+    // Protein/carbs/fat are dynamic sliders whose max range shrinks live to
+    // whatever's left of the kcal budget after the other two macros — it's
+    // physically impossible to drag a total above the target kcal.
+    const MACRO_DEFS=[
+      {field:'protein', label:'Protein', kcalPerG:4, split:0.30, cls:'mc-protein'},
+      {field:'carbs',   label:'Carbs',   kcalPerG:4, split:0.40, cls:'mc-carbs'},
+      {field:'fat',     label:'Fat',     kcalPerG:9, split:0.30, cls:'mc-fat'},
+    ];
+    const sliders={};
+    MACRO_DEFS.forEach(def=>{
+      const grp=document.createElement('div'); grp.className='pt-macro-grp pt-macro-slider-grp';
+      grp.innerHTML=`<span class="pt-macro-lbl">${def.label} (g)</span>`;
+      const range=document.createElement('input');
+      range.type='range'; range.className=`pt-in pt-macro-slider ${def.cls}`;
+      range.min='0'; range.step='1'; range.value='0';
+      range.dataset.field=def.field; range.dataset.day=di; range.dataset.type='daily';
+      const readout=document.createElement('div'); readout.className='pt-macro-readout';
+      grp.appendChild(range); grp.appendChild(readout);
       macRow.appendChild(grp);
+      sliders[def.field]={el:range, readout, kcalPerG:def.kcalPerG, split:def.split};
+      if(day[def.field]!=null && Number(day[def.field])>0) range.dataset.prefill=day[def.field]; // bulk-fill / edit
     });
     totRow.appendChild(macRow);
-    const macWarn=document.createElement('div'); macWarn.className='pt-macro-warn'; macWarn.style.display='none';
-    totRow.appendChild(macWarn);
+
+    const summary=document.createElement('div'); summary.className='pt-macro-summary';
+    const track=document.createElement('div'); track.className='pt-macro-summary-track';
+    const segP=document.createElement('div'); segP.className='pt-macro-summary-seg protein';
+    const segC=document.createElement('div'); segC.className='pt-macro-summary-seg carbs';
+    const segF=document.createElement('div'); segF.className='pt-macro-summary-seg fat';
+    track.appendChild(segP); track.appendChild(segC); track.appendChild(segF);
+    const summaryLbl=document.createElement('span');
+    track.style.flex='1'; summary.appendChild(track); summary.appendChild(summaryLbl);
+    totRow.appendChild(summary);
     body.appendChild(totRow);
-    // Live macro/kcal coherence check (P×4 + C×4 + F×9 must ≈ kcal)
-    const checkMacros=()=>validateDayMacros(macInputs,macWarn);
-    Object.values(macInputs).forEach(inp=>inp.addEventListener('input',checkMacros));
-    checkMacros(); // validate any prefilled macros immediately
+
+    initMacroSliders(kcalIn, sliders, {segP,segC,segF,summaryLbl});
 
     // 5 fixed meals with dishes/ingredients
     MEAL_NAMES.forEach((mName,mi)=>{
@@ -1125,15 +1173,6 @@ function buildSaveRow(action, specialty){
   div.appendChild(btn); div.appendChild(status);
 
   btn.addEventListener('click', async ()=>{
-    // Block save when any day's macros don't add up to its kcal.
-    if(specialty==='nutrition'){
-      const bad=collectMacroErrors(div.closest('.plan-table-wrap'));
-      if(bad.length){
-        status.className='pt-status err';
-        status.textContent=`❌ g macros do not correspond to kcal — check ${bad.join(', ')}`;
-        return;
-      }
-    }
     btn.disabled=true; status.className='pt-status'; status.textContent='Saving — AI is perfecting names and generating details…';
     try{
       const days = specialty==='nutrition' ? collectNutrition(div.closest('.plan-table-wrap'),action) : collectTraining(div.closest('.plan-table-wrap'),action);
@@ -1172,43 +1211,84 @@ function q(wrap,field,day,extra){
   return (wrap.querySelector(sel)||{}).value||'';
 }
 
-// ── Macro ↔ kcal coherence ────────────────────────────────────
-// Protein 4 kcal/g · Carbs 4 kcal/g · Fat 9 kcal/g.
-const MACRO_TOL = (kcal)=>Math.max(25, kcal*0.05); // allow ±5% or ±25 kcal
+// ── Macro ↔ kcal sliders ────────────────────────────────────────
+// Protein 4 kcal/g · Carbs 4 kcal/g · Fat 9 kcal/g. Each slider's `max` is
+// recomputed live from the *other two* current values, so grams*kcalPerG can
+// never sum past the kcal target — dragging past the remaining budget is
+// physically impossible rather than merely flagged.
+function initMacroSliders(kcalIn, sliders, seg){
+  const order=['protein','carbs','fat'];
+  const val=(f)=>parseFloat(sliders[f].el.value)||0;
+  const usedKcal=()=>order.reduce((s,f)=>s+val(f)*sliders[f].kcalPerG,0);
 
-// Live check for one day's totals. Returns true when coherent (or not yet
-// fillable). Paints the 4 cells red + shows the message when it doesn't add up.
-function validateDayMacros(inputs, warnEl){
-  const kcal=parseFloat(inputs.kcal.value)||0;
-  const p=parseFloat(inputs.protein.value)||0;
-  const c=parseFloat(inputs.carbs.value)||0;
-  const f=parseFloat(inputs.fat.value)||0;
-  const ready = kcal>0 && (p>0||c>0||f>0);
-  if(!ready){ paintMacros(inputs,warnEl,false); return true; }
-  const computed=p*4+c*4+f*9;
-  const ok=Math.abs(computed-kcal)<=MACRO_TOL(kcal);
-  paintMacros(inputs,warnEl,!ok,computed,kcal);
-  return ok;
-}
-function paintMacros(inputs,warnEl,isError,computed,kcal){
-  Object.values(inputs).forEach(i=>i.classList.toggle('pt-in-error',!!isError));
-  if(isError){
-    warnEl.textContent=`g macros do not correspond to kcal — ${Math.round(computed)} kcal from macros vs ${Math.round(kcal)} target`;
-    warnEl.style.display='';
-  } else {
-    warnEl.style.display='none';
+  function refresh(){
+    const kcal=parseFloat(kcalIn.value)||0;
+    // Snapshot first so each macro's max is derived from the others'
+    // pre-refresh values, avoiding order-dependent clamping in one pass.
+    const snapshot={}; order.forEach(f=>snapshot[f]=val(f));
+    order.forEach(f=>{
+      const others=order.filter(k=>k!==f).reduce((s,k)=>s+snapshot[k]*sliders[k].kcalPerG,0);
+      const remaining=Math.max(0,kcal-others);
+      const max=Math.floor(remaining/sliders[f].kcalPerG);
+      sliders[f].el.max=String(max);
+      if(snapshot[f]>max) sliders[f].el.value=String(max);
+    });
+    order.forEach(f=>{
+      const el=sliders[f].el, max=parseFloat(el.max)||0, v=val(f);
+      el.style.setProperty('--fill', (max>0?Math.round(v/max*100):0)+'%');
+      sliders[f].readout.innerHTML=`<b>${Math.round(v)}</b> g · ${Math.round(v*sliders[f].kcalPerG)} kcal`;
+    });
+    const track=Math.max(kcal,1);
+    seg.segP.style.width=(val('protein')*sliders.protein.kcalPerG/track*100)+'%';
+    seg.segC.style.width=(val('carbs')*sliders.carbs.kcalPerG/track*100)+'%';
+    seg.segF.style.width=(val('fat')*sliders.fat.kcalPerG/track*100)+'%';
+    seg.summaryLbl.textContent = kcal>0 ? `${Math.round(usedKcal())} / ${Math.round(kcal)} kcal used` : 'Set kcal to begin';
   }
-}
-// Returns the labels of days whose macros don't match kcal (skips empty days).
-function collectMacroErrors(wrap){
-  const bad=[];
-  wrap.querySelectorAll('.pt-day-block').forEach(block=>{
-    const get=(field)=>{const el=block.querySelector(`.pt-in[data-type="daily"][data-field="${field}"]`);return el?parseFloat(el.value)||0:0;};
-    const kcal=get('kcal'),p=get('protein'),c=get('carbs'),f=get('fat');
-    if(!(kcal>0 && (p>0||c>0||f>0))) return; // skip empty days
-    if(Math.abs((p*4+c*4+f*9)-kcal)>MACRO_TOL(kcal)) bad.push(block.querySelector('.pt-day-label')?.textContent||'?');
+
+  // Rounds a target-kcal split into grams, then trims fat→carbs→protein
+  // (highest kcal/g first) until the rounded total no longer exceeds kcal.
+  function gramsForSplit(kcal, ratios){
+    const grams={}; order.forEach(f=>grams[f]=Math.max(0,Math.round(kcal*ratios[f]/sliders[f].kcalPerG)));
+    let computed=order.reduce((s,f)=>s+grams[f]*sliders[f].kcalPerG,0);
+    const trimOrder=['fat','carbs','protein'];
+    let i=0;
+    while(computed>kcal && i<10000){
+      const f=trimOrder[i%3];
+      if(grams[f]>0){ grams[f]--; computed-=sliders[f].kcalPerG; }
+      i++;
+    }
+    return grams;
+  }
+
+  function applyDefaultSplit(){
+    const kcal=parseFloat(kcalIn.value)||0;
+    const ratios={}; order.forEach(f=>ratios[f]=sliders[f].split);
+    const grams = kcal>0 ? gramsForSplit(kcal, ratios) : {protein:0,carbs:0,fat:0};
+    order.forEach(f=>sliders[f].el.value=String(grams[f]));
+  }
+
+  // Keeps the coach's already-chosen macro *ratio* and re-suggests grams
+  // that fill the new kcal target at that same ratio.
+  function rescaleToKcal(){
+    const kcal=parseFloat(kcalIn.value)||0;
+    const total=usedKcal();
+    if(kcal<=0){ order.forEach(f=>sliders[f].el.value='0'); return; }
+    if(total<=0){ applyDefaultSplit(); return; }
+    const ratios={}; order.forEach(f=>ratios[f]=(val(f)*sliders[f].kcalPerG)/total);
+    const grams=gramsForSplit(kcal, ratios);
+    order.forEach(f=>sliders[f].el.value=String(grams[f]));
+  }
+
+  kcalIn.addEventListener('input',()=>{
+    if(order.some(f=>val(f)>0)) rescaleToKcal(); else applyDefaultSplit();
+    refresh();
   });
-  return bad;
+  order.forEach(f=>sliders[f].el.addEventListener('input',refresh));
+
+  const hasPrefill=order.some(f=>sliders[f].el.dataset.prefill);
+  if(hasPrefill) order.forEach(f=>{ if(sliders[f].el.dataset.prefill) sliders[f].el.value=sliders[f].el.dataset.prefill; });
+  else applyDefaultSplit();
+  refresh();
 }
 
 function collectNutrition(wrap,action){
