@@ -5,7 +5,11 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
-const LOGO_PATH = join(__dir, '..', 'images', 'dare-logo.jpg');
+// Transparent, print-ready crop of the current DARE wordmark (the source
+// asset is a dark-background export unsuitable for a white page — see
+// scripts/make-print-logo.py for how this PNG was derived from it).
+const LOGO_PATH = join(__dir, '..', 'images', 'dare-logo-print.png');
+const LOGO_ASPECT = 875 / 447; // width / height of dare-logo-print.png
 
 // Bump when the agreement text changes so every stored contract records the
 // wording the client actually signed. Matches the versioning style of the
@@ -108,9 +112,10 @@ export function generateContractPdf(contract) {
 
   // ── Header: logo + title ──
   if (existsSync(LOGO_PATH)) {
-    doc.image(LOGO_PATH, doc.page.margins.left, doc.y, { width: 130 });
-    doc.moveDown(0.2);
-    doc.y = doc.page.margins.top + 44;
+    const logoWidth = 95;
+    const logoTop = doc.y;
+    doc.image(LOGO_PATH, doc.page.margins.left, logoTop, { width: logoWidth });
+    doc.y = logoTop + (logoWidth / LOGO_ASPECT) + 14;
   }
   doc.font('Helvetica-Bold').fontSize(17).fillColor(INK)
      .text('PRIVATE COACHING AGREEMENT', { characterSpacing: 1.2 });
