@@ -153,6 +153,20 @@ db.exec(`
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
   );
   CREATE INDEX IF NOT EXISTS idx_messages_client ON messages(client_id, created_at);
+
+  -- Coaching agreements. One row per client intake: data_json snapshots the
+  -- client's details at creation time so the contract keeps showing what was
+  -- signed even if the profile (weight, goal…) changes later.
+  CREATE TABLE IF NOT EXISTS contracts (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id   TEXT NOT NULL,
+    version     TEXT NOT NULL,
+    data_json   TEXT NOT NULL,
+    created_at  TEXT DEFAULT (datetime('now')),
+    signed_at   TEXT,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_contracts_client ON contracts(client_id);
 `);
 
 // ── Safe migrations for existing DBs ──────────────────────────
@@ -164,6 +178,9 @@ for (const sql of [
   // when the privacy policy changes.
   `ALTER TABLE clients ADD COLUMN health_consent_at TEXT`,
   `ALTER TABLE clients ADD COLUMN health_consent_version TEXT`,
+  // Date of birth (YYYY-MM-DD) — needed to identify the client in the
+  // coaching agreement and to confirm they are of legal age.
+  `ALTER TABLE clients ADD COLUMN birth_date TEXT`,
 ]) {
   try { db.exec(sql); } catch {} // column already exists — fine
 }

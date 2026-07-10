@@ -19,6 +19,7 @@ import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCh
 import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
 import { sendWelcomeNotifications, sendTestEmail } from './notifier.js';
+import { createContractForClient, getLatestContractForClient, generateContractPdf } from './contract.js';
 import { scheduleDailyBackups, runBackup, latestBackupPath } from './backup.js';
 import { randomBytes } from 'crypto';
 
@@ -397,6 +398,43 @@ app.post('/api/coach/test-email', requireCoach, async (req, res) => {
   }
 });
 
+// Create a client from the intake form. Same effect as the AI create_client
+// tool: account + coaching-agreement snapshot + welcome notifications.
+app.post('/api/coach/clients', requireCoach, async (req, res) => {
+  const { name, email, goal, totalWeeks, currentWeek, phone, birthDate, height, weight, bodyFat, notes } = req.body || {};
+  if (!name?.trim() || !email?.trim() || !goal?.trim() || !totalWeeks) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios: nombre, email, objetivo y semanas.' });
+  }
+  try {
+    const { client, generatedPassword } = await createClient({
+      name: name.trim(), email: email.trim(), goal: goal.trim(),
+      totalWeeks: Number(totalWeeks), currentWeek: Number(currentWeek) || 1,
+      phone: phone?.trim() || null, birthDate: birthDate || null,
+      height: height ? Number(height) : null, weight: weight ? Number(weight) : null,
+      bodyFat: bodyFat ? Number(bodyFat) : null, notes: notes?.trim() || null,
+    });
+    const contract = createContractForClient(client);
+    sendWelcomeNotifications(client, generatedPassword).catch(err =>
+      console.error('[notifier] welcome notifications failed:', err.message)
+    );
+    console.log(`[coach] ${req.client.email} created client ${client.email} (contract #${contract.id})`);
+    res.json({ client, password: generatedPassword, contractId: contract.id });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Coaching agreement PDF for a client (latest snapshot), generated on the fly.
+app.get('/api/coach/contracts/:clientId', requireCoach, (req, res) => {
+  const client = getClientById(req.params.clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  // Older clients (created before contracts existed) get a snapshot on first download.
+  const contract = getLatestContractForClient(client.id) || createContractForClient(client);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="DARE-agreement-${client.id}.pdf"`);
+  generateContractPdf(contract).pipe(res);
+});
+
 // Full client profile (for coach profile panel)
 app.get('/api/coach/clients/:clientId', requireCoach, (req, res) => {
   const client = getClientById(req.params.clientId);
@@ -649,7 +687,8 @@ OTRAS FUNCIONES:
       }
     } else if (toolName === 'create_client') {
       const { client, generatedPassword } = await createClient(toolInput);
-      action = { type: 'client_created', client, password: generatedPassword };
+      const contract = createContractForClient(client);
+      action = { type: 'client_created', client, password: generatedPassword, contractId: contract.id };
       toolResultContent = JSON.stringify({ success: true, name: client.name, email: client.email, password: generatedPassword });
       sendWelcomeNotifications(client, generatedPassword).catch(err =>
         console.error('[notifier] welcome notifications failed:', err.message)

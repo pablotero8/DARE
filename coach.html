@@ -395,6 +395,32 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 .cmsg-textarea:focus{border-color:rgba(201,162,74,.45)}
 .cmsg-send{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;flex-shrink:0;background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;font-size:1.1rem;transition:transform .15s}
 .cmsg-send:hover:not(:disabled){transform:scale(1.08)} .cmsg-send:disabled{opacity:.4;cursor:default}
+
+/* ── New client intake form ── */
+.nc-box{max-width:640px}
+.nc-body{flex:1;overflow-y:auto;padding:1.3rem 1.4rem;scrollbar-width:thin}
+.nc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem 1rem}
+.nc-field{display:flex;flex-direction:column;gap:.3rem}
+.nc-field.full{grid-column:1 / -1}
+.nc-label{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.nc-label b{color:var(--gold)}
+.nc-input,.nc-textarea{background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:10px;padding:.6rem .8rem;color:var(--text);font-family:'Manrope',sans-serif;font-size:.85rem;outline:none;transition:border-color .2s;width:100%}
+.nc-input:focus,.nc-textarea:focus{border-color:rgba(201,162,74,.45)}
+.nc-input::placeholder,.nc-textarea::placeholder{color:var(--muted2)}
+.nc-textarea{resize:vertical;min-height:64px;line-height:1.5}
+.nc-footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.95rem 1.4rem;border-top:1px solid var(--border);background:rgba(5,5,7,.6)}
+.nc-hint{font-size:.68rem;color:var(--muted2);line-height:1.5}
+.nc-error{font-size:.74rem;color:#e0524d;line-height:1.5}
+.nc-submit{padding:.6rem 1.4rem;border:none;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;font-family:'Manrope',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;transition:transform .15s;flex-shrink:0}
+.nc-submit:hover:not(:disabled){transform:scale(1.04)}
+.nc-submit:disabled{opacity:.4;cursor:default}
+.nc-success{text-align:center;padding:1.5rem .5rem}
+.nc-success h3{font-family:'Tulpen One',serif;font-size:1.9rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem}
+.nc-success p{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:.4rem}
+.nc-pwd{font-family:monospace;font-size:1.05rem;font-weight:700;color:var(--gold);background:rgba(201,162,74,.08);border:1px dashed rgba(201,162,74,.4);border-radius:10px;padding:.6rem 1rem;display:inline-block;margin:.5rem 0 1rem;user-select:all}
+.nc-dl-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border:1px solid rgba(201,162,74,.4);border-radius:10px;background:rgba(201,162,74,.07);color:var(--gold);font-family:'Manrope',sans-serif;font-size:.74rem;font-weight:700;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .18s}
+.nc-dl-btn:hover{background:rgba(201,162,74,.15);border-color:rgba(201,162,74,.6)}
+@media(max-width:600px){ .nc-grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -446,6 +472,7 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
         <div class="pp-head-btns">
           <button class="pp-view-btn" id="pp-view-plan-btn">📋 Ver plan</button>
           <button class="pp-view-btn" id="pp-msg-btn" style="border-color:rgba(201,162,74,.4);background:rgba(201,162,74,.07);color:var(--gold)">💬 Mensajes</button>
+          <button class="pp-view-btn" id="pp-contract-btn" style="border-color:rgba(201,162,74,.4);background:rgba(201,162,74,.07);color:var(--gold)" title="Download coaching agreement (PDF)">📄 Contract</button>
           <button class="pp-chat-btn" id="pp-chat-btn">✦ Select for chat</button>
           <div style="position:relative">
             <button class="pp-menu-btn" id="pp-menu-btn">⋯</button>
@@ -517,6 +544,69 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
       <textarea class="cmsg-textarea" id="cmsg-input" rows="1" placeholder="Escribe una respuesta…"></textarea>
       <button class="cmsg-send" id="cmsg-send" title="Enviar">›</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══ NEW CLIENT MODAL ═══ -->
+<div class="cmodal" id="nc-modal">
+  <div class="cmodal-box nc-box">
+    <div class="cmodal-head">
+      <div>
+        <div class="cmodal-title">New client</div>
+        <div class="cmodal-sub">Profile + coaching agreement</div>
+      </div>
+      <button class="cmodal-close" id="nc-close">✕</button>
+    </div>
+    <form id="nc-form" novalidate>
+      <div class="nc-body" id="nc-body">
+        <div class="nc-grid">
+          <div class="nc-field full">
+            <label class="nc-label" for="nc-name">Full name <b>*</b></label>
+            <input class="nc-input" id="nc-name" name="name" placeholder="Alexandra Hammond" required>
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-email">Email <b>*</b></label>
+            <input class="nc-input" id="nc-email" name="email" type="email" placeholder="alex@example.com" required>
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-phone">Phone</label>
+            <input class="nc-input" id="nc-phone" name="phone" type="tel" placeholder="+971 50 000 0000">
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-birth">Date of birth</label>
+            <input class="nc-input" id="nc-birth" name="birthDate" type="date">
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-goal">Goal / protocol <b>*</b></label>
+            <input class="nc-input" id="nc-goal" name="goal" placeholder="Fat-Loss Protocol" required>
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-height">Height (cm)</label>
+            <input class="nc-input" id="nc-height" name="height" type="number" min="100" max="250" step="0.1" placeholder="175">
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-weight">Weight (kg)</label>
+            <input class="nc-input" id="nc-weight" name="weight" type="number" min="30" max="300" step="0.1" placeholder="78.5">
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-bodyfat">Body fat (%)</label>
+            <input class="nc-input" id="nc-bodyfat" name="bodyFat" type="number" min="3" max="60" step="0.1" placeholder="22">
+          </div>
+          <div class="nc-field">
+            <label class="nc-label" for="nc-weeks">Programme weeks <b>*</b></label>
+            <input class="nc-input" id="nc-weeks" name="totalWeeks" type="number" min="1" max="52" value="12" required>
+          </div>
+          <div class="nc-field full">
+            <label class="nc-label" for="nc-notes">Notes (gym, dietary restrictions, injuries…)</label>
+            <textarea class="nc-textarea" id="nc-notes" name="notes" placeholder="Trains at home · lactose intolerant · old knee injury"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="nc-footer">
+        <div class="nc-hint" id="nc-msg">On creation the client receives their portal credentials and a coaching agreement (PDF) is generated for signature.</div>
+        <button class="nc-submit" id="nc-submit" type="submit">Create client</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -644,13 +734,100 @@ function filterClients(q){
   return allClients.filter(c => c.name.toLowerCase().includes(lq) || c.goal.toLowerCase().includes(lq));
 }
 
+// ── New client modal ──────────────────────────────────────────
+const ncModal = document.getElementById('nc-modal');
+const ncForm  = document.getElementById('nc-form');
+
 document.getElementById('new-client-btn').addEventListener('click', () => {
-  activeClient = null;
-  document.getElementById('chat-context').classList.remove('visible');
-  document.getElementById('chat-input').placeholder = 'Type here…';
-  document.getElementById('chat-input').value = 'I want to add a new client';
-  document.getElementById('chat-input').focus();
-  renderClients(filterClients(''));
+  ncForm.reset();
+  ncForm.style.display = '';
+  document.getElementById('nc-success')?.remove();
+  const msg = document.getElementById('nc-msg');
+  msg.className = 'nc-hint';
+  msg.textContent = 'On creation the client receives their portal credentials and a coaching agreement (PDF) is generated for signature.';
+  document.getElementById('nc-submit').disabled = false;
+  ncModal.classList.add('open');
+  document.getElementById('nc-name').focus();
+});
+document.getElementById('nc-close').addEventListener('click', () => ncModal.classList.remove('open'));
+ncModal.addEventListener('click', e => { if(e.target === ncModal) ncModal.classList.remove('open'); });
+
+async function downloadContract(clientId){
+  try{
+    const r = await fetch(`${BASE}/api/coach/contracts/${clientId}`, { headers:{ Authorization:`Bearer ${storedToken()}` } });
+    if(!r.ok){ alert('Could not download the agreement.'); return; }
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `DARE-agreement-${clientId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert('Connection error while downloading the agreement.');
+  }
+}
+
+ncForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById('nc-msg');
+  const submitBtn = document.getElementById('nc-submit');
+  const body = {
+    name:       document.getElementById('nc-name').value.trim(),
+    email:      document.getElementById('nc-email').value.trim(),
+    phone:      document.getElementById('nc-phone').value.trim(),
+    birthDate:  document.getElementById('nc-birth').value,
+    goal:       document.getElementById('nc-goal').value.trim(),
+    height:     document.getElementById('nc-height').value,
+    weight:     document.getElementById('nc-weight').value,
+    bodyFat:    document.getElementById('nc-bodyfat').value,
+    totalWeeks: document.getElementById('nc-weeks').value,
+    notes:      document.getElementById('nc-notes').value.trim(),
+  };
+  if(!body.name || !body.email || !body.goal || !body.totalWeeks){
+    msg.className = 'nc-error';
+    msg.textContent = 'Name, email, goal and programme weeks are required.';
+    return;
+  }
+  submitBtn.disabled = true;
+  msg.className = 'nc-hint';
+  msg.textContent = 'Creating client…';
+  try{
+    const r = await fetch(`${BASE}/api/coach/clients`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${storedToken()}` },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok){
+      submitBtn.disabled = false;
+      msg.className = 'nc-error';
+      msg.textContent = data.error || `Could not create the client (${r.status}).`;
+      return;
+    }
+    ncForm.style.display = 'none';
+    const ok = document.createElement('div');
+    ok.className = 'nc-body nc-success';
+    ok.id = 'nc-success';
+    ok.innerHTML = `
+      <h3>Client created</h3>
+      <p><strong>${escHtml(data.client.name)}</strong> · ${escHtml(data.client.email)}</p>
+      <p>Initial portal password (also emailed to the client):</p>
+      <div class="nc-pwd">${escHtml(data.password)}</div>
+      <div>
+        <button type="button" class="nc-dl-btn" id="nc-dl-contract">📄 Download coaching agreement</button>
+      </div>
+      <p style="margin-top:.9rem">Print or send the agreement to the client for signature. It can be downloaded again anytime from their profile.</p>`;
+    ncForm.parentNode.insertBefore(ok, ncForm);
+    document.getElementById('nc-dl-contract').addEventListener('click', ()=>downloadContract(data.client.id));
+    loadClients();
+  }catch(err){
+    submitBtn.disabled = false;
+    msg.className = 'nc-error';
+    msg.textContent = 'Connection error while creating the client.';
+  }
 });
 
 // ── Chat ──────────────────────────────────────────────────────
@@ -712,6 +889,13 @@ function appendMsg(role, content, action){
       <div class="ac-row"><strong>Goal:</strong> ${c.goal}</div>
       <div class="ac-row">Initial password:</div>
       <div class="ac-pwd">${action.password}</div>`;
+    const dlBtn = document.createElement('button');
+    dlBtn.type = 'button';
+    dlBtn.className = 'nc-dl-btn';
+    dlBtn.style.marginTop = '.6rem';
+    dlBtn.textContent = '📄 Download coaching agreement';
+    dlBtn.addEventListener('click', ()=>downloadContract(c.id));
+    card.appendChild(dlBtn);
     bubble.appendChild(card);
     loadClients(); // refresh sidebar
   }
@@ -1333,6 +1517,10 @@ document.getElementById('pp-chat-btn').addEventListener('click', ()=>{
   if(!profileClient) return;
   selectClient(profileClient);
   closeProfile();
+});
+document.getElementById('pp-contract-btn').addEventListener('click', ()=>{
+  if(!profileClient) return;
+  downloadContract(profileClient.id);
 });
 
 const menuBtn = document.getElementById('pp-menu-btn');
