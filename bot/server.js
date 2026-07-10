@@ -68,15 +68,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS: the frontend is served same-origin by this server, so only the app's
-// own origin is allowed (dev tools / localhost work because same-origin
-// requests never send a cross-origin preflight).
+// CORS allowlist. The public site is served by GitHub Pages on darehabits.com
+// and its client portal calls this Railway API cross-origin, so both the
+// custom domain and the app's own origin must be allowed — nothing else.
+const ALLOWED_ORIGINS = new Set([
+  APP_ORIGIN,
+  'https://darehabits.com',
+  'https://www.darehabits.com',
+]);
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && origin === APP_ORIGIN) {
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.header('Vary', 'Origin');
   }
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
