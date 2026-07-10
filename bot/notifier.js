@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const CLIENT_URL = process.env.APP_URL || 'https://dare-production-2636.up.railway.app';
+const CLIENT_URL = process.env.APP_URL || 'https://darehabits.com';
 const FROM = process.env.EMAIL_FROM || 'DARE <onboarding@resend.dev>';
 
 function resendClient() {

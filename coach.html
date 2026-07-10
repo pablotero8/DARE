@@ -523,7 +523,7 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 <script>
 (function(){
 
-const _isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const _isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.endsWith('.up.railway.app'));
 const BASE = _isLocal ? window.location.origin : 'https://dare-production-2636.up.railway.app';
 
 // ── Auth ──────────────────────────────────────────────────────

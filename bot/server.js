@@ -52,7 +52,7 @@ const aiLimiter = rateLimit({
   message: { error: 'Demasiadas peticiones. Espera unos segundos.' },
 });
 
-const APP_ORIGIN = (process.env.APP_URL || 'https://dare-production-2636.up.railway.app').replace(/\/$/, '');
+const APP_ORIGIN = (process.env.APP_URL || 'https://darehabits.com').replace(/\/$/, '');
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 // Force HTTPS behind the Railway proxy + security headers on every response.
@@ -75,6 +75,7 @@ const ALLOWED_ORIGINS = new Set([
   APP_ORIGIN,
   'https://darehabits.com',
   'https://www.darehabits.com',
+  'https://dare-production-2636.up.railway.app',
 ]);
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -137,7 +138,7 @@ app.post('/api/auth/forgot-password', loginLimiter, async (req, res) => {
     const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
     const db = (await import('./db.js')).default;
     db.prepare('INSERT INTO password_reset_tokens (token, client_id, expires_at) VALUES (?,?,?)').run(token, client.id, expires);
-    const baseUrl  = process.env.APP_URL || 'https://dare-production-2636.up.railway.app';
+    const baseUrl  = process.env.APP_URL || 'https://darehabits.com';
     const resetUrl = `${baseUrl}/reset.html?token=${token}`;
     await sendPasswordReset(client.email, client.name, resetUrl);
     console.log(`[reset] Sent password reset to ${client.email}`);
