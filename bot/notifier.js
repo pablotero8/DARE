@@ -1,6 +1,4 @@
-import cron from 'node-cron';
 import { Resend } from 'resend';
-import { listClients } from './clients.js';
 
 const CLIENT_URL = process.env.APP_URL || 'https://dare-production-2636.up.railway.app';
 const FROM = process.env.EMAIL_FROM || 'DARE <onboarding@resend.dev>';
@@ -95,46 +93,3 @@ export async function sendWelcomeNotifications(client, password) {
   }
 }
 
-// ── Daily reminder email ──────────────────────────────────────
-
-async function sendDailyReminderEmail(client) {
-  const firstName = client.name.split(' ')[0];
-  const resend = resendClient();
-  const bodyHtml = `
-    <p style="margin:0 0 20px;font-size:15px;color:rgba(244,241,232,.65);line-height:1.6">
-      Hey <strong style="color:#f4f1e8">${firstName}</strong> — great work today! 💪
-    </p>
-    <p style="margin:0 0 28px;font-size:15px;color:rgba(244,241,232,.65);line-height:1.6">
-      Don't forget to log your <strong style="color:#f4f1e8">training</strong> and
-      <strong style="color:#f4f1e8">nutrition</strong> for today. Consistency is everything.
-    </p>
-    ${ctaButton('Log Today →', `${CLIENT_URL}/client.html`)}
-    <p style="margin:24px 0 0;font-size:13px;color:rgba(244,241,232,.35);line-height:1.6">
-      Keep it up — every entry brings you closer to your goal. 🔥
-    </p>`;
-  const { error } = await resend.emails.send({
-    from: FROM,
-    to: client.email,
-    subject: 'Log your day — DARE',
-    html: emailShell({ eyebrow: 'DAILY CHECK-IN', title: 'Time to log your day', bodyHtml }),
-  });
-  if (error) throw new Error('Reminder email failed: ' + JSON.stringify(error));
-}
-
-export async function sendDailyReminders() {
-  const clients = listClients().filter(c => c.role === 'client' && c.email);
-  console.log(`[notifier] sending daily reminder emails to ${clients.length} client(s)`);
-  for (const c of clients) {
-    try {
-      await sendDailyReminderEmail(c);
-    } catch (err) {
-      console.error(`[notifier] reminder failed for ${c.id}:`, err.message);
-    }
-  }
-}
-
-export function scheduleDailyReminders() {
-  // Every day at 21:00 Madrid time
-  cron.schedule('0 21 * * *', sendDailyReminders, { timezone: 'Europe/Madrid' });
-  console.log('[notifier] daily reminder emails scheduled at 21:00 Europe/Madrid');
-}
