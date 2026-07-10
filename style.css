@@ -3716,6 +3716,14 @@ main > section:not(.p-hero) {
     background: rgba(201, 162, 74, 0.06);
 }
 
+/* — Language toggle button (flag) — */
+.header-lang-btn { overflow: hidden; }
+.header-lang-btn span {
+    font-size: 16px;
+    line-height: 1;
+    filter: grayscale(0.15);
+}
+
 /* Sun shown in dark mode, Moon shown in light mode */
 .icon-moon { display: none; }
 .icon-sun  { display: block; }

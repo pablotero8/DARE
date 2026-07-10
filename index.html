@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <script>(function(){if(location.protocol==='file:')return;if(location.pathname.indexOf('/es/')!==-1)return;var p=localStorage.getItem('dare-lang');if(p==='en')return;if(p==='es'){var f=location.pathname.split('/').pop()||'index.html';location.replace('/es/'+f);return;}var l=(navigator.language||'').toLowerCase();if(l==='es'||l.startsWith('es-')){var f2=location.pathname.split('/').pop()||'index.html';localStorage.setItem('dare-lang','es');location.replace('/es/'+f2);}})();</script>
+    <script>(function(){if(location.protocol==='file:')return;if(location.pathname.indexOf('/es/')!==-1)return;if(localStorage.getItem('dare-lang')==='es'){var f=location.pathname.split('/').pop()||'index.html';location.replace('/es/'+f);}})();</script>
     <title>DARE | Private Health OS — Dubai</title>
     <meta name="description" content="DARE is a private health OS in Dubai: personalised training, nutrition and culinary execution run as one system by dedicated human coaches.">
     <link rel="canonical" href="https://darehabits.com/">
@@ -214,6 +214,10 @@
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
         </button>
+
+        <a href="#" id="lang-toggle" data-lang-target="es" class="header-theme-btn header-lang-btn" aria-label="Ver en español">
+            <span aria-hidden="true">🇪🇸</span>
+        </a>
 
         <a href="client.html" class="header-user-btn" aria-label="Client area">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

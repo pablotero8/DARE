@@ -317,6 +317,10 @@
             </svg>
         </button>
 
+        <a href="#" id="lang-toggle" data-lang-target="es" class="header-theme-btn header-lang-btn" aria-label="Ver en español">
+            <span aria-hidden="true">🇪🇸</span>
+        </a>
+
         <a href="client.html" class="header-user-btn" aria-label="Client area">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <circle cx="12" cy="8" r="4"/>
@@ -639,6 +643,18 @@
         var next = curr === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', next);
         try { localStorage.setItem('dare-theme', next); } catch(e){}
+      });
+    })();
+    (function(){
+      var btn = document.getElementById('lang-toggle');
+      if (!btn) return;
+      var EN_TO_ES = {'index.html':'index.html','plans.html':'plans.html','team.html':'team.html','cookies.html':'cookies.html','legal.html':'aviso-legal.html','privacy.html':'privacidad.html'};
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var file = location.pathname.split('/').pop() || 'index.html';
+        var dest = '/es/' + (EN_TO_ES[file] || 'index.html');
+        try { localStorage.setItem('dare-lang','es'); } catch(err){}
+        location.href = dest;
       });
     })();
     </script>

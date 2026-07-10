@@ -730,3 +730,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 })();
+
+/* ── Language toggle (EN default, ES via flag) ───────────── */
+(function () {
+  var btn = document.getElementById('lang-toggle');
+  if (!btn) return;
+  var EN_TO_ES = {
+    'index.html': 'index.html',
+    'plans.html': 'plans.html',
+    'team.html': 'team.html',
+    'cookies.html': 'cookies.html',
+    'legal.html': 'aviso-legal.html',
+    'privacy.html': 'privacidad.html'
+  };
+  var ES_TO_EN = {
+    'index.html': 'index.html',
+    'plans.html': 'plans.html',
+    'team.html': 'team.html',
+    'cookies.html': 'cookies.html',
+    'aviso-legal.html': 'legal.html',
+    'privacidad.html': 'privacy.html'
+  };
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    var target = btn.getAttribute('data-lang-target');
+    var inEs = location.pathname.indexOf('/es/') !== -1;
+    var file = location.pathname.split('/').pop() || 'index.html';
+    var dest;
+    if (target === 'es') {
+      dest = '/es/' + (EN_TO_ES[file] || 'index.html');
+    } else {
+      dest = '/' + (inEs ? (ES_TO_EN[file] || 'index.html') : file);
+    }
+    try { localStorage.setItem('dare-lang', target); } catch (err) {}
+    location.href = dest;
+  });
+})();
