@@ -420,19 +420,19 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 .cmsg-send{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;flex-shrink:0;background:linear-gradient(135deg,#c9a24a,#a6c85e);color:#070707;font-size:1.1rem;transition:transform .15s}
 .cmsg-send:hover:not(:disabled){transform:scale(1.08)} .cmsg-send:disabled{opacity:.4;cursor:default}
 
-/* ── Global chat FAB + all-conversations list ── */
+/* ── Global chat button (header) + all-conversations list ── */
 #chat-fab{
-  position:fixed;right:1.25rem;bottom:1.25rem;z-index:860;display:flex;
-  align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;
-  border:none;cursor:pointer;color:#070707;
+  position:relative;z-index:10;display:flex;
+  align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;
+  border:none;cursor:pointer;color:#070707;flex-shrink:0;
   background:linear-gradient(135deg,#c9a24a,#a6c85e);
-  box-shadow:0 8px 26px rgba(201,162,74,.42);font-size:1.4rem;
+  box-shadow:0 4px 14px rgba(201,162,74,.35);font-size:1.1rem;
   transition:transform .2s,box-shadow .2s;
 }
-#chat-fab:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(201,162,74,.55)}
+#chat-fab:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(201,162,74,.5)}
 .chat-fab-badge{
-  position:absolute;top:-3px;right:-3px;min-width:20px;height:20px;padding:0 5px;
-  border-radius:999px;background:#e0524d;color:#fff;font-size:.66rem;font-weight:700;
+  position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;
+  border-radius:999px;background:#e0524d;color:#fff;font-size:.62rem;font-weight:700;
   display:none;align-items:center;justify-content:center;border:2px solid var(--bg);
 }
 .chat-fab-badge.visible{display:flex}
@@ -479,6 +479,10 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 <header class="header">
   <span class="header-logo" translate="no">DARE</span>
   <div class="header-right">
+    <button id="chat-fab" title="Client chats" aria-label="Client chats">
+      💬
+      <span class="chat-fab-badge" id="chat-fab-badge">0</span>
+    </button>
     <div class="coach-badge">
       <div class="coach-avatar" id="coach-avatar">?</div>
       <div>
@@ -599,10 +603,6 @@ h1,h2,h3{font-family:'Tulpen One',serif;letter-spacing:.07em}
 </div>
 
 <!-- ═══ ALL CONVERSATIONS ═══ -->
-<button id="chat-fab" title="Client chats" aria-label="Client chats">
-  💬
-  <span class="chat-fab-badge" id="chat-fab-badge">0</span>
-</button>
 <div class="cmodal" id="conv-modal">
   <div class="cmodal-box conv-box">
     <div class="cmodal-head">
