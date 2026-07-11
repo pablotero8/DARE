@@ -1,22 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Background -->
+  <rect width="256" height="256" fill="#050507"/>
+
+  <!-- Main text "DARE" with gradient -->
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#b8d87a"/>
-      <stop offset="100%" stop-color="#8ab85a"/>
+    <linearGradient id="dareGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c9a24a;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#a6c85e;stop-opacity:1" />
     </linearGradient>
-    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#1a2012"/>
-      <stop offset="100%" stop-color="#0d1108"/>
-    </radialGradient>
   </defs>
-  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <!-- DARE text -->
   <text
-    x="256" y="365"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-size="260"
-    font-weight="700"
-    letter-spacing="18"
+    x="128"
+    y="156"
+    font-family="'Tulpen One', cursive"
+    font-size="160"
+    font-weight="bold"
+    fill="url(#dareGradient)"
     text-anchor="middle"
-    fill="url(#g)"
+    dominant-baseline="middle"
+    letter-spacing="-2"
   >DARE</text>
+
+  <!-- Accent line for visual interest at small sizes -->
+  <rect x="40" y="200" width="176" height="3" fill="#a6c85e" rx="1.5"/>
 </svg>
