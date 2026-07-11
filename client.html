@@ -194,6 +194,8 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .macro-track{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
 .macro-fill{height:100%;border-radius:999px}
 .macro-g{font-size:.7rem;font-weight:700;color:var(--text);width:40px;text-align:right;flex-shrink:0}
+.meal-macro-bar{display:flex;height:3px;border-radius:999px;overflow:hidden;margin-top:.35rem;background:rgba(255,255,255,.07)}
+.meal-macro-seg{height:100%}
 .divider{border:none;border-top:1px solid var(--border);margin:.9rem 0 1rem}
 
 /* ─── MEAL ACCORDION ─── */
@@ -293,6 +295,9 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
 .cs-name{font-family:'Tulpen One',serif;font-size:clamp(2.8rem,5.5vw,4.2rem);line-height:1;letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
 .cs-prog{font-family:'Tulpen One',serif;font-size:clamp(1.2rem,2vw,1.7rem);line-height:1.1;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:400}
 .cs-plan-label{font-family:'Tulpen One',serif;font-size:clamp(1.5rem,2.8vw,2.2rem);line-height:1.1;letter-spacing:.06em;text-transform:uppercase;color:rgba(201,162,74,.75);font-weight:400;margin-top:.3rem}
+.download-pdf-btn{margin-top:.6rem;padding:.5rem 1.1rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#070707;background:linear-gradient(135deg,#c9a24a,#a6c85e);border:none;border-radius:999px;cursor:pointer;transition:opacity .2s}
+.download-pdf-btn:hover{opacity:.88}
+.download-pdf-btn:disabled{opacity:.5;cursor:default}
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:960px){
@@ -594,6 +599,7 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       <div class="cs-prog" id="cs-client-prog">Fat-Loss Protocol &nbsp;&middot;&nbsp; Week 8 of 12</div>
       <div id="week-selector" class="week-selector"></div>
       <div class="cs-plan-label" id="cs-plan-label">My plan for today</div>
+      <button id="download-pdf-btn" class="download-pdf-btn" style="display:none" data-i18n="plan.downloadPdf">Download plan (PDF)</button>
     </div>
   </div>
 
@@ -832,6 +838,7 @@ const I18N = {
     'no.training':"Erika hasn't planned anything for you yet!",'no.nutrition':"Dani hasn't planned anything for you yet!",
     'nut.kcalTarget':'kcal target','nut.protein':'Protein','nut.carbs':'Carbs','nut.fat':'Fat',
     'nut.dailyTotal':'Daily total · achieved / target','nut.calories':'Calories','nut.kcal':'kcal',
+    'plan.downloadPdf':'Download plan (PDF)','plan.downloading':'Preparing…','plan.downloadErr':'Could not download the plan.',
     'msg.title':'Your coach','msg.sub':'Erika & Dani','msg.placeholder':'Write a message…','msg.empty':'No messages yet.<br>Write to Erika or Dani — they\'ll get back to you here.','msg.you':'You','msg.coach':'Coach',
     'log.training':'Log this session','log.nutrition':'Log nutrition','log.done':'✓ Done','log.partial':'~ Partial','log.skipped':'✗ Skipped',
     'log.onplan':'✓ On plan','log.offplan':'✗ Off plan','log.notePh':'How did it go? (optional)','log.noteNutPh':'Any notes on your nutrition today? (optional)',
@@ -873,6 +880,7 @@ const I18N = {
     'no.training':'¡Erika aún no ha planificado nada para ti!','no.nutrition':'¡Dani aún no ha planificado nada para ti!',
     'nut.kcalTarget':'kcal objetivo','nut.protein':'Proteína','nut.carbs':'Carbohid.','nut.fat':'Grasa',
     'nut.dailyTotal':'Total diario · conseguido / objetivo','nut.calories':'Calorías','nut.kcal':'kcal',
+    'plan.downloadPdf':'Descargar plan (PDF)','plan.downloading':'Preparando…','plan.downloadErr':'No se pudo descargar el plan.',
     'msg.title':'Tu coach','msg.sub':'Erika y Dani','msg.placeholder':'Escribe un mensaje…','msg.empty':'Aún no hay mensajes.<br>Escribe a Erika o Dani — te responderán aquí.','msg.you':'Tú','msg.coach':'Coach',
     'log.training':'Registra esta sesión','log.nutrition':'Registra tu nutrición','log.done':'✓ Hecho','log.partial':'~ Parcial','log.skipped':'✗ Saltada',
     'log.onplan':'✓ Según plan','log.offplan':'✗ Fuera de plan','log.notePh':'¿Cómo fue? (opcional)','log.noteNutPh':'¿Alguna nota sobre tu nutrición hoy? (opcional)',
@@ -938,6 +946,36 @@ async function fetchLivePlan(){
     if(data.week && Array.isArray(data.week)) return data;
     return null;
   }catch{ return null; }
+}
+
+// Download the currently-viewed week as a branded PDF. Only meaningful for a
+// live (API-backed) plan; the button stays hidden for the offline demo.
+async function downloadPlanPdf(){
+  const apiUrl=window.DARE_API_URL, token=getAuthToken(), client=getAuthClient();
+  if(!apiUrl||!token||!client||!CURRENT_WEEK_OF){ alert(t('plan.downloadErr')); return; }
+  const btn=document.getElementById('download-pdf-btn');
+  const orig=btn?btn.textContent:'';
+  if(btn){ btn.disabled=true; btn.textContent=t('plan.downloading'); }
+  try{
+    const r=await fetch(`${apiUrl}/api/plans/${client.id}/week/${CURRENT_WEEK_OF}/pdf`,{headers:{'Authorization':`Bearer ${token}`}});
+    if(!r.ok) throw new Error('bad status');
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`DARE-plan-${CURRENT_WEEK_OF}.pdf`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){ alert(t('plan.downloadErr')); }
+  finally{ if(btn){ btn.disabled=false; btn.textContent=orig||t('plan.downloadPdf'); } }
+}
+
+// Show the download button only when a live plan is loaded (token + client + week).
+function updateDownloadPdfBtn(){
+  const btn=document.getElementById('download-pdf-btn');
+  if(!btn) return;
+  const live=!!(window.DARE_API_URL && getAuthToken() && getAuthClient() && CURRENT_WEEK_OF && ACTIVE_PLAN);
+  btn.style.display = live ? '' : 'none';
+  if(live && !btn.dataset.wired){ btn.addEventListener('click', downloadPlanPdf); btn.dataset.wired='1'; }
 }
 
 async function apiLogin(email, password){
@@ -1237,6 +1275,7 @@ async function switchToWeek(weekOf){
     CURRENT_WEEK_OF=weekOf;
     ACTIVE_PLAN=null;
     renderWeeklyShopping(null); // clear last week's shopping list
+    updateDownloadPdfBtn();
     var weekNum=weekNumberFor(weekOf);
     updateWeekBtn(weekNum);
     buildWeekDropdown();
@@ -1251,6 +1290,7 @@ async function switchToWeek(weekOf){
 
   buildWeekSelector(WEEK_LIST,weekOf);
   buildWeekStrip();
+  updateDownloadPdfBtn();
 
   var plans=document.getElementById('day-plans');
   plans.style.transition='opacity .18s ease';
@@ -1377,6 +1417,7 @@ async function showDash(){
     renderDay(currentDay);
     renderWeeklyShopping(ACTIVE_PLAN);
     buildWeekStrip();
+    updateDownloadPdfBtn();
   } else {
     document.getElementById('day-plans').style.display      = 'none';
     document.getElementById('no-plan-screen').style.display = 'flex';
@@ -1827,8 +1868,16 @@ function renderNutrition(n){
     <div class="meal-list">`;
   n.meals.forEach(m=>{
     const steps=(m.steps||[]).map(s=>`<li>${s}</li>`).join('');
-    const mMacros = ((Number(m.protein)||0)||(Number(m.carbs)||0)||(Number(m.fat)||0))
-      ? `<div class="meal-macros" style="font-size:.66rem;color:var(--muted);margin-top:.2rem;letter-spacing:.02em">P ${Math.round(m.protein)}g · C ${Math.round(m.carbs)}g · F ${Math.round(m.fat)}g</div>` : '';
+    const hasM = (Number(m.protein)||0)||(Number(m.carbs)||0)||(Number(m.fat)||0);
+    let mMacros='';
+    if(hasM){
+      // Segment the bar by each macro's share of this meal's energy (4·P+4·C+9·F).
+      const mp=Math.round(m.protein)*4, mc=Math.round(m.carbs)*4, mf=Math.round(m.fat)*9;
+      const mt=mp+mc+mf||1;
+      const seg=(v,g)=>`<div class="meal-macro-seg" style="width:${v/mt*100}%;background:${g}"></div>`;
+      const bar=`<div class="meal-macro-bar">${seg(mp,'#a6c85e')}${seg(mc,'#c9a24a')}${seg(mf,'rgba(217,212,200,.65)')}</div>`;
+      mMacros=`<div class="meal-macros" style="font-size:.66rem;color:var(--muted);margin-top:.2rem;letter-spacing:.02em">P ${Math.round(m.protein)}g · C ${Math.round(m.carbs)}g · F ${Math.round(m.fat)}g</div>${bar}`;
+    }
     h+=`<div class="meal-item">
       <div class="meal-header">
         <span class="meal-time">${m.time}</span>

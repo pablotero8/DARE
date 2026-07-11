@@ -19,8 +19,9 @@ import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL,
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
-import { sendWelcomeNotifications, sendTestEmail, sendWelcomeEmail, sendNewMessageEmail } from './notifier.js';
+import { sendWelcomeNotifications, sendTestEmail, sendWelcomeEmail, sendNewMessageEmail, sendPlanReadyEmail } from './notifier.js';
 import { createContractForClient, getLatestContractForClient, generateContractPdf } from './contract.js';
+import { generatePlanPdf } from './planPdf.js';
 import { scheduleDailyBackups, runBackup, latestBackupPath } from './backup.js';
 import { randomBytes } from 'crypto';
 
@@ -856,31 +857,163 @@ function primaryMacro(f) {
   return 'fat';
 }
 
-// Solve gram quantities so the day's protein/carbs/fat hit their targets, in
-// priority order protein → carbs → fat. Each macro is steered by the foods whose
-// primary macro it is, accounting for what other foods already contribute to it.
-// Iterating resolves cross-coupling (e.g. eggs add fat while being protein-led).
-function solveDayQuantities(foods, targets) {
-  const PER = { protein: 'protein100', carbs: 'carbs100', fat: 'fat100' };
-  const macroTotal = (key) => foods.reduce((s, f) => s + f.grams * (Number(f[key]) || 0) / 100, 0);
-  for (let iter = 0; iter < 14; iter++) {
-    for (const M of ['protein', 'carbs', 'fat']) {          // protein first
-      const tgt = Number(targets[M]) || 0;
-      if (tgt <= 0) continue;
-      const key = PER[M];
-      const group = foods.filter(f => f.primary === M);
-      if (!group.length) continue;
-      const groupContrib = group.reduce((s, f) => s + f.grams * (Number(f[key]) || 0) / 100, 0);
-      if (groupContrib <= 1e-6) continue;
-      const fromOthers = macroTotal(key) - groupContrib;
-      let ratio = (tgt - fromOthers) / groupContrib;
-      ratio = Math.min(5, Math.max(0.1, ratio));            // clamp the per-step change
-      for (const f of group) f.grams = Math.max(0, f.grams * ratio);
+const MACRO_KEYS = { protein: 'protein100', carbs: 'carbs100', fat: 'fat100' };
+
+// Solve a small square linear system A·x = b by Gaussian elimination with
+// partial pivoting. Returns the solution vector, or null if A is singular
+// (degenerate foods — e.g. two groups with proportionally identical macros).
+function solveLinearSystem(A, b) {
+  const n = b.length;
+  const M = A.map((row, i) => [...row, b[i]]);   // augmented matrix (copy)
+  for (let col = 0; col < n; col++) {
+    let piv = col;
+    for (let r = col + 1; r < n; r++) if (Math.abs(M[r][col]) > Math.abs(M[piv][col])) piv = r;
+    if (Math.abs(M[piv][col]) < 1e-9) return null;   // singular / no unique solution
+    [M[col], M[piv]] = [M[piv], M[col]];
+    for (let r = 0; r < n; r++) {
+      if (r === col) continue;
+      const factor = M[r][col] / M[col][col];
+      for (let c = col; c <= n; c++) M[r][c] -= factor * M[col][c];
     }
+  }
+  return M.map((row, i) => row[n] / M[i][i]);
+}
+
+// Solve gram quantities so the day's protein/carbs/fat hit their targets EXACTLY.
+// Each food is scaled by one factor per its "primary" macro group, so the achieved
+// protein/carbs/fat are a linear function of the group scale factors. We build that
+// (≤3×3) system and solve it directly — no iteration, no convergence guessing.
+// Cross-contributions (e.g. eggs adding fat while sitting in the protein group)
+// are captured by the off-diagonal matrix terms, so the solution is exact when the
+// food set is feasible. A negative scale means a target is genuinely infeasible
+// (the other foods already overshoot that macro): we clamp it to 0 and re-solve the
+// remaining macros, leaving the overshoot to surface in checkDayTotals / the retry.
+function solveDayQuantities(foods, targets) {
+  for (const f of foods) if (f.baseGrams === undefined) f.baseGrams = f.grams;
+
+  // Group contribution to macro `Mi` when the group for `Mj` is scaled by 1.
+  const contrib = (Mi, Mj) => foods
+    .filter(f => f.primary === Mj)
+    .reduce((s, f) => s + f.baseGrams * (Number(f[MACRO_KEYS[Mi]]) || 0) / 100, 0);
+
+  const trySolve = (group) => {
+    if (!group.length) return null;
+    const A = group.map(Mi => group.map(Mj => contrib(Mi, Mj)));
+    const b = group.map(Mi => Number(targets[Mi]) || 0);
+    const sol = solveLinearSystem(A, b);
+    if (!sol) return null;
+    const out = {};
+    group.forEach((M, i) => { out[M] = sol[i]; });
+    return out;
+  };
+
+  // Macros we can actually steer: positive target AND at least one food primarily
+  // providing it. Kept in protein → carbs → fat priority order.
+  let active = ['protein', 'carbs', 'fat'].filter(M =>
+    (Number(targets[M]) || 0) > 0 &&
+    foods.some(f => f.primary === M && (Number(f[MACRO_KEYS[M]]) || 0) > 0)
+  );
+
+  const scales = { protein: 1, carbs: 1, fat: 1 };   // groups we don't solve keep baseline
+  while (active.length) {
+    const sol = trySolve(active);
+    if (!sol) { active = active.slice(0, -1); continue; }   // singular → drop lowest priority
+    const neg = active.filter(M => !(sol[M] >= 0));
+    for (const M of active) scales[M] = Math.max(0, sol[M]);
+    if (!neg.length) break;
+    active = active.filter(M => !neg.includes(M));           // clamp infeasible groups to 0, re-solve rest
+  }
+
+  for (const f of foods) {
+    const s = scales[f.primary];
+    if (Number.isFinite(s)) f.grams = Math.max(0, f.baseGrams * s);
   }
 }
 
 const round0 = (n) => Math.round(Number(n) || 0);
+
+// Turn a solved food/meal structure into the final day result (meals with exact
+// per-meal macros, aggregated shopping list, day totals and the target check).
+function buildDayResult(day, mealsRaw, foods) {
+  solveDayQuantities(foods, day);   // size portions to the targets, exactly
+
+  const meals = mealsRaw.map(m => {
+    let p = 0, c = 0, ft = 0;
+    const parts = m.foods.filter(f => Math.round(f.grams) >= 1).map(f => {
+      const g = Math.round(f.grams);
+      p  += g * f.protein100 / 100;
+      c  += g * f.carbs100   / 100;
+      ft += g * f.fat100     / 100;
+      return `${g}g ${f.item.toLowerCase()}`;
+    });
+    const protein = round0(p), carbs = round0(c), fat = round0(ft);
+    return {
+      id: m.id,
+      ingredients: parts.join(', '),
+      protein, carbs, fat,
+      kcal: round0(protein * 4 + carbs * 4 + fat * 9),
+      steps: m.steps.length ? m.steps : ['Prepare as planned.'],
+    };
+  });
+
+  // Shopping list: aggregate solved grams by food across the whole day.
+  const agg = {};
+  for (const f of foods) {
+    const g = Math.round(f.grams);
+    if (g >= 1) agg[f.item] = (agg[f.item] || 0) + g;
+  }
+  const shopping = Object.entries(agg).map(([item, g]) => ({ item, qty: `${g}g` }));
+
+  const totals = sumMealMacros(meals);
+  const check = checkDayTotals(day, totals);
+  return { meals, shopping, totals, ok: check.ok, check };
+}
+
+// One corrective pass when the food set can't hit the targets (a macro — usually
+// fat — overshoots because other foods carry it "for free"). We ask the model for
+// leaner/richer substitutes with the same culinary role, keeping items in order so
+// we can map the new per-100g facts straight back onto the existing food objects.
+async function refineFoodsForFeasibility(day, foods, check) {
+  const overshoot = (check.off || []).filter(o => o.achieved > o.target).map(o => o.macro);
+  if (!overshoot.length) return false;
+
+  const list = foods.map((f, i) =>
+    `${i}: "${f.item}" — P100:${f.protein100} C100:${f.carbs100} F100:${f.fat100}`).join('\n');
+  const prompt = `You are a nutrition database. A daily meal plan cannot hit its macro targets because these macros OVERSHOOT: ${overshoot.join(', ')}.
+Daily targets: P${day.protein} C${day.carbs} F${day.fat} g (${day.kcal} kcal).
+
+FOODS (index: name — grams of protein/carbs/fat per 100 g):
+${list}
+
+For the foods driving the overshooting macro(s), propose a LEANER/adjusted alternative that keeps the same culinary role (e.g. replace whole eggs with egg whites, full-fat yoghurt with 0% fat, olive oil with a smaller/leaner fat, fatty cuts with lean cuts). Foods that are fine may stay unchanged.
+Return ONLY JSON with EVERY food, in the SAME index order:
+{"foods":[{"index":0,"item":"Egg whites","protein100":11,"carbs100":0.7,"fat100":0.2}, ...]}`;
+
+  const resp = await openai.chat.completions.create({
+    model: NUTRITION_MODEL, max_tokens: 1400,
+    response_format: { type: 'json_object' },
+    messages: [{ role: 'user', content: prompt }],
+  });
+  const parsed = JSON.parse(resp.choices[0].message.content);
+  const subs = Array.isArray(parsed.foods) ? parsed.foods : [];
+  if (!subs.length) return false;
+
+  let changed = false;
+  subs.forEach((s, i) => {
+    const idx = Number.isInteger(s?.index) ? s.index : i;
+    const f = foods[idx];
+    if (!f) return;
+    const p = Math.max(0, Number(s.protein100) || 0);
+    const c = Math.max(0, Number(s.carbs100)   || 0);
+    const ft = Math.max(0, Number(s.fat100)    || 0);
+    if (p + c + ft <= 0) return;              // ignore nonsense rows
+    if (s.item) f.item = String(s.item).trim() || f.item;
+    f.protein100 = p; f.carbs100 = c; f.fat100 = ft;
+    f.primary = primaryMacro(f);             // profile changed → regroup
+    changed = true;
+  });
+  return changed;
+}
 
 async function computeNutritionDay(day) {
   const empty = { meals: [], shopping: [], totals: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, ok: false };
@@ -918,47 +1051,50 @@ async function computeNutritionDay(day) {
     });
     if (!foods.length) return empty;
 
-    // Size portions to the day targets, then compute every macro EXACTLY.
-    solveDayQuantities(foods, day);
+    let result = buildDayResult(day, mealsRaw, foods);
 
-    const meals = mealsRaw.map(m => {
-      let p = 0, c = 0, ft = 0;
-      const parts = m.foods.filter(f => Math.round(f.grams) >= 1).map(f => {
-        const g = Math.round(f.grams);
-        p  += g * f.protein100 / 100;
-        c  += g * f.carbs100   / 100;
-        ft += g * f.fat100     / 100;
-        return `${g}g ${f.item.toLowerCase()}`;
-      });
-      const protein = round0(p), carbs = round0(c), fat = round0(ft);
-      return {
-        id: m.id,
-        ingredients: parts.join(', '),
-        protein, carbs, fat,
-        kcal: round0(protein * 4 + carbs * 4 + fat * 9),
-        steps: m.steps.length ? m.steps : ['Prepare as planned.'],
-      };
-    });
-
-    // Shopping list: aggregate solved grams by food across the whole day.
-    const agg = {};
-    for (const f of foods) {
-      const g = Math.round(f.grams);
-      if (g >= 1) agg[f.item] = (agg[f.item] || 0) + g;
+    // Bounded (single) retry: if the food set is genuinely infeasible, ask the
+    // model once for leaner substitutes and re-solve. Keep whichever result is
+    // better so a bad substitution never makes the day worse.
+    if (!result.ok) {
+      try {
+        const changed = await refineFoodsForFeasibility(day, foods, result.check);
+        if (changed) {
+          for (const f of foods) delete f.baseGrams;     // re-derive starting portions
+          const retry = buildDayResult(day, mealsRaw, foods);
+          if (retry.ok || Math.abs(retry.totals.kcal - day.kcal) < Math.abs(result.totals.kcal - day.kcal)) {
+            result = retry;
+          }
+        }
+      } catch (e) {
+        console.error('[nutrition] substitution retry failed:', day.dayId, e.message);
+      }
     }
-    const shopping = Object.entries(agg).map(([item, g]) => ({ item, qty: `${g}g` }));
 
-    const totals = sumMealMacros(meals);
-    const check = checkDayTotals(day, totals);
-    if (!check.ok) {
-      const detail = check.off.map(o => `${o.macro} ${o.achieved}/${o.target}`).join(', ') || (check.proteinShort ? 'protein below target' : '');
+    if (!result.ok) {
+      const detail = result.check.off.map(o => `${o.macro} ${o.achieved}/${o.target}`).join(', ')
+        || (result.check.proteinShort ? 'protein below target' : '');
       console.warn(`[nutrition] day ${day.dayId} off target (food set may be infeasible): ${detail}`);
     }
-    return { meals, shopping, totals, ok: check.ok };
+    const { meals, shopping, totals, ok } = result;
+    return { meals, shopping, totals, ok };
   } catch (e) {
     console.error('[AI nutrition day]', day.dayId, e.message);
     return empty;
   }
+}
+
+// Email the client the first time a week becomes fully published (both training
+// and nutrition halves ready). Fire-and-forget — pass the pre-mutation published
+// state so later edits to an already-live week never re-notify.
+function notifyIfNewlyPublished(clientId, weekOf, wasPublished) {
+  if (wasPublished) return;
+  const plan = getPlanByWeek(clientId, weekOf);
+  if (!plan || !plan.publishedAt) return;
+  const client = getClientById(clientId);
+  if (!client || !client.email) return;
+  sendPlanReadyEmail({ toEmail: client.email, toName: client.name, weekOf })
+    .catch(err => console.error('[notify] plan ready email failed:', err.message));
 }
 
 app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res) => {
@@ -974,6 +1110,7 @@ app.post('/api/coach/save-plan-table', aiLimiter, requireCoach, async (req, res)
       return res.status(400).json({ error: 'Invalid clientId' });
     }
 
+    const wasPublished = !!getPlanByWeek(clientId, weekOf)?.publishedAt;
     let verification = null; // nutrition only: per-day achieved-vs-target macro check
 
     if (specialty === 'nutrition') {
@@ -1130,6 +1267,7 @@ Return ONLY this JSON:
       return res.status(400).json({ error: 'Invalid specialty' });
     }
 
+    notifyIfNewlyPublished(clientId, weekOf, wasPublished);
     res.json({ success: true, weekOf, clientId, verification });
   } catch (err) {
     if (err instanceof PlanValidationError) {
@@ -1170,7 +1308,9 @@ app.post('/api/coach/plans/:clientId/:weekOf/day', aiLimiter, requireCoach, (req
   if (!['training', 'nutrition'].includes(specialty)) return res.status(400).json({ error: 'specialty inválido' });
   if (!ensureClient(clientId, res)) return;
   try {
+    const wasPublished = !!getPlanByWeek(clientId, weekOf)?.publishedAt;
     const plan = updatePlanDay(clientId, weekOf, specialty, Number(dayIndex), day);
+    notifyIfNewlyPublished(clientId, weekOf, wasPublished);
     res.json({ success: true, weekOf, clientId, dayIndex: Number(dayIndex), shoppingList: plan.shoppingList || null });
   } catch (err) {
     handlePlanError(err, res, '[plans/day]', 'Error al actualizar el día');
@@ -1187,7 +1327,9 @@ app.post('/api/coach/plans/:clientId/:weekOf/overwrite', aiLimiter, requireCoach
   if (!ensureClient(clientId, res)) return;
   const toolName = specialty === 'training' ? 'save_training_plan' : 'save_nutrition_plan';
   try {
+    const wasPublished = !!getPlanByWeek(clientId, weekOf)?.publishedAt;
     const plan = savePlan(toolName, { clientId, weekOf, days });
+    notifyIfNewlyPublished(clientId, weekOf, wasPublished);
     res.json({ success: true, weekOf, clientId, shoppingList: plan.shoppingList || null });
   } catch (err) {
     handlePlanError(err, res, '[plans/overwrite]', 'Error al sobrescribir la semana');
@@ -1217,6 +1359,22 @@ app.get('/api/plans/:clientId/week/:weekOf/shopping', requireAuth, (req, res) =>
   const shoppingList = plan.shoppingList || shoppingListForPlan(plan);
   if (!shoppingList) return res.status(404).json({ error: 'Sin lista de la compra para esta semana' });
   res.json(shoppingList);
+});
+
+// Branded weekly-plan PDF. Client downloads their own week; coach any client's.
+app.get('/api/plans/:clientId/week/:weekOf/pdf', requireAuth, (req, res) => {
+  const { clientId, weekOf } = req.params;
+  if (req.client.id !== clientId && req.client.role !== 'coach') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  const client = getClientById(clientId);
+  if (!client || client.role !== 'client') return res.status(404).json({ error: 'Cliente no encontrado' });
+  const plan = getPlanByWeek(clientId, weekOf);
+  if (!plan) return res.status(404).json({ error: 'Semana no encontrada' });
+  if (!plan.shoppingList) plan.shoppingList = shoppingListForPlan(plan); // legacy plans
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="DARE-plan-${clientId}-${weekOf}.pdf"`);
+  generatePlanPdf(plan, client).pipe(res);
 });
 
 // ── Recipe library (coach) ────────────────────────────────────

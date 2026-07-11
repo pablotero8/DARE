@@ -117,6 +117,41 @@ export async function sendNewMessageEmail({ toEmail, toName, fromName, preview, 
   if (error) throw new Error('New message email failed: ' + JSON.stringify(error));
 }
 
+// ── Weekly plan ready email ───────────────────────────────────
+// Sent once, the first time a client's week becomes fully published (both the
+// training and nutrition halves ready). Fire-and-forget from the save endpoints.
+
+function weekRangeLabel(weekOf) {
+  try {
+    const mon = new Date(weekOf + 'T12:00:00Z');
+    const sun = new Date(mon); sun.setUTCDate(sun.getUTCDate() + 6);
+    const opts = { day: 'numeric', month: 'long', timeZone: 'UTC' };
+    return `${mon.toLocaleDateString('en-GB', opts)} – ${sun.toLocaleDateString('en-GB', { ...opts, year: 'numeric' })}`;
+  } catch { return weekOf; }
+}
+
+export async function sendPlanReadyEmail({ toEmail, toName, weekOf }) {
+  if (!toEmail) return;
+  const firstName = toName?.split(' ')[0] || 'there';
+  const resend = resendClient();
+  const range = weekRangeLabel(weekOf);
+  const bodyHtml = `
+    <p style="margin:0 0 20px;font-size:15px;color:rgba(244,241,232,.65);line-height:1.6">
+      Hi <strong style="color:#f4f1e8">${firstName}</strong>, your personalised training and nutrition plan for the week of <strong style="color:#f4f1e8">${escapeHtml(range)}</strong> is now available in your portal.
+    </p>
+    <p style="margin:0 0 24px;font-size:15px;color:rgba(244,241,232,.65);line-height:1.6">
+      Every meal is portioned to hit your exact macros, and you can download a copy of the full week as a PDF.
+    </p>
+    ${ctaButton('View My Plan →', `${CLIENT_URL}/client.html`)}`;
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: toEmail,
+    subject: 'Your weekly plan is ready — DARE',
+    html: emailShell({ eyebrow: 'DARE COACHING PLATFORM', title: 'Your plan is ready', bodyHtml }),
+  });
+  if (error) throw new Error('Plan ready email failed: ' + JSON.stringify(error));
+}
+
 export async function sendWelcomeNotifications(client, password, contractPdfStream) {
   try {
     if (contractPdfStream) {
