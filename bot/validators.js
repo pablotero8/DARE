@@ -111,6 +111,18 @@ export function validateNutritionDay(day, index = null) {
   if (!isFiniteNumber(day.carbs) || day.carbs < 0) errors.push(`Día ${where}: carbohidratos inválidos`);
   if (!isFiniteNumber(day.fat) || day.fat < 0) errors.push(`Día ${where}: grasa inválida`);
 
+  // Macro/kcal consistency ("regla de las proporciones"): the typed kcal should
+  // match 4·protein + 4·carbs + 9·fat. A drift > 3% almost always means a data-
+  // entry slip in the coach's targets — warn (don't block) so it's caught before
+  // the solver runs against an impossible goal.
+  if (isFiniteNumber(day.kcal) && day.kcal > 0 &&
+      isFiniteNumber(day.protein) && isFiniteNumber(day.carbs) && isFiniteNumber(day.fat)) {
+    const implied = day.protein * 4 + day.carbs * 4 + day.fat * 9;
+    if (implied > 0 && Math.abs(implied - day.kcal) / day.kcal > 0.03) {
+      warnings.push(`Día ${where}: kcal (${Math.round(day.kcal)}) no cuadra con los macros (4·P+4·C+9·G = ${Math.round(implied)} kcal)`);
+    }
+  }
+
   // Meals: at least one, each with time + name + kcal + steps.
   if (!Array.isArray(day.meals) || day.meals.length === 0) {
     errors.push(`Día ${where}: sin comidas (se requiere al menos 1)`);
