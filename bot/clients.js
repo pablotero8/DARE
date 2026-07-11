@@ -135,6 +135,22 @@ export async function resetClientPassword(id) {
   return newPwd;
 }
 
+// ── Presence ─────────────────────────────────────────────────
+// Stamped on every authenticated request (see requireAuth in server.js).
+// Used to tell whether someone currently has the portal open, so a new
+// message only triggers an email when the recipient isn't actively polling.
+
+export function touchLastSeen(id) {
+  db.prepare("UPDATE clients SET last_seen_at = datetime('now') WHERE id = ?").run(id);
+}
+
+export function isRecentlyActive(id, withinSeconds = 90) {
+  const row = db.prepare('SELECT last_seen_at FROM clients WHERE id = ?').get(id);
+  if (!row?.last_seen_at) return false;
+  const seenAt = new Date(row.last_seen_at.replace(' ', 'T') + 'Z').getTime();
+  return Date.now() - seenAt < withinSeconds * 1000;
+}
+
 // ── Convenience for bot prompts ───────────────────────────────
 
 export function formatClientsForPrompt() {

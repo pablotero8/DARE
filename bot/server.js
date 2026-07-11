@@ -12,13 +12,14 @@ import { listExercises } from './exercises.js';
 import {
   verifyClientPassword, getClientById, getClientByEmail,
   listClients, createClient, deleteClient, resetClientPassword, updateClient,
+  touchLastSeen, isRecentlyActive,
 } from './clients.js';
 import { signToken, verifyToken, persistSession, revokeSession, isSessionValid, passwordPolicyError, verifyPassword, hashPassword } from './auth.js';
 import { TRAINING_TOOL, NUTRITION_TOOL, CREATE_CLIENT_TOOL, RESET_PASSWORD_TOOL, SHOW_TEMPLATE_TOOL, ADD_NOTE_TOOL, FILL_NUTRITION_FROM_TEXT_TOOL, PREFILL_PLAN_TABLE_TOOL } from './tools.js';
 import { saveLog, getLog, getRecentLogs, getAdherenceSummary, saveCheckIn, getCheckIns } from './logs.js';
 import { addMessage, getThread, markRead, unreadCount, unreadByClientForCoach } from './messages.js';
 import { sendPasswordReset } from './mailer.js';
-import { sendWelcomeNotifications, sendTestEmail, sendWelcomeEmail } from './notifier.js';
+import { sendWelcomeNotifications, sendTestEmail, sendWelcomeEmail, sendNewMessageEmail } from './notifier.js';
 import { createContractForClient, getLatestContractForClient, generateContractPdf } from './contract.js';
 import { scheduleDailyBackups, runBackup, latestBackupPath } from './backup.js';
 import { randomBytes } from 'crypto';
@@ -112,6 +113,7 @@ function requireAuth(req, res, next) {
   if (!client) return res.status(401).json({ error: 'Usuario no encontrado' });
   req.token = token;
   req.client = client;
+  touchLastSeen(client.id); // marks them "active in portal" for message notifications
   next();
 }
 
@@ -353,6 +355,12 @@ app.post('/api/messages', requireAuth, (req, res) => {
   const text = String(req.body?.text || '').trim();
   if (!text) return res.status(400).json({ error: 'Mensaje vacío' });
   const msg = addMessage(req.client.id, 'client', text, null);
+  // Both coaches share every client thread — email whichever ones aren't
+  // currently active in their portal (the active ones just see the badge).
+  listClients().filter(c => c.role === 'coach' && !isRecentlyActive(c.id)).forEach(coach => {
+    sendNewMessageEmail({ toEmail: coach.email, toName: coach.name, fromName: req.client.name, preview: text, portalPath: '/coach.html' })
+      .catch(err => console.error('[notify] coach message email failed:', err.message));
+  });
   res.json({ ok: true, message: msg });
 });
 
@@ -383,6 +391,10 @@ app.post('/api/coach/messages/:clientId', requireCoach, (req, res) => {
   const text = String(req.body?.text || '').trim();
   if (!text) return res.status(400).json({ error: 'Mensaje vacío' });
   const msg = addMessage(req.params.clientId, 'coach', text, req.client.id);
+  if (!isRecentlyActive(client.id)) {
+    sendNewMessageEmail({ toEmail: client.email, toName: client.name, fromName: req.client.name, preview: text, portalPath: '/client.html' })
+      .catch(err => console.error('[notify] client message email failed:', err.message));
+  }
   res.json({ ok: true, message: msg });
 });
 

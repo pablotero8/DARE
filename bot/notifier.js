@@ -52,6 +52,10 @@ function ctaButton(label, href) {
   </td></tr></table>`;
 }
 
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
 // ── Welcome email ─────────────────────────────────────────────
 
 export async function sendWelcomeEmail(client, password) {
@@ -84,6 +88,33 @@ export async function sendWelcomeEmail(client, password) {
     html: emailShell({ eyebrow: 'DARE COACHING PLATFORM', title: `Welcome, ${firstName}!`, bodyHtml }),
   });
   if (error) throw new Error('Welcome email failed: ' + JSON.stringify(error));
+}
+
+// ── New-message email ────────────────────────────────────────
+// Sent only when the recipient isn't currently active in the portal (see
+// isRecentlyActive in clients.js) — otherwise they just get the in-portal
+// unread badge, no email.
+
+export async function sendNewMessageEmail({ toEmail, toName, fromName, preview, portalPath }) {
+  if (!toEmail) return;
+  const firstName = toName?.split(' ')[0] || 'there';
+  const resend = resendClient();
+  const trimmed = String(preview || '').slice(0, 300);
+  const bodyHtml = `
+    <p style="margin:0 0 20px;font-size:15px;color:rgba(244,241,232,.65);line-height:1.6">
+      <strong style="color:#f4f1e8">${escapeHtml(fromName)}</strong> sent you a new message on DARE:
+    </p>
+    <div style="background:rgba(244,241,232,.04);border:1px solid rgba(244,241,232,.08);border-radius:10px;padding:16px 20px;margin-bottom:24px">
+      <p style="margin:0;font-size:14px;color:rgba(244,241,232,.75);line-height:1.6;font-style:italic">"${escapeHtml(trimmed)}${preview && preview.length > 300 ? '…' : ''}"</p>
+    </div>
+    ${ctaButton('Reply on DARE →', `${CLIENT_URL}${portalPath}`)}`;
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: toEmail,
+    subject: `New message from ${fromName} — DARE`,
+    html: emailShell({ eyebrow: 'DARE COACHING PLATFORM', title: `Hi, ${firstName}`, bodyHtml }),
+  });
+  if (error) throw new Error('New message email failed: ' + JSON.stringify(error));
 }
 
 export async function sendWelcomeNotifications(client, password, contractPdfStream) {

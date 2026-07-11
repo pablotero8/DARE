@@ -181,6 +181,9 @@ for (const sql of [
   // Date of birth (YYYY-MM-DD) — needed to identify the client in the
   // coaching agreement and to confirm they are of legal age.
   `ALTER TABLE clients ADD COLUMN birth_date TEXT`,
+  // Updated on every authenticated request — lets us tell whether a client
+  // or coach currently has the portal open (for message email notifications).
+  `ALTER TABLE clients ADD COLUMN last_seen_at TEXT`,
 ]) {
   try { db.exec(sql); } catch {} // column already exists — fine
 }
