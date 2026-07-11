@@ -23,6 +23,10 @@ import { sendWelcomeNotifications, sendTestEmail, sendWelcomeEmail, sendNewMessa
 import { createContractForClient, getLatestContractForClient, generateContractPdf } from './contract.js';
 import { generatePlanPdf } from './planPdf.js';
 import { scheduleDailyBackups, runBackup, latestBackupPath } from './backup.js';
+import {
+  fitbitConfigured, buildAuthUrl as buildFitbitAuthUrl, handleCallback as handleFitbitCallback,
+  getStatus as fitbitStatus, getSummary as getFitbitSummary, disconnect as disconnectFitbit,
+} from './fitbit.js';
 import { randomBytes } from 'crypto';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -333,6 +337,63 @@ app.get('/api/checkins/:clientId', requireAuth, (req, res) => {
     return res.status(403).json({ error: 'Acceso denegado' });
   }
   res.json(getCheckIns(clientId));
+});
+
+// ── Fitbit integration ────────────────────────────────────────
+// Each client links their own Fitbit account via OAuth (see bot/fitbit.js).
+// Coaches may read a client's summary — the same access model as check-ins.
+
+app.get('/api/fitbit/status', requireAuth, (req, res) => {
+  res.json(fitbitStatus(req.client.id));
+});
+
+app.post('/api/fitbit/connect', requireAuth, (req, res) => {
+  if (!fitbitConfigured()) return res.status(503).json({ error: 'Fitbit no está configurado' });
+  try {
+    res.json({ url: buildFitbitAuthUrl(req.client.id) });
+  } catch (err) {
+    console.error('[fitbit] connect:', err.message);
+    res.status(500).json({ error: 'No se pudo iniciar la conexión con Fitbit' });
+  }
+});
+
+// Unauthenticated by design: the browser lands here redirected from
+// fitbit.com. The signed single-use `state` row maps back to the client.
+app.get('/api/fitbit/callback', async (req, res) => {
+  const { code, state, error } = req.query;
+  if (error || !code || !state) return res.redirect('/client.html?fitbit=denied');
+  try {
+    await handleFitbitCallback(String(code), String(state));
+    res.redirect('/client.html?fitbit=connected');
+  } catch (err) {
+    console.error('[fitbit] callback:', err.message);
+    res.redirect('/client.html?fitbit=error');
+  }
+});
+
+app.get('/api/fitbit/summary/:clientId', requireAuth, async (req, res) => {
+  const { clientId } = req.params;
+  if (req.client.id !== clientId && req.client.role !== 'coach') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  if (!fitbitConfigured()) return res.json({ configured: false, connected: false, data: null });
+  try {
+    const data = await getFitbitSummary(clientId);
+    res.json({ configured: true, connected: data !== null, data });
+  } catch (err) {
+    console.error('[fitbit] summary:', err.message);
+    res.status(502).json({ error: 'No se pudieron obtener los datos de Fitbit' });
+  }
+});
+
+app.delete('/api/fitbit/disconnect', requireAuth, async (req, res) => {
+  try {
+    await disconnectFitbit(req.client.id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[fitbit] disconnect:', err.message);
+    res.status(500).json({ error: 'No se pudo desconectar Fitbit' });
+  }
 });
 
 // ── Messaging (client side) ───────────────────────────────────
