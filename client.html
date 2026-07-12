@@ -692,28 +692,6 @@ h1,h2,h3,h4{font-family:'Tulpen One','Times New Roman',serif;letter-spacing:.07e
       </div>
     </div>
 
-    <!-- Fitbit wearable data (hidden unless the server has Fitbit configured) -->
-    <div class="checkin-section" id="fitbit-section" style="display:none">
-      <div class="checkin-title" data-i18n="fitbit.title">⌚ Fitbit — Wearable data</div>
-      <div id="fitbit-off" style="display:none">
-        <p style="font-size:.8rem;line-height:1.65;color:rgba(244,241,232,.55);margin:.5rem 0 1.1rem" data-i18n-html="fitbit.intro">
-          Connect your Fitbit account so your coaches can see your sleep, resting heart rate,
-          HRV and daily activity, and fine-tune your protocol with real data. Fitbit accounts
-          are managed by Google, so you authorise access on Google's own consent screen and you
-          can disconnect at any time — we then delete our access and your synced data. We only
-          read daily summaries, as described in the <a href="/privacy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy Policy</a>.
-        </p>
-        <button class="log-save-btn" id="fitbit-connect-btn" data-i18n="fitbit.connect">Connect my Fitbit</button>
-      </div>
-      <div id="fitbit-on" style="display:none">
-        <div class="pp-metrics" id="fitbit-tiles" style="margin-bottom:0"></div>
-        <p style="font-size:.68rem;color:rgba(244,241,232,.35);margin:.9rem 0 .7rem" id="fitbit-sync-note"></p>
-        <button class="log-save-btn" id="fitbit-disconnect-btn" style="background:transparent;border:1px solid rgba(244,241,232,.2);color:rgba(244,241,232,.55);box-shadow:none" data-i18n="fitbit.disconnect">Disconnect Fitbit</button>
-      </div>
-      <span class="log-status" id="fitbit-status"></span>
-      <p style="font-size:.62rem;color:rgba(244,241,232,.28);margin-top:1rem;line-height:1.5" data-i18n="fitbit.trademark">Fitbit is a trademark of Google LLC. DARE is not endorsed by Google. Your Fitbit data is used only for your coaching — never for advertising — and is deleted when you disconnect.</p>
-    </div>
-
     <!-- Weekly check-in -->
     <div class="checkin-section">
       <div class="checkin-title" data-i18n="checkin.title">📊 Weekly Check-In — Log your measurements</div>
@@ -866,15 +844,6 @@ const I18N = {
     'log.onplan':'✓ On plan','log.offplan':'✗ Off plan','log.notePh':'How did it go? (optional)','log.noteNutPh':'Any notes on your nutrition today? (optional)',
     'log.save':'Save log','log.saving':'Saving…','log.saved':'Saved ✓','log.savedShort':'Saved','log.error':'Error',
     'log.sessionLogged':'✓ Session logged','log.nutLogged':'✓ Nutrition logged','log.fullAdh':'✓ Full adherence','log.logged':'✓ Logged',
-    'fitbit.title':'⌚ Fitbit — Wearable data',
-    'fitbit.intro':"Connect your Fitbit account so your coaches can see your sleep, resting heart rate, HRV and daily activity, and fine-tune your protocol with real data. Fitbit accounts are managed by Google, so you authorise access on Google's own consent screen and you can disconnect at any time — we then delete our access and your synced data. We only read daily summaries, as described in the <a href=\"/privacy.html\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--gold)\">Privacy Policy</a>.",
-    'fitbit.connect':'Connect my Fitbit','fitbit.connecting':'Opening Fitbit…','fitbit.disconnect':'Disconnect Fitbit',
-    'fitbit.confirmDisc':'Disconnect Fitbit? We will delete our access and your synced data.',
-    'fitbit.connectedMsg':'✓ Fitbit connected!','fitbit.deniedMsg':'Connection cancelled on Fitbit.','fitbit.errorMsg':'Could not connect to Fitbit. Please try again.',
-    'fitbit.discOk':'Fitbit disconnected and data deleted.','fitbit.loadErr':'Could not load your Fitbit data right now.',
-    'fitbit.noData':'No data for today yet — open the Fitbit app on your phone to sync your device.',
-    'fitbit.sync':'Today, from your Fitbit account · updated at','fitbit.sleep':'Sleep','fitbit.rhr':'Resting HR','fitbit.hrv':'HRV','fitbit.steps':'Steps','fitbit.active':'Active min','fitbit.cals':'Calories',
-    'fitbit.trademark':'Fitbit is a trademark of Google LLC. DARE is not endorsed by Google. Your Fitbit data is used only for your coaching — never for advertising — and is deleted when you disconnect.',
     'week.label':'Week','week.dash':'Week —',
     'shop.title':'🛒 Weekly shopping list','shop.protein':'Protein','shop.carbs':'Carbs','shop.veg':'Vegetables & fruit','shop.dairy':'Dairy','shop.fats':'Fats & oils','shop.other':'Other',
   },
@@ -917,15 +886,6 @@ const I18N = {
     'log.onplan':'✓ Según plan','log.offplan':'✗ Fuera de plan','log.notePh':'¿Cómo fue? (opcional)','log.noteNutPh':'¿Alguna nota sobre tu nutrición hoy? (opcional)',
     'log.save':'Guardar registro','log.saving':'Guardando…','log.saved':'Guardado ✓','log.savedShort':'Guardado','log.error':'Error',
     'log.sessionLogged':'✓ Sesión registrada','log.nutLogged':'✓ Nutrición registrada','log.fullAdh':'✓ Adherencia total','log.logged':'✓ Registrado',
-    'fitbit.title':'⌚ Fitbit — Datos de tu wearable',
-    'fitbit.intro':'Conecta tu cuenta de Fitbit para que tus coaches vean tu sueño, frecuencia cardíaca en reposo, VFC y actividad diaria, y ajusten tu protocolo con datos reales. Las cuentas Fitbit las gestiona Google, así que autorizas el acceso en la propia pantalla de consentimiento de Google y puedes desconectarlo cuando quieras — entonces eliminamos nuestro acceso y tus datos sincronizados. Solo leemos resúmenes diarios, como se describe en la <a href="/es/privacidad.html" target="_blank" rel="noopener" style="color:var(--gold)">Política de Privacidad</a>.',
-    'fitbit.connect':'Conectar mi Fitbit','fitbit.connecting':'Abriendo Fitbit…','fitbit.disconnect':'Desconectar Fitbit',
-    'fitbit.confirmDisc':'¿Desconectar Fitbit? Eliminaremos nuestro acceso y tus datos sincronizados.',
-    'fitbit.connectedMsg':'✓ ¡Fitbit conectado!','fitbit.deniedMsg':'Conexión cancelada en Fitbit.','fitbit.errorMsg':'No se pudo conectar con Fitbit. Inténtalo de nuevo.',
-    'fitbit.discOk':'Fitbit desconectado y datos eliminados.','fitbit.loadErr':'No se pudieron cargar tus datos de Fitbit ahora mismo.',
-    'fitbit.noData':'Aún no hay datos de hoy — abre la app de Fitbit en tu móvil para sincronizar tu dispositivo.',
-    'fitbit.sync':'Hoy, desde tu cuenta de Fitbit · actualizado a las','fitbit.sleep':'Sueño','fitbit.rhr':'FC Reposo','fitbit.hrv':'VFC','fitbit.steps':'Pasos','fitbit.active':'Min activos','fitbit.cals':'Calorías',
-    'fitbit.trademark':'Fitbit es una marca de Google LLC. DARE no cuenta con el respaldo de Google. Tus datos de Fitbit se usan solo para tu coaching — nunca para publicidad — y se eliminan al desconectar.',
     'week.label':'Semana','week.dash':'Semana —',
     'shop.title':'🛒 Lista de la compra semanal','shop.protein':'Proteína','shop.carbs':'Carbohidratos','shop.veg':'Verduras y fruta','shop.dairy':'Lácteos','shop.fats':'Grasas y aceites','shop.other':'Otros',
   },
@@ -1600,7 +1560,7 @@ if(new URLSearchParams(location.search).has('logout')){
       if(!me){ sessionStorage.clear(); return; }
       sessionStorage.setItem('dare_client', JSON.stringify(me));
       if(me.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html'; }
-      else { showDash(); handleFitbitReturn(); }
+      else { showDash(); }
     })
     .catch(() => null);
 })();
@@ -1624,7 +1584,6 @@ document.getElementById('login-btn').addEventListener('click', async ()=>{
   // Token travels via sessionStorage only — never in the URL (history/Referer leak).
   if(result.client.role === 'coach'){ window.location.href = window.DARE_API_URL + '/coach.html'; return; }
   showDash();
-  handleFitbitReturn();
 });
 document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-btn').click(); });
 document.getElementById('logout-btn').addEventListener('click',()=>{
@@ -2088,7 +2047,6 @@ const profilePanel=document.getElementById('profile-panel');
 document.getElementById('profile-btn').addEventListener('click',async ()=>{
   profilePanel.classList.add('open');
   const client=getAuthClient();
-  loadFitbit();
   if(!chartsInit && client){
     const checkIns = await fetch(`${window.DARE_API_URL}/api/checkins/${client.id}`,{headers:{Authorization:'Bearer '+getAuthToken()}}).then(r=>r.ok?r.json():[]).catch(()=>[]);
     initProfileCharts(checkIns);
@@ -2096,77 +2054,6 @@ document.getElementById('profile-btn').addEventListener('click',async ()=>{
   }
 });
 document.getElementById('close-profile').addEventListener('click',()=>profilePanel.classList.remove('open'));
-
-/* ═══ FITBIT (Google) — wearable data ═══
- * The card only appears when the server has FITBIT_CLIENT_ID configured.
- * Connect → server builds the OAuth URL → full-page redirect to fitbit.com →
- * Fitbit redirects back to /api/fitbit/callback → /client.html?fitbit=… */
-let fitbitLoaded=false;
-async function loadFitbit(force){
-  const sec=document.getElementById('fitbit-section');
-  const client=getAuthClient();
-  if(!sec||!client) return;
-  if(fitbitLoaded&&!force) return;
-  try{
-    const st=await fetch(window.DARE_API_URL+'/api/fitbit/status',{headers:{Authorization:'Bearer '+getAuthToken()}}).then(r=>r.ok?r.json():null);
-    if(!st||!st.configured){ sec.style.display='none'; return; }
-    sec.style.display='';
-    fitbitLoaded=true;
-    const off=document.getElementById('fitbit-off'), on=document.getElementById('fitbit-on');
-    if(!st.connected){ off.style.display=''; on.style.display='none'; return; }
-    off.style.display='none'; on.style.display='';
-    const r=await fetch(window.DARE_API_URL+'/api/fitbit/summary/'+client.id,{headers:{Authorization:'Bearer '+getAuthToken()}});
-    const j=r.ok?await r.json():null;
-    renderFitbitTiles(j?j.data:null);
-  }catch(e){ /* leave section as-is; transient network error */ }
-}
-function fbTile(label,valHtml){ return '<div class="pp-metric glass"><div class="pp-metric-label">'+label+'</div><div class="pp-metric-val">'+valHtml+'</div></div>'; }
-function fbFmtSleep(min){ if(min==null) return '—'; return Math.floor(min/60)+'h '+String(min%60).padStart(2,'0')+'m'; }
-function renderFitbitTiles(d){
-  const wrap=document.getElementById('fitbit-tiles');
-  const note=document.getElementById('fitbit-sync-note');
-  if(!d){ wrap.innerHTML='<p style="grid-column:1/-1;font-size:.78rem;color:rgba(244,241,232,.5)">'+t('fitbit.noData')+'</p>'; note.textContent=''; return; }
-  const V=(v,suf)=>v==null?'—':v+(suf?'<sup>'+suf+'</sup>':'');
-  wrap.innerHTML=
-    fbTile(t('fitbit.sleep'), fbFmtSleep(d.sleepMinutes))+
-    fbTile(t('fitbit.rhr'),   V(d.restingHeartRate,'bpm'))+
-    fbTile(t('fitbit.hrv'),   V(d.hrvMs!=null?Math.round(d.hrvMs):null,'ms'))+
-    fbTile(t('fitbit.steps'), d.steps==null?'—':Number(d.steps).toLocaleString())+
-    fbTile(t('fitbit.active'),V(d.activeMinutes,'min'))+
-    fbTile(t('fitbit.cals'),  V(d.caloriesOut,'kcal'));
-  note.textContent=t('fitbit.sync')+' '+new Date(d.fetchedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-}
-document.getElementById('fitbit-connect-btn').addEventListener('click',async()=>{
-  const btn=document.getElementById('fitbit-connect-btn'), st=document.getElementById('fitbit-status');
-  btn.disabled=true; st.className='log-status'; st.textContent=t('fitbit.connecting');
-  try{
-    const r=await fetch(window.DARE_API_URL+'/api/fitbit/connect',{method:'POST',headers:{Authorization:'Bearer '+getAuthToken()}});
-    const j=await r.json().catch(()=>({}));
-    if(r.ok&&j.url){ window.location.href=j.url; return; }
-    st.textContent=j.error||t('fitbit.errorMsg'); btn.disabled=false;
-  }catch{ st.textContent=t('fitbit.errorMsg'); btn.disabled=false; }
-});
-document.getElementById('fitbit-disconnect-btn').addEventListener('click',async()=>{
-  if(!confirm(t('fitbit.confirmDisc'))) return;
-  const st=document.getElementById('fitbit-status');
-  try{
-    const r=await fetch(window.DARE_API_URL+'/api/fitbit/disconnect',{method:'DELETE',headers:{Authorization:'Bearer '+getAuthToken()}});
-    if(r.ok){ st.className='log-status ok'; st.textContent=t('fitbit.discOk'); loadFitbit(true); }
-    else{ st.className='log-status'; st.textContent=t('fitbit.errorMsg'); }
-  }catch{ st.className='log-status'; st.textContent=t('fitbit.errorMsg'); }
-});
-// Returning from the Fitbit consent screen: open the profile with a status note.
-function handleFitbitReturn(){
-  const p=new URLSearchParams(location.search).get('fitbit');
-  if(!p) return;
-  history.replaceState(null,'',location.pathname);
-  document.getElementById('profile-btn').click();
-  const st=document.getElementById('fitbit-status');
-  if(p==='connected'){ st.className='log-status ok'; st.textContent=t('fitbit.connectedMsg'); }
-  else if(p==='denied'){ st.className='log-status'; st.textContent=t('fitbit.deniedMsg'); }
-  else{ st.className='log-status'; st.textContent=t('fitbit.errorMsg'); }
-  loadFitbit(true);
-}
 
 // Check-in save
 document.getElementById('ci-save-btn').addEventListener('click',async()=>{

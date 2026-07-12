@@ -3461,8 +3461,16 @@ body {
 /* Chart notes */
 .p-chart-note { font-size: 1.05rem; line-height: 1.55; }
 
-/* Fitbit tracking section */
-.p-whoop-hl-sub { font-size: 1.1rem !important; line-height: 1.6 !important; }
+/* Screen-reader-only text (SEO/accessibility headings) */
+.sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 
 /* Onboarding timeline */
 .p-timeline-title { font-size: 1.24rem; }

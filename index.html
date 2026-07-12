@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <script>(function(){if(location.protocol==='file:')return;if(location.pathname.indexOf('/es/')!==-1)return;if(localStorage.getItem('dare-lang')==='es'){var f=location.pathname.split('/').pop()||'index.html';location.replace('/es/'+f);}})();</script>
-    <title>DARE | Private Health OS — Dubai</title>
-    <meta name="description" content="DARE is a private health OS in Dubai: personalised training, nutrition and culinary execution run as one system by dedicated human coaches.">
+    <title>Private Training & Nutrition Coach in Dubai | Online Coaching — DARE</title>
+    <meta name="description" content="Private training and nutrition run as one protocol. Online private coach worldwide, in-home private training in Dubai. Personalised plans built weekly by dedicated human coaches.">
     <link rel="canonical" href="https://darehabits.com/">
     <link rel="alternate" hreflang="en" href="https://darehabits.com/">
     <link rel="alternate" hreflang="es" href="https://darehabits.com/es/index.html">
@@ -17,170 +17,76 @@
     
     <link rel="apple-touch-icon" href="./images/dare-logo.jpg">
     <meta property="og:image" content="https://darehabits.com/images/dare-logo.jpg">
-    <meta property="og:title" content="DARE | Private Health OS — Dubai">
-    <meta property="og:description" content="Private training and nutrition coaching in Dubai, UAE.">
+    <meta property="og:title" content="Private Training & Nutrition Coach in Dubai | Online Coaching — DARE">
+    <meta property="og:description" content="Private training and nutrition run as one protocol — online private coaching worldwide, in-home private training in Dubai.">
+    <meta property="og:site_name" content="DARE">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Private Training & Nutrition Coach in Dubai | Online Coaching — DARE">
+    <meta name="twitter:description" content="Private training and nutrition run as one protocol — online private coaching worldwide, in-home private training in Dubai.">
+    <meta name="twitter:image" content="https://darehabits.com/images/dare-logo.jpg">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ProfessionalService",
+          "@id": "https://darehabits.com/#business",
+          "name": "DARE — Private Training & Nutrition",
+          "url": "https://darehabits.com/",
+          "logo": "https://darehabits.com/images/dare-logo.jpg",
+          "image": "https://darehabits.com/images/dare-logo.jpg",
+          "description": "Private training and nutrition coaching run as one protocol — online private coaching worldwide and in-home private training in Dubai, UAE.",
+          "areaServed": [
+            { "@type": "City", "name": "Dubai" },
+            { "@type": "Country", "name": "United Arab Emirates" }
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Dubai",
+            "addressCountry": "AE"
+          },
+          "knowsLanguage": ["en", "es"],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Private coaching programmes",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Online Protocol — private training and nutrition online",
+                  "description": "Fully remote private coaching: weekly training and nutrition plans, daily adaptation and direct coach messaging.",
+                  "url": "https://darehabits.com/plan-online.html"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "In-Home Presence — private training in Dubai",
+                  "description": "Private personal training, nutrition and culinary execution delivered at your residence in Dubai.",
+                  "url": "https://darehabits.com/plan-inhome.html",
+                  "areaServed": { "@type": "City", "name": "Dubai" }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://darehabits.com/#website",
+          "url": "https://darehabits.com/",
+          "name": "DARE",
+          "publisher": { "@id": "https://darehabits.com/#business" },
+          "inLanguage": "en"
+        }
+      ]
+    }
+    </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="stylesheet" href="style.css">
-    <style>
-    .p-whoop-partner {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-top: 2rem;
-        padding-top: 1.8rem;
-        border-top: 1px solid rgba(201,162,74,0.12);
-        flex-wrap: wrap;
-    }
-    .p-whoop-partner-label {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.62rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: rgba(201,162,74,0.85);
-        font-weight: 600;
-    }
-    .p-whoop-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.38rem 0.9rem 0.38rem 0.65rem;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(244,241,232,0.18);
-        border-radius: 999px;
-        text-decoration: none;
-    }
-    .p-whoop-badge svg { color: rgba(244,241,232,0.75); flex-shrink: 0; }
-    .p-whoop-badge-name {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.74rem;
-        font-weight: 800;
-        letter-spacing: 0.16em;
-        color: rgba(244,241,232,0.82);
-    }
-    .p-whoop-badge-tag {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.58rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        color: rgba(244,241,232,0.32);
-    }
-
-    /* ── FITBIT VISUAL SECTION ── */
-    .p-whoop-section {
-        padding: 14vh 0;
-        background: #080810;
-        border-top: 1px solid rgba(244,241,232,0.1);
-        border-bottom: 1px solid rgba(244,241,232,0.1);
-    }
-    .p-whoop-section-inner {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 5%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5rem;
-        align-items: center;
-    }
-    .p-whoop-copy {
-        padding-left: 1.5rem;
-        border-left: 2px solid rgba(201,162,74,0.35);
-    }
-    .p-whoop-eyebrow {
-        font-family: 'Manrope', sans-serif;
-        font-size: 0.68rem;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        color: rgba(201,162,74,1);
-        font-weight: 700;
-        margin-bottom: 1.1rem;
-    }
-    .p-whoop-hl-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.55rem 1.1rem 0.55rem 0.85rem;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(244,241,232,0.2);
-        border-radius: 10px;
-        margin-bottom: 2rem;
-    }
-    .p-whoop-hl-badge svg { color: rgba(244,241,232,0.75); }
-    .p-whoop-hl-badge-name {
-        font-family: 'Manrope', sans-serif;
-        font-size: 1rem;
-        font-weight: 800;
-        letter-spacing: 0.18em;
-        color: rgba(244,241,232,0.95);
-    }
-    .p-whoop-hl-title {
-        font-family: 'Tulpen One', serif;
-        font-size: clamp(3.5rem, 5.5vw, 5.5rem);
-        line-height: 0.88;
-        text-transform: uppercase;
-        color: #f4f1e8;
-        margin-bottom: 1.4rem;
-    }
-    .p-whoop-hl-sub {
-        font-size: 0.92rem;
-        color: rgba(244,241,232,0.6);
-        line-height: 1.75;
-        margin-bottom: 1.8rem;
-        max-width: 400px;
-    }
-    .p-whoop-hl-link {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: rgba(166,200,94,0.85);
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    .p-whoop-hl-link:hover { color: #a6c85e; }
-    .p-whoop-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-    .p-whoop-tile {
-        padding: 1.7rem 1.5rem;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(244,241,232,0.1);
-    }
-    .p-whoop-tile-green {
-        background: rgba(166,200,94,0.07);
-        border-color: rgba(166,200,94,0.25);
-    }
-    .p-whoop-tile-val {
-        font-family: 'Tulpen One', serif;
-        font-size: 3.2rem;
-        line-height: 1;
-        color: #f4f1e8;
-        margin-bottom: 0.35rem;
-    }
-    .p-whoop-tile-green .p-whoop-tile-val { color: #a6c85e; }
-    .p-whoop-tile-name {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #f4f1e8;
-        margin-bottom: 0.14rem;
-    }
-    .p-whoop-tile-green .p-whoop-tile-name { color: #a6c85e; }
-    .p-whoop-tile-sub {
-        font-size: 0.67rem;
-        color: rgba(244,241,232,0.42);
-        line-height: 1.4;
-    }
-    @media (max-width: 960px) {
-        .p-whoop-section-inner { grid-template-columns: 1fr; gap: 3rem; }
-        .p-whoop-copy { padding-left: 0; border-left: none; border-top: 2px solid rgba(201,162,74,0.35); padding-top: 1.5rem; }
-    }
-    </style>
     <script>
     (function(){
       try {
@@ -234,6 +140,7 @@
     <main>
         
         <section class="p-hero" id="top" aria-label="DARE introduction">
+            <h1 class="sr-only">DARE — Private training and nutrition coaching in Dubai, online and in-home. Your private coach for training, nutrition and culinary execution.</h1>
             <div class="p-hero-bg" role="presentation"></div>
             <div class="p-hero-overlay" role="presentation"></div>
             <div class="p-hero-takeover" role="presentation"></div>
@@ -613,56 +520,6 @@
             </div>
         </section>
 
-        <!-- ── FITBIT TRACKING INTELLIGENCE ── -->
-        <section class="p-whoop-section" id="fitbit-tracking" aria-label="Fitbit health tracking">
-            <div class="p-whoop-section-inner">
-                <div class="p-whoop-copy">
-                    <p class="p-whoop-eyebrow">Fitbit Monitoring</p>
-                    <span class="p-whoop-hl-badge">
-                        <span class="p-whoop-hl-badge-name">FITBIT</span>
-                    </span>
-                    <h2 class="p-whoop-hl-title">WE TRACK YOUR<br>PROGRESS DAILY.<br>WE PLAN. YOU EXECUTE.</h2>
-                    <p class="p-whoop-hl-sub">Connect your Fitbit and your coaches see your sleep, resting heart rate, HRV and daily activity every day. Your protocol adjusts in real-time.</p>
-                    <a href="plan-online.html" class="p-whoop-hl-link">See how Fitbit monitoring works →</a>
-                    <p style="font-size:0.6rem;color:rgba(244,241,232,0.28);margin-top:1.6rem;">Fitbit is a trademark of Google LLC. You connect your own account and can revoke access at any time.</p>
-                </div>
-                <div class="p-whoop-grid">
-                    <!-- Sleep tile with SVG ring -->
-                    <div class="p-whoop-tile p-whoop-tile-green">
-                        <div style="position:relative;width:60px;height:60px;margin-bottom:0.75rem;">
-                            <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
-                                <circle cx="30" cy="30" r="24" stroke="rgba(166,200,94,0.14)" stroke-width="5"/>
-                                <circle cx="30" cy="30" r="24" stroke="#a6c85e" stroke-width="5" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="20" transform="rotate(-90 30 30)"/>
-                            </svg>
-                            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                                <span style="font-family:'Tulpen One',serif;font-size:1.3rem;line-height:1;color:#a6c85e;">87</span>
-                                <span style="font-size:0.42rem;letter-spacing:0.08em;color:rgba(244,241,232,0.4);text-transform:uppercase;">%</span>
-                            </div>
-                        </div>
-                        <div class="p-whoop-tile-name">Sleep</div>
-                        <div class="p-whoop-tile-sub">7h 48m · 87% efficiency</div>
-                    </div>
-                    <!-- HRV tile -->
-                    <div class="p-whoop-tile">
-                        <div class="p-whoop-tile-val">61<span style="font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0;">ms</span> <span style="font-size:1.4rem;color:#a6c85e;">↑</span></div>
-                        <div class="p-whoop-tile-name">HRV</div>
-                        <div class="p-whoop-tile-sub">Above 14-day baseline</div>
-                    </div>
-                    <!-- Resting HR tile -->
-                    <div class="p-whoop-tile">
-                        <div class="p-whoop-tile-val">52<span style="font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0;">bpm</span></div>
-                        <div class="p-whoop-tile-name">Resting HR</div>
-                        <div class="p-whoop-tile-sub">Trending down · adapting well</div>
-                    </div>
-                    <!-- Active minutes tile -->
-                    <div class="p-whoop-tile">
-                        <div class="p-whoop-tile-val">42<span style="font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0;">min</span></div>
-                        <div class="p-whoop-tile-name">Active Minutes</div>
-                        <div class="p-whoop-tile-sub">Daily target met</div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
 <section class="p-section p-section-tight" id="data" aria-label="Measured outcomes">
             <div class="p-shell">
