@@ -24,9 +24,9 @@
       "areaServed": { "@type": "Place", "name": "Worldwide" },
       "offers": {
         "@type": "Offer",
-        "price": "13500",
+        "price": "4500",
         "priceCurrency": "AED",
-        "description": "12-week online private coaching protocol"
+        "description": "Monthly online private coaching engagement, from AED 4,500/month. 3-month commitment available at AED 12,000."
       }
     }
     </script>
@@ -697,6 +697,87 @@
             .op-step-dot { margin-bottom: 1rem; margin-left: -2.2rem; }
         }
 
+        /* ── PRICING ── */
+        .op-pricing {
+            padding: 10vh 6vw;
+            background: #111114;
+            color: #f4f1e8;
+        }
+
+        .op-pricing-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .op-pricing-title {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(3.5rem, 7vw, 6rem);
+            line-height: 0.88;
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+        }
+
+        .op-pricing-title span { color: var(--gold); }
+
+        .op-pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .op-pricing-card {
+            border: 1px solid rgba(244,241,232,0.12);
+            border-radius: 4px;
+            padding: 2.6rem 2.4rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .op-pricing-card:hover { border-color: rgba(201,162,74,0.4); }
+
+        .op-pricing-card--featured {
+            border-color: rgba(201,162,74,0.5);
+            background: rgba(201,162,74,0.05);
+        }
+
+        .op-pricing-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 1.4rem;
+        }
+
+        .op-pricing-amount {
+            font-family: 'Tulpen One', serif;
+            font-size: clamp(2.2rem, 3.5vw, 3rem);
+            color: #f4f1e8;
+            line-height: 1;
+            margin-bottom: 0.6rem;
+        }
+
+        .op-pricing-amount span {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            color: rgba(244,241,232,0.5);
+            text-transform: none;
+        }
+
+        .op-pricing-desc {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            color: rgba(244,241,232,0.55);
+            line-height: 1.65;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 720px) {
+            .op-pricing-cards { grid-template-columns: 1fr; }
+        }
+
         /* ── CTA ── */
         .op-cta {
             padding: 10vh 6vw;
@@ -835,7 +916,7 @@
             <p class="op-hero-eyebrow">Engagement Model · Online · No Physical Visits</p>
             <h1 class="op-hero-title">ONLINE<br><span>PROTOCOL</span></h1>
             <p class="op-hero-sub">Your training program, nutrition coaching and personalised meal plan, tailored to your specific goals — fat loss, muscle gain, performance — and continuously adapted to your body, lifestyle and schedule.</p>
-            <p class="op-hero-price"><strong>AED 13,500</strong> &nbsp;/&nbsp; 12 weeks</p>
+            <p class="op-hero-price">From <strong>AED 4,500</strong> &nbsp;/&nbsp; month</p>
         </section>
 
         <!-- ── HOW IT WORKS ── -->
@@ -1087,6 +1168,26 @@
                             <h3 class="op-step-title">Execution Begins</h3>
                             <p class="op-step-desc">Your fully managed system goes live.</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── PRICING ── -->
+        <section class="op-pricing">
+            <div class="op-pricing-inner">
+                <p class="op-section-label">Choose your engagement</p>
+                <h2 class="op-pricing-title">TWO WAYS<br><span>TO ENROL.</span></h2>
+                <div class="op-pricing-cards">
+                    <div class="op-pricing-card">
+                        <p class="op-pricing-label">Monthly Engagement</p>
+                        <p class="op-pricing-amount">AED 4,500 <span>/ month</span></p>
+                        <p class="op-pricing-desc">Full flexibility. Continue month to month, for as long as you need.</p>
+                    </div>
+                    <div class="op-pricing-card op-pricing-card--featured">
+                        <p class="op-pricing-label">3-Month Commitment</p>
+                        <p class="op-pricing-amount">AED 12,000</p>
+                        <p class="op-pricing-desc">For those who DARE to commit to lasting change.</p>
                     </div>
                 </div>
             </div>
