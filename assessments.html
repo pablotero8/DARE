@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="./images/favicon.svg">
+<title>DARE — Client Assessments</title>
+<style>
+  :root{
+    --paper:#F1F4F3;
+    --card:#FFFFFF;
+    --ink:#131D19;
+    --muted:#5F6E68;
+    --line:#D8E0DD;
+    --accent:#1F5C4D;
+    --accent-soft:#E4EEEA;
+    --warn:#A8462A;
+    --radius:10px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 18px 140px}
+
+  /* ---------- top bar ---------- */
+  .bar{
+    position:sticky;top:0;z-index:20;
+    background:rgba(241,244,243,.94);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .bar-inner{max-width:640px;margin:0 auto;padding:12px 18px 10px;display:flex;align-items:center;gap:12px}
+  .mark{font-family:var(--serif);font-size:15px;letter-spacing:.02em;font-weight:600}
+  .mark span{color:var(--muted);font-weight:400}
+  .bar-title{font-size:13px;color:var(--muted);flex:1;text-align:right;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .iconbtn{
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    width:34px;height:34px;border-radius:8px;font-size:16px;line-height:1;
+    cursor:pointer;flex:none;
+  }
+  .iconbtn:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .track{height:3px;background:var(--line)}
+  .track > i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s ease}
+
+  /* ---------- home ---------- */
+  .lede{padding:34px 0 22px}
+  .lede h1{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.15;margin:0 0 10px}
+  .lede p{margin:0;color:var(--muted);font-size:15px;max-width:46ch}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;margin-bottom:12px;display:block;width:100%;text-align:left;
+    font:inherit;color:inherit;cursor:pointer;
+  }
+  .card:hover{border-color:var(--accent)}
+  .card h2{font-family:var(--serif);font-size:19px;font-weight:600;margin:0 0 4px}
+  .card p{margin:0 0 14px;color:var(--muted);font-size:14px}
+  .meta{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+  .pill{
+    font-size:12px;padding:3px 9px;border-radius:999px;
+    background:var(--paper);border:1px solid var(--line);color:var(--muted);
+  }
+  .pill.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .minitrack{flex:1;height:4px;background:var(--paper);border-radius:2px;overflow:hidden;border:1px solid var(--line)}
+  .minitrack > i{display:block;height:100%;background:var(--accent)}
+  .note{font-size:13px;color:var(--muted);margin-top:22px;line-height:1.6}
+
+  /* ---------- section ---------- */
+  .sechead{padding:26px 0 6px;display:flex;align-items:baseline;gap:10px}
+  .secnum{
+    font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);
+    border:1px solid var(--accent);border-radius:6px;padding:1px 7px;flex:none;
+  }
+  .sechead h2{font-family:var(--serif);font-size:23px;font-weight:600;margin:0;line-height:1.2}
+  .secsub{color:var(--muted);font-size:14px;margin:2px 0 0}
+  .callout{
+    background:var(--accent-soft);border-left:3px solid var(--accent);
+    padding:12px 14px;border-radius:0 8px 8px 0;font-size:14px;margin:18px 0 0;color:var(--ink)
+  }
+
+  /* ---------- questions ---------- */
+  .q{padding:22px 0 4px;border-top:1px solid var(--line);margin-top:18px}
+  .q:first-of-type{border-top:none;margin-top:4px}
+  .q.cond{
+    border-top:none;margin-top:2px;padding:14px 0 4px 14px;
+    border-left:2px solid var(--accent-soft);
+  }
+  .qlabel{font-size:16px;font-weight:600;margin:0 0 3px;line-height:1.35}
+  .qlabel em{font-style:normal;color:var(--warn);margin-left:3px}
+  .qhelp{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+  .qlabel + .opts,.qlabel + input,.qlabel + textarea,.qlabel + .grid{margin-top:11px}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opts.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .opt{
+    font:inherit;font-size:15px;text-align:left;color:inherit;
+    background:var(--card);border:1px solid var(--line);border-radius:9px;
+    padding:13px 14px;cursor:pointer;display:flex;align-items:center;gap:11px;
+    min-height:48px;line-height:1.3;
+  }
+  .opt:hover{border-color:var(--accent)}
+  .opt .box{
+    width:19px;height:19px;border:1.5px solid var(--line);flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
+  }
+  .opt[data-shape="radio"] .box{border-radius:50%}
+  .opt[data-shape="check"] .box{border-radius:5px}
+  .opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+  .opt[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+  .opt[aria-disabled="true"]{opacity:.42;cursor:not-allowed}
+  input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],textarea,select{
+    width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);
+    border:1px solid var(--line);border-radius:9px;padding:12px 13px;
+  }
+  textarea{min-height:88px;resize:vertical;line-height:1.45}
+  input:focus,textarea:focus,select:focus,.opt:focus-visible,button:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)
+  }
+  .grid{display:grid;gap:10px}
+  .grid.two{grid-template-columns:1fr 1fr}
+  .sublabel{font-size:13px;color:var(--muted);margin:0 0 5px}
+  .other-in{margin-top:8px}
+  .err{color:var(--warn);font-size:13px;margin:8px 0 0;display:none}
+  .q.invalid .err{display:block}
+  .q.invalid input,.q.invalid textarea{border-color:var(--warn)}
+  .q.invalid .opts .opt{border-color:#EBC9BC}
+
+  /* ---------- footer nav ---------- */
+  .nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;
+    background:rgba(241,244,243,.95);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);
+    padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+  }
+  .nav-inner{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .btn{
+    font:inherit;font-size:16px;font-weight:600;border-radius:9px;padding:14px 18px;
+    cursor:pointer;border:1px solid var(--accent);min-height:50px;
+  }
+  .btn.primary{background:var(--accent);color:#fff;flex:1}
+  .btn.primary:hover{background:#17493D}
+  .btn.ghost{background:transparent;color:var(--accent)}
+  .btn.ghost:hover{background:var(--accent-soft)}
+  .saved{font-size:12px;color:var(--muted);text-align:center;padding-top:8px;min-height:18px}
+
+  /* ---------- review / document ---------- */
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px 22px;margin-top:20px}
+  .doc-head{text-align:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:4px}
+  .doc-head .org{font-family:var(--serif);font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+  .doc-head h2{font-family:var(--serif);font-size:22px;margin:8px 0 4px;font-weight:600}
+  .doc-head p{margin:0;font-size:13px;color:var(--muted)}
+  .doc-sec{margin-top:22px}
+  .doc-sec > h3{
+    font-family:var(--serif);font-size:15px;font-weight:600;margin:0 0 10px;
+    background:var(--accent-soft);padding:7px 11px;border-radius:6px;
+  }
+  .da{margin:0 0 13px;font-size:14.5px}
+  .da .dq{color:var(--muted);margin:0 0 2px;font-size:13.5px}
+  .da .dv{margin:0;white-space:pre-wrap}
+  .da .dv.empty{color:#9AA7A2;font-style:italic}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .toolbar .btn{flex:1;min-width:150px}
+  .flash{font-size:13px;color:var(--accent);min-height:18px;padding-top:8px}
+  .send{
+    background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:var(--radius);padding:20px;margin-top:20px
+  }
+  .send.sent{background:var(--accent-soft);border-color:var(--accent)}
+  .send h3{font-family:var(--serif);font-size:18px;font-weight:600;margin:0 0 6px}
+  .send > p{margin:0 0 14px;font-size:14.5px;color:var(--muted);line-height:1.5}
+  .send .opt{font-size:14px;line-height:1.45;align-items:flex-start}
+  .send .sendnote{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+  .send .senderr{
+    font-size:14px;color:var(--warn);margin:12px 0 0;background:#FBF0EC;
+    border:1px solid #EBC9BC;border-radius:8px;padding:11px 13px;line-height:1.45
+  }
+  .missing{
+    background:#FBF0EC;border:1px solid #EBC9BC;border-radius:9px;padding:13px 15px;
+    font-size:14px;margin-top:18px;color:var(--ink)
+  }
+  .missing b{color:var(--warn)}
+  .missing ul{margin:7px 0 0;padding-left:18px}
+  .missing li{margin:2px 0}
+
+  @media (min-width:560px){
+    .lede h1{font-size:34px}
+    .doc{padding:34px 32px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ---------- print ---------- */
+  @media print{
+    body{background:#fff}
+    .bar,.nav,.toolbar,.flash,.missing,.noprint{display:none!important}
+    .wrap{max-width:none;padding:0}
+    .doc{border:none;border-radius:0;padding:0;margin:0}
+    .doc-sec{break-inside:auto}
+    .da{break-inside:avoid}
+    .doc-sec > h3{background:#EEF3F1;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-inner">
+    <button class="iconbtn" id="homeBtn" title="Back to all assessments" aria-label="Back to all assessments" hidden>&#8592;</button>
+    <div class="mark">DARE <span>Client Assessments</span></div>
+    <div class="bar-title" id="barTitle"></div>
+  </div>
+  <div class="track"><i id="track"></i></div>
+</div>
+
+<div class="wrap" id="app"></div>
+
+<div class="nav" id="nav" hidden>
+  <div class="nav-inner">
+    <button class="btn ghost" id="backBtn">Back</button>
+    <button class="btn primary" id="nextBtn">Continue</button>
+  </div>
+  <div class="saved" id="saved"></div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   0. SETUP — the only part DARE needs to edit
+   ========================================================= */
+
+const CONFIG = {
+  // Paste the endpoint URL your form backend gives you.
+  // Leave it empty and the form stays offline: PDF and copy only, no sending.
+  endpoint: "",
+
+  // Shown to the client on the confirmation screen.
+  teamName: "DARE",
+
+  // Query parameter carrying the client code:  assessments.html?c=a8f3
+  clientParam: "c",
+
+  // The client must tick this before anything leaves their device.
+  consentText: "I agree to DARE processing the health information in this form for the sole purpose of designing and adjusting my training and nutrition programme. I understand I can ask for my data to be corrected or deleted at any time."
+};
+
+/* =========================================================
+   1. CONTENT — transcribed from the three master specs
+   ========================================================= */
+
+const YESNO = ["No", "Yes"];
+
+const ASSESSMENTS = [
+  {
+    id: "health",
+    title: "Client Profile & Health Assessment",
+    short: "Profile & Health",
+    blurb: "Essential information used to safely personalise your training and nutrition programme.",
+    sections: [
+      {
+        n: 1, title: "Client profile",
+        questions: [
+          { id: "fullName", type: "text", label: "Full name", required: true, autocomplete: "name" },
+          { id: "dob", type: "date", label: "Date of birth", required: true },
+          { id: "phone", type: "tel", label: "Phone number", required: true, autocomplete: "tel" },
+          { id: "email", type: "email", label: "Email address", required: true, autocomplete: "email" },
+          { id: "sex", type: "single", label: "Sex", required: true, grid: true,
+            options: ["Female", "Male", "Prefer not to say"] },
+          { id: "occupation", type: "text", label: "Occupation", required: true },
+          { id: "workActivity", type: "single", label: "Typical work activity", required: true, grid: true,
+            options: ["Mostly seated", "Mixed", "Mostly active"] }
+        ]
+      },
+      {
+        n: 2, title: "Goals & priorities",
+        questions: [
+          { id: "goals", type: "multi", label: "What would you most like to achieve through your programme?",
+            help: "Select up to 3.", required: true, max: 3, other: true,
+            options: ["Fat loss / body composition", "Muscle gain", "Strength", "General fitness",
+              "Muscular endurance", "Power / athletic performance", "Movement quality / mobility",
+              "Energy / overall wellbeing"] },
+          { id: "topPriority", type: "text", label: "What is your single most important priority?", required: true },
+          { id: "goalTimeframe", type: "text", label: "Is there a particular reason or timeframe attached to this goal?",
+            help: "Optional." }
+        ]
+      },
+      {
+        n: 3, title: "Health screening",
+        questions: [
+          { id: "diagnosed", type: "single", label: "Has a healthcare professional diagnosed you with any medical condition that may affect exercise, nutrition or general wellbeing?",
+            required: true, grid: true, options: YESNO },
+          { id: "diagnosedDetails", type: "longtext", label: "Please specify the condition", required: true,
+            showIf: { q: "diagnosed", eq: "Yes" } },
+          { id: "symptoms", type: "multi", label: "Do you currently experience any of the following?",
+            help: "Check all that apply.", required: true, exclusive: "None of the above",
+            options: ["Chest pain / unusual discomfort", "Dizziness / fainting / loss of balance",
+              "Unusual shortness of breath", "Heart / cardiovascular condition",
+              "Blood pressure condition requiring medical attention", "Diabetes / blood glucose condition",
+              "Musculoskeletal pain / injury", "Neurological condition",
+              "Other condition affecting exercise or nutrition", "None of the above"] },
+          { id: "symptomDetails", type: "longtext", label: "Please give the relevant details", required: true,
+            showIf: { q: "symptoms", anyExcept: "None of the above" } },
+          { id: "surgery", type: "single", label: "Have you had any significant surgery, injury or medical procedure that could currently affect your ability to exercise?",
+            required: true, grid: true, options: YESNO },
+          { id: "surgeryDetails", type: "longtext", label: "Please explain", required: true,
+            showIf: { q: "surgery", eq: "Yes" } },
+          { id: "pain", type: "single", label: "Do you currently experience pain or physical discomfort during everyday activities or exercise?",
+            required: true, grid: true, options: YESNO },
+          { id: "painArea", type: "text", label: "Which area?", required: true,
+            showIf: { q: "pain", eq: "Yes" } },
+          { id: "painTrigger", type: "text", label: "Which movement or activity triggers it?", required: true,
+            showIf: { q: "pain", eq: "Yes" } },
+          { id: "painSeverity", type: "scale", label: "How severe is it?", help: "1 = barely noticeable, 10 = severe.",
+            required: true, showIf: { q: "pain", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 4, title: "Medication & medical guidance",
+        questions: [
+          { id: "medication", type: "single", label: "Are you currently taking prescription medication that could influence exercise performance, appetite, hydration, heart rate, blood pressure, blood glucose, recovery or body weight?",
+            required: true, grid: true, options: YESNO },
+          { id: "medicationDetails", type: "longtext", label: "Please specify", required: true,
+            showIf: { q: "medication", eq: "Yes" } },
+          { id: "advice", type: "single", label: "Has a healthcare professional advised you to avoid or modify any type of exercise, physical activity or dietary practice?",
+            required: true, grid: true, options: YESNO },
+          { id: "adviceDetails", type: "longtext", label: "Please specify", required: true,
+            showIf: { q: "advice", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 5, title: "Lifestyle & recovery",
+        questions: [
+          { id: "sleep", type: "single", label: "Average sleep per night", required: true, grid: true,
+            options: ["Under 5 h", "5–6 h", "6–7 h", "7–8 h", "Over 8 h"] },
+          { id: "sleepQuality", type: "single", label: "Typical sleep quality", required: true, grid: true,
+            options: ["Poor", "Fair", "Good", "Very good"] },
+          { id: "stress", type: "single", label: "Current overall stress level", required: true, grid: true,
+            options: ["Low", "Moderate", "High", "Very high"] },
+          { id: "schedule", type: "multi", label: "Does your work or lifestyle regularly involve any of the following?",
+            required: true, exclusive: "None",
+            options: ["Frequent travel", "Night shifts / irregular hours", "Long working hours",
+              "Variable daily schedule", "None"] }
+        ]
+      },
+      {
+        n: 6, title: "Additional information",
+        questions: [
+          { id: "anythingElse", type: "single", label: "Is there anything else about your health, lifestyle or current circumstances that we should know before designing your programme?",
+            required: true, grid: true, options: YESNO },
+          { id: "anythingElseDetails", type: "longtext", label: "Please tell us", required: true,
+            showIf: { q: "anythingElse", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 7, title: "Client declaration",
+        questions: [
+          { id: "declaration", type: "ack", required: true,
+            label: "I confirm that the information provided in this assessment is accurate and complete to the best of my knowledge. I understand that I should inform DARE of any relevant changes to my health or circumstances that may affect my programme." },
+          { id: "declName", type: "text", label: "Name", required: true },
+          { id: "declSignature", type: "text", label: "Signature", help: "Type your full name to sign.", required: true },
+          { id: "declDate", type: "date", label: "Date", required: true, today: true }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: "training",
+    title: "Training Assessment",
+    short: "Training",
+    blurb: "Essential information used to design a realistic, safe and personalised training programme.",
+    sections: [
+      {
+        n: 1, title: "Training background",
+        questions: [
+          { id: "experience", type: "single", label: "How would you describe your experience with structured training?",
+            required: true,
+            options: ["Beginner — little or no experience", "Intermediate — consistent experience",
+              "Advanced — several years of consistent training"] },
+          { id: "currentProgramme", type: "single", label: "Are you currently following a structured training programme?",
+            required: true, grid: true, options: YESNO },
+          { id: "weeklySessions", type: "number", label: "How many structured training sessions do you usually complete per week?",
+            required: true, min: 0, max: 21, showIf: { q: "currentProgramme", eq: "Yes" } },
+          { id: "trainingTypes", type: "multi", label: "What types of training are you currently doing?",
+            help: "Select all that apply.", required: true, other: true,
+            showIf: { q: "currentProgramme", eq: "Yes" },
+            options: ["Strength / resistance", "Cardiovascular", "Group classes", "Pilates / Yoga", "Sport-specific"] },
+          { id: "break4w", type: "single", label: "Have you had a break of 4 weeks or more from regular training during the last 6 months?",
+            required: true, grid: true, options: YESNO },
+          { id: "breakLength", type: "text", label: "Approximately how long was the break?", required: true,
+            showIf: { q: "break4w", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 2, title: "Other physical activity & sport",
+        questions: [
+          { id: "otherSport", type: "single", label: "Do you regularly take part in any sport or structured physical activity outside these training sessions?",
+            required: true, grid: true, options: YESNO },
+          { id: "otherSportDetails", type: "longtext", label: "Which activity or sport, how many sessions per week, and roughly how long is each one?",
+            required: true, showIf: { q: "otherSport", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 3, title: "Training availability",
+        questions: [
+          { id: "daysPerWeek", type: "single", label: "How many days per week can you realistically commit to structured training?",
+            required: true, grid: true, other: true, otherLabel: "Another number",
+            options: ["2", "3", "4", "5", "6"] },
+          { id: "sessionLength", type: "single", label: "How much time can you realistically give to each session?",
+            required: true, grid: true,
+            options: ["Up to 30 min", "30–45 min", "45–60 min", "60–75 min", "75–90 min", "90+ min"] },
+          { id: "scheduling", type: "single", label: "Are there specific days or scheduling restrictions we should consider?",
+            required: true, grid: true, options: YESNO },
+          { id: "schedulingDetails", type: "text", label: "Please specify", required: true,
+            showIf: { q: "scheduling", eq: "Yes" } },
+          { id: "varies", type: "single", label: "Does your training availability change significantly from week to week?",
+            required: true, grid: true, options: YESNO },
+          { id: "variesDetails", type: "text", label: "Please explain", required: true,
+            showIf: { q: "varies", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 4, title: "Training environment & equipment",
+        note: "DARE may ask for a short video or clear photos of your training space to confirm the exact equipment available before designing your programme. Nothing to upload here.",
+        questions: [
+          { id: "location", type: "single", label: "Where will you mainly train?", required: true,
+            options: ["Commercial / private gym", "Residential / building gym", "Home gym",
+              "Home — limited equipment", "Outdoors", "Multiple locations"] },
+          { id: "locationDetails", type: "text", label: "Which locations, and roughly how often each?",
+            help: "Optional.", showIf: { q: "location", eq: "Multiple locations" } },
+          { id: "equipment", type: "single", label: "How would you describe the equipment available?", required: true,
+            options: ["Fully equipped", "Moderately equipped", "Limited equipment",
+              "Bodyweight / minimal equipment", "Not sure"] },
+          { id: "equipmentLimits", type: "single", label: "Are there any equipment limitations you already know about?",
+            required: true, grid: true, options: ["No / Not sure", "Yes"] },
+          { id: "equipmentLimitDetails", type: "text", label: "Please specify", required: true,
+            showIf: { q: "equipmentLimits", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 5, title: "Training preferences",
+        questions: [
+          { id: "enjoy", type: "single", label: "Are there any types of exercise or training that you particularly enjoy?",
+            required: true, options: ["No specific preference", "Yes"] },
+          { id: "enjoyDetails", type: "text", label: "Please tell us", required: true,
+            showIf: { q: "enjoy", eq: "Yes" } },
+          { id: "dislike", type: "single", label: "Are there any exercises or types of training that you strongly dislike or prefer not to do?",
+            required: true, grid: true, options: YESNO },
+          { id: "dislikeDetails", type: "text", label: "Please tell us", required: true,
+            showIf: { q: "dislike", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 6, title: "Exercise & position limitations",
+        note: "Your general health, injuries and pain are already covered in the Client Profile & Health Assessment. Please add training-specific information only.",
+        questions: [
+          { id: "movementLimits", type: "single", label: "Are there any exercises or movements you currently avoid or cannot do comfortably?",
+            required: true, grid: true, options: YESNO },
+          { id: "movementLimitDetails", type: "text", label: "Please specify", required: true,
+            showIf: { q: "movementLimits", eq: "Yes" } },
+          { id: "positions", type: "multi", label: "Are there any positions that are uncomfortable or difficult for you?",
+            help: "Select all that apply.", required: true, exclusive: "None", other: true,
+            options: ["Standing", "Seated", "Lying on back", "Lying face down", "Kneeling",
+              "Overhead positions", "Hanging", "Getting to and from the floor", "None"] }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: "nutrition",
+    title: "Nutrition & Culinary Assessment",
+    short: "Nutrition",
+    blurb: "Essential information used to build a personalised, practical and sustainable nutrition and meal strategy.",
+    sections: [
+      {
+        n: 1, title: "Current eating pattern",
+        questions: [
+          { id: "mealsPerDay", type: "single", label: "How many meals do you typically eat per day?", required: true, grid: true,
+            options: ["1–2", "3", "4", "5+", "Varies significantly"] },
+          { id: "snacking", type: "single", label: "Do you usually eat snacks between meals?", required: true, grid: true,
+            options: ["Rarely / never", "Sometimes", "Most days"] },
+          { id: "mealTimes", type: "single", label: "How consistent are your usual meal times?", required: true, grid: true,
+            options: ["Mostly consistent", "Somewhat variable", "Very variable"] },
+          { id: "breakfast", type: "longtext", label: "Breakfast", required: true,
+            groupStart: "Please describe what you typically eat and drink on a normal day.",
+            groupHelp: "Rough portions help if you know them — exact weights are not needed." },
+          { id: "lunch", inGroup: true, type: "longtext", label: "Lunch", required: true },
+          { id: "dinner", inGroup: true, type: "longtext", label: "Dinner", required: true },
+          { id: "snacksDetail", inGroup: true, type: "longtext", label: "Snacks and anything else", help: "Optional." },
+          { id: "drinks", inGroup: true, type: "longtext", label: "Main drinks", required: true },
+          { id: "tracks", type: "single", label: "Do you track your food intake, or have a reasonable idea of your daily calories and macros?",
+            required: true, grid: true, options: YESNO },
+          { id: "macros", type: "text", label: "Roughly what is your daily intake?",
+            help: "Calories, protein, carbohydrates, fat — whatever you know.", required: true,
+            showIf: { q: "tracks", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 2, title: "Food access & meal routine",
+        questions: [
+          { id: "foodSources", type: "multi", label: "Where does most of your food currently come from?",
+            help: "Select all that apply.", required: true,
+            options: ["Prepared by me", "Prepared by someone else at home", "Private chef / household staff",
+              "Meal delivery / meal plan service", "Restaurants / cafés", "Takeaway / food delivery"] },
+          { id: "outsideMeals", type: "single", label: "How often do you eat meals prepared outside the home?",
+            required: true, grid: true,
+            options: ["Rarely", "1–3 times a week", "4–6 times a week", "Daily / almost daily"] },
+          { id: "routineHard", type: "single", label: "Are there parts of your routine that regularly make eating to plan difficult?",
+            required: true, grid: true, options: YESNO },
+          { id: "routineHardDetails", type: "longtext", label: "Please explain", required: true,
+            showIf: { q: "routineHard", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 3, title: "Dietary requirements & safety",
+        questions: [
+          { id: "allergies", type: "single", label: "Do you have any diagnosed food allergies?", required: true, grid: true, options: YESNO },
+          { id: "allergyDetails", type: "longtext", label: "Which food or foods, and what reaction?", required: true,
+            showIf: { q: "allergies", eq: "Yes" } },
+          { id: "intolerances", type: "single", label: "Do you have any known or suspected food intolerances, or foods that consistently cause digestive discomfort?",
+            required: true, grid: true, options: YESNO },
+          { id: "intoleranceDetails", type: "longtext", label: "Please specify", required: true,
+            showIf: { q: "intolerances", eq: "Yes" } },
+          { id: "restrictions", type: "single", label: "Do you follow any dietary restrictions for personal, cultural or religious reasons?",
+            required: true, grid: true, options: YESNO },
+          { id: "restrictionDetails", type: "longtext", label: "Please specify", required: true,
+            showIf: { q: "restrictions", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 4, title: "Digestion & appetite",
+        questions: [
+          { id: "digestive", type: "single", label: "Do you regularly experience digestive symptoms that affect what or how you eat?",
+            required: true, grid: true, options: YESNO },
+          { id: "digestiveSymptoms", type: "multi", label: "Which ones?", help: "Select all that apply.",
+            required: true, other: true, showIf: { q: "digestive", eq: "Yes" },
+            options: ["Bloating", "Reflux / heartburn", "Constipation", "Diarrhoea", "Abdominal discomfort"] },
+          { id: "appetite", type: "single", label: "How would you generally describe your appetite?", required: true, grid: true,
+            options: ["Low", "Moderate", "High", "Varies significantly"] },
+          { id: "cravings", type: "single", label: "Are there particular times of day when you regularly get strong hunger or cravings?",
+            required: true, grid: true, options: YESNO },
+          { id: "cravingDetails", type: "text", label: "When, typically?", required: true,
+            showIf: { q: "cravings", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 5, title: "Hydration & beverages",
+        questions: [
+          { id: "water", type: "single", label: "Roughly how much water do you drink per day?", required: true, grid: true,
+            options: ["Under 1 L", "1–1.5 L", "1.5–2 L", "2–3 L", "Over 3 L", "Not sure"] },
+          { id: "caffeine", type: "single", label: "How many caffeinated drinks do you typically have per day?",
+            required: true, grid: true, options: ["None", "1", "2", "3", "4+"] },
+          { id: "alcohol", type: "single", label: "How often do you drink alcohol?", required: true, grid: true,
+            options: ["Never / rarely", "1–2 days a week", "3–4 days a week", "5+ days a week"] },
+          { id: "alcoholQty", type: "text", label: "Roughly how many drinks do you have on those occasions?",
+            required: true, showIf: { q: "alcohol", notEq: "Never / rarely" } }
+        ]
+      },
+      {
+        n: 6, title: "Supplements",
+        questions: [
+          { id: "supplements", type: "single", label: "Are you currently taking any nutritional supplements?",
+            required: true, grid: true, options: YESNO },
+          { id: "supplementDetails", type: "longtext", label: "Which ones, and roughly what dose?",
+            help: "Dose only if you know it.", required: true, showIf: { q: "supplements", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 7, title: "Previous nutrition experience",
+        questions: [
+          { id: "previousPlan", type: "single", label: "Have you previously followed a structured diet or nutrition plan?",
+            required: true, grid: true, options: YESNO },
+          { id: "previousPlanDetails", type: "longtext", label: "What approach did you follow, and what worked well or was hard to keep up?",
+            required: true, showIf: { q: "previousPlan", eq: "Yes" } }
+        ]
+      },
+      {
+        n: 8, title: "Food & culinary preferences",
+        questions: [
+          { id: "likedFoods", type: "longtext", label: "Which foods, ingredients or dishes do you particularly enjoy and would like included where possible?",
+            required: true },
+          { id: "dislikedFoods", type: "single", label: "Are there any foods, ingredients or dishes you dislike or prefer not to eat?",
+            required: true, grid: true, options: YESNO },
+          { id: "dislikedFoodDetails", type: "longtext", label: "Please specify", required: true,
+            showIf: { q: "dislikedFoods", eq: "Yes" } },
+          { id: "cuisines", type: "text", label: "Are there particular cuisines you especially enjoy?",
+            help: "Optional. For example Mediterranean, Middle Eastern, Asian, Latin American." },
+          { id: "variety", type: "single", label: "How much variety do you prefer?", required: true,
+            options: ["I enjoy repeating meals I like", "Some variety", "High variety"] },
+          { id: "mealVolume", type: "single", label: "When possible, what meal volume tends to suit you best?", required: true,
+            options: ["Smaller, more calorie-dense meals", "Moderate portions", "Larger-volume meals",
+              "No preference / not sure"] }
+        ]
+      },
+      {
+        n: 9, title: "Nutrition plan preferences",
+        questions: [
+          { id: "changeFrequency", type: "single", label: "Would you be comfortable changing your current meal frequency if we recommended it?",
+            required: true, options: ["Yes", "Prefer to keep it similar", "Not sure"] },
+          { id: "planStructure", type: "single", label: "How would you prefer your nutrition plan to be structured?",
+            required: true,
+            options: ["Clear meals and quantities", "Structured with alternatives",
+              "Flexible targets and guidelines", "Open to DARE's recommendation"] }
+        ]
+      },
+      {
+        n: 10, title: "Additional information",
+        questions: [
+          { id: "nutritionElse", type: "single", label: "Is there anything else about your eating habits, dietary requirements, preferences or routine that we should consider?",
+            required: true, grid: true, options: YESNO },
+          { id: "nutritionElseDetails", type: "longtext", label: "Please tell us", required: true,
+            showIf: { q: "nutritionElse", eq: "Yes" } }
+        ]
+      }
+    ]
+  }
+];
+
+/* =========================================================
+   2. STATE
+   ========================================================= */
+
+const STORE_KEY = "dare:assessments:v1";
+let answers = {};
+let submissions = {};          // { health: {at: ISO}, ... }
+let clientCode = "";
+let consent = false;
+let view = { screen: "home", aid: null, si: 0 };
+let storageOK = true;
+
+const key = (aid, qid) => aid + "." + qid;
+const get = (aid, qid) => answers[key(aid, qid)];
+const setVal = (aid, qid, v) => { answers[key(aid, qid)] = v; queueSave(); };
+
+const A = id => ASSESSMENTS.find(a => a.id === id);
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+};
+
+/* ---- storage: works both inside a host app and on a plain web server ---- */
+const Store = (function () {
+  const mem = {};
+  const appAPI = typeof window !== "undefined" && window.storage && typeof window.storage.set === "function";
+  function localWorks() {
+    try { window.localStorage.setItem("__dare_t", "1"); window.localStorage.removeItem("__dare_t"); return true; }
+    catch (e) { return false; }
+  }
+  const kind = appAPI ? "app" : (localWorks() ? "local" : "memory");
+  return {
+    kind: kind,
+    async set(k, v) {
+      if (kind === "app") { await window.storage.set(k, v); return; }
+      if (kind === "local") { window.localStorage.setItem(k, v); return; }
+      mem[k] = v;
+    },
+    async get(k) {
+      if (kind === "app") { const r = await window.storage.get(k); return r && r.value; }
+      if (kind === "local") return window.localStorage.getItem(k);
+      return mem[k] || null;
+    }
+  };
+})();
+
+let saveTimer = null;
+function queueSave() {
+  const badge = document.getElementById("saved");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      await Store.set(STORE_KEY, JSON.stringify({ v: 1, answers, submissions, client: clientCode }));
+      if (badge) { badge.textContent = "Saved"; setTimeout(() => { if (badge.textContent === "Saved") badge.textContent = ""; }, 1600); }
+    } catch (e) {
+      storageOK = false;
+      if (badge) badge.textContent = "Answers kept for this session only";
+    }
+  }, 450);
+}
+async function loadSaved() {
+  try {
+    const raw = await Store.get(STORE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw) || {};
+    answers = d.answers || {};
+    submissions = d.submissions || {};
+    if (d.client) clientCode = d.client;
+  } catch (e) { /* nothing saved yet */ }
+}
+function readClientCode() {
+  try { return new URL(window.location.href).searchParams.get(CONFIG.clientParam) || ""; }
+  catch (e) { return ""; }
+}
+
+/* =========================================================
+   3. CONDITIONAL LOGIC + COMPLETENESS
+   ========================================================= */
+
+function visible(aid, q) {
+  const c = q.showIf;
+  if (!c) return true;
+  const v = get(aid, c.q);
+  if (c.eq != null) return v === c.eq;
+  if (c.notEq != null) return v != null && v !== "" && v !== c.notEq;
+  if (c.anyExcept != null) return Array.isArray(v) && v.some(x => x !== c.anyExcept);
+  return true;
+}
+
+function hasValue(aid, q) {
+  const v = get(aid, q.id);
+  if (q.type === "multi") {
+    if (!Array.isArray(v) || v.length === 0) return false;
+    if (q.other && v.includes("Other")) return !!(get(aid, q.id + "__other") || "").trim();
+    return true;
+  }
+  if (q.type === "ack") return v === true;
+  if (q.other && v === "Other") return !!(get(aid, q.id + "__other") || "").trim();
+  return v != null && String(v).trim() !== "";
+}
+
+function visibleQuestions(aid) {
+  const out = [];
+  A(aid).sections.forEach(s => s.questions.forEach(q => { if (visible(aid, q)) out.push(q); }));
+  return out;
+}
+
+function progress(aid) {
+  const qs = visibleQuestions(aid);
+  const req = qs.filter(q => q.required);
+  const done = req.filter(q => hasValue(aid, q)).length;
+  const touched = qs.filter(q => hasValue(aid, q)).length;
+  return { total: req.length, done, touched, pct: req.length ? Math.round(done / req.length * 100) : 0 };
+}
+
+function missingList(aid) {
+  const out = [];
+  A(aid).sections.forEach(s => s.questions.forEach(q => {
+    if (visible(aid, q) && q.required && !hasValue(aid, q)) out.push({ section: s, q });
+  }));
+  return out;
+}
+
+/* =========================================================
+   4. RENDERING
+   ========================================================= */
+
+const app = document.getElementById("app");
+const nav = document.getElementById("nav");
+const bar = { title: document.getElementById("barTitle"), track: document.getElementById("track"), home: document.getElementById("homeBtn") };
+
+let lastView = "";
+function render() {
+  const keyNow = view.screen + "|" + view.aid + "|" + view.si;
+  app.innerHTML = "";
+  if (view.screen === "home") renderHome();
+  else if (view.screen === "form") renderSection();
+  else renderReview();
+  if (keyNow !== lastView) window.scrollTo(0, 0);   // don't jump when only an answer changed
+  lastView = keyNow;
+}
+
+/* ---------- home ---------- */
+function renderHome() {
+  nav.hidden = true;
+  bar.home.hidden = true;
+  bar.title.textContent = "";
+  bar.track.style.width = "0%";
+
+  const lede = el("div", "lede");
+  lede.appendChild(el("h1", null, "Your onboarding assessments"));
+  lede.appendChild(el("p", null, "Three short questionnaires. Answer what applies to you — follow-up questions only appear when they are relevant, so most people see far fewer than the full list. Your answers save as you go, and you can stop and come back."));
+  app.appendChild(lede);
+
+  ASSESSMENTS.forEach(a => {
+    const p = progress(a.id);
+    const card = el("button", "card");
+    card.type = "button";
+    card.appendChild(el("h2", null, a.title));
+    card.appendChild(el("p", null, a.blurb));
+
+    const meta = el("div", "meta");
+    const sent = submissions[a.id];
+    const state = sent ? "Sent" : (p.done === 0 ? "Not started" : (p.done === p.total ? "Ready to send" : "In progress"));
+    const pill = el("span", "pill" + (sent || (p.done === p.total && p.total > 0) ? " done" : ""), state);
+    meta.appendChild(pill);
+    const t = el("div", "minitrack");
+    const fill = el("i"); fill.style.width = p.pct + "%";
+    t.appendChild(fill);
+    meta.appendChild(t);
+    meta.appendChild(el("span", null, p.done + "/" + p.total));
+    card.appendChild(meta);
+
+    card.addEventListener("click", () => {
+      view = { screen: "form", aid: a.id, si: firstIncompleteSection(a.id) };
+      render();
+    });
+    app.appendChild(card);
+  });
+
+  const note = el("p", "note");
+  note.textContent = storageOK
+    ? "Everything you enter stays on this device until you send it to DARE. Close the page whenever you like and pick up where you left off — on this device and browser."
+    : "Note: this browser is not saving between visits — finish in one sitting, or copy your answers before closing.";
+  app.appendChild(note);
+}
+
+function firstIncompleteSection(aid) {
+  const secs = A(aid).sections;
+  for (let i = 0; i < secs.length; i++) {
+    const bad = secs[i].questions.some(q => visible(aid, q) && q.required && !hasValue(aid, q));
+    if (bad) return i;
+  }
+  return 0;
+}
+
+/* ---------- one section ---------- */
+function renderSection() {
+  const a = A(view.aid);
+  const s = a.sections[view.si];
+  nav.hidden = false;
+  bar.home.hidden = false;
+  bar.title.textContent = a.short + " · " + (view.si + 1) + " of " + a.sections.length;
+  bar.track.style.width = progress(a.id).pct + "%";
+
+  const head = el("div", "sechead");
+  head.appendChild(el("span", "secnum", String(s.n)));
+  head.appendChild(el("h2", null, s.title));
+  app.appendChild(head);
+
+  if (s.note) app.appendChild(el("p", "callout", s.note));
+
+  s.questions.forEach(q => {
+    if (!visible(a.id, q)) return;
+    if (q.groupStart) {
+      const g = el("div", "q");
+      g.appendChild(el("p", "qlabel", q.groupStart));
+      if (q.groupHelp) g.appendChild(el("p", "qhelp", q.groupHelp));
+      app.appendChild(g);
+    }
+    app.appendChild(renderQuestion(a.id, q));
+  });
+
+  document.getElementById("backBtn").textContent = view.si === 0 ? "All assessments" : "Back";
+  document.getElementById("nextBtn").textContent = view.si === a.sections.length - 1 ? "Review answers" : "Continue";
+}
+
+function renderQuestion(aid, q) {
+  const wrap = el("div", "q" + (q.showIf || q.groupStart || q.inGroup ? " cond" : ""));
+  wrap.id = "q_" + q.id;
+
+  const lab = el("p", "qlabel", q.label);
+  if (q.required) { const r = el("em", null, "*"); lab.appendChild(r); }
+  wrap.appendChild(lab);
+  if (q.help) wrap.appendChild(el("p", "qhelp", q.help));
+
+  const v = get(aid, q.id);
+
+  if (q.type === "single" || q.type === "multi") {
+    const opts = el("div", "opts" + (q.grid ? " grid2" : ""));
+    const list = q.other ? q.options.concat(["Other"]) : q.options;
+    list.forEach(o => {
+      const b = el("button", "opt");
+      b.type = "button";
+      b.dataset.shape = q.type === "single" ? "radio" : "check";
+      const on = q.type === "single" ? v === o : Array.isArray(v) && v.includes(o);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      const box = el("span", "box", on ? "✓" : "");
+      b.appendChild(box);
+      b.appendChild(el("span", null, o === "Other" && q.otherLabel ? q.otherLabel : o));
+
+      // max-selection lock
+      if (q.type === "multi" && q.max && !on && Array.isArray(v) && v.length >= q.max) {
+        b.setAttribute("aria-disabled", "true");
+      }
+      b.addEventListener("click", () => toggle(aid, q, o));
+      opts.appendChild(b);
+    });
+    wrap.appendChild(opts);
+
+    const otherOn = q.other && (q.type === "single" ? v === "Other" : Array.isArray(v) && v.includes("Other"));
+    if (otherOn) {
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.className = "other-in";
+      inp.placeholder = "Please specify";
+      inp.value = get(aid, q.id + "__other") || "";
+      inp.addEventListener("input", e => setVal(aid, q.id + "__other", e.target.value));
+      wrap.appendChild(inp);
+    }
+  }
+
+  else if (q.type === "ack") {
+    const b = el("button", "opt");
+    b.type = "button";
+    b.dataset.shape = "check";
+    b.style.alignItems = "flex-start";
+    b.setAttribute("aria-pressed", v === true ? "true" : "false");
+    const box = el("span", "box", v === true ? "✓" : "");
+    box.style.marginTop = "2px";
+    b.appendChild(box);
+    b.appendChild(el("span", null, "I confirm the above"));
+    b.addEventListener("click", () => { setVal(aid, q.id, !(v === true)); render(); });
+    wrap.appendChild(b);
+  }
+
+  else if (q.type === "scale") {
+    const opts = el("div", "opts grid2");
+    opts.style.gridTemplateColumns = "repeat(5,1fr)";
+    for (let i = 1; i <= 10; i++) {
+      const b = el("button", "opt");
+      b.type = "button";
+      b.style.justifyContent = "center";
+      b.style.padding = "12px 4px";
+      b.setAttribute("aria-pressed", String(v) === String(i) ? "true" : "false");
+      b.appendChild(el("span", null, String(i)));
+      b.addEventListener("click", () => { setVal(aid, q.id, i); render(); });
+      opts.appendChild(b);
+    }
+    wrap.appendChild(opts);
+  }
+
+  else if (q.type === "longtext") {
+    const t = document.createElement("textarea");
+    t.value = v || "";
+    t.rows = 3;
+    t.addEventListener("input", e => { setVal(aid, q.id, e.target.value); clearError(wrap); });
+    wrap.appendChild(t);
+  }
+
+  else {
+    const inp = document.createElement("input");
+    inp.type = q.type === "number" ? "number" : q.type;
+    if (q.min != null) inp.min = q.min;
+    if (q.max != null) inp.max = q.max;
+    if (q.autocomplete) inp.autocomplete = q.autocomplete;
+    if (q.today && !v) { const d = new Date().toISOString().slice(0, 10); setVal(aid, q.id, d); inp.value = d; }
+    else inp.value = v || "";
+    inp.addEventListener("input", e => { setVal(aid, q.id, e.target.value); clearError(wrap); });
+    wrap.appendChild(inp);
+  }
+
+  wrap.appendChild(el("p", "err", "This one is needed before you continue."));
+  return wrap;
+}
+
+function clearError(wrap) { wrap.classList.remove("invalid"); }
+
+function toggle(aid, q, o) {
+  const v = get(aid, q.id);
+  if (q.type === "single") {
+    setVal(aid, q.id, v === o ? null : o);
+  } else {
+    let arr = Array.isArray(v) ? v.slice() : [];
+    if (arr.includes(o)) arr = arr.filter(x => x !== o);
+    else {
+      if (q.exclusive) {
+        if (o === q.exclusive) arr = [o];
+        else arr = arr.filter(x => x !== q.exclusive).concat([o]);
+      } else arr = arr.concat([o]);
+      if (q.max && arr.length > q.max) return;
+    }
+    setVal(aid, q.id, arr);
+  }
+  render();
+}
+
+/* ---------- review ---------- */
+function renderReview() {
+  const a = A(view.aid);
+  nav.hidden = true;
+  bar.home.hidden = false;
+  bar.title.textContent = a.short + " · review";
+  bar.track.style.width = progress(a.id).pct + "%";
+
+  const missing = missingList(a.id);
+  if (missing.length) {
+    const m = el("div", "missing");
+    const b = el("b", null, missing.length === 1 ? "1 answer still missing" : missing.length + " answers still missing");
+    m.appendChild(b);
+    const ul = document.createElement("ul");
+    missing.slice(0, 8).forEach(x => {
+      const li = document.createElement("li");
+      const link = el("button", null, x.q.label.length > 70 ? x.q.label.slice(0, 70) + "…" : x.q.label);
+      link.type = "button";
+      link.style.cssText = "background:none;border:none;padding:0;font:inherit;color:var(--accent);text-decoration:underline;text-align:left;cursor:pointer";
+      link.addEventListener("click", () => {
+        view.screen = "form";
+        view.si = a.sections.indexOf(x.section);
+        render();
+        const t = document.getElementById("q_" + x.q.id);
+        if (t) { t.classList.add("invalid"); if (t.scrollIntoView) t.scrollIntoView({ block: "center" }); }
+      });
+      li.appendChild(link);
+      ul.appendChild(li);
+    });
+    if (missing.length > 8) ul.appendChild(el("li", null, "…and " + (missing.length - 8) + " more"));
+    m.appendChild(ul);
+    app.appendChild(m);
+  }
+
+  app.appendChild(buildDoc(a));
+
+  app.appendChild(buildSendBlock(a, missing.length));
+
+  const tb = el("div", "toolbar noprint");
+  const pdf = el("button", "btn " + (CONFIG.endpoint && !submissions[a.id] ? "ghost" : "primary"), "Save as PDF");
+  pdf.type = "button";
+  pdf.addEventListener("click", () => { try { window.print(); } catch (e) { flash("Use your browser menu › Print to save this as a PDF."); } });
+  const copy = el("button", "btn ghost", "Copy as text");
+  copy.type = "button";
+  copy.addEventListener("click", () => copyText(a));
+  const edit = el("button", "btn ghost", "Keep editing");
+  edit.type = "button";
+  edit.addEventListener("click", () => { view.screen = "form"; view.si = 0; render(); });
+  tb.appendChild(pdf); tb.appendChild(copy); tb.appendChild(edit);
+  app.appendChild(tb);
+  app.appendChild(el("p", "flash noprint", ""));
+}
+
+function fmtDate(iso) {
+  try { return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }); }
+  catch (e) { return iso; }
+}
+
+function buildSendBlock(a, missingCount) {
+  const box = el("div", "send noprint");
+
+  const sent = submissions[a.id];
+  if (sent) {
+    box.classList.add("sent");
+    box.appendChild(el("h3", null, "Sent to " + CONFIG.teamName));
+    box.appendChild(el("p", null, "Received on " + fmtDate(sent.at) + ". Nothing else to do — we will be in touch. You can still keep a copy below."));
+    const again = el("button", "btn ghost", "Send an updated version");
+    again.type = "button";
+    again.style.marginTop = "12px";
+    again.addEventListener("click", () => submit(a, again));
+    box.appendChild(again);
+    return box;
+  }
+
+  if (!CONFIG.endpoint) {
+    box.appendChild(el("h3", null, "Return your answers"));
+    box.appendChild(el("p", null, "Save this as a PDF or copy it as text, then send it back to " + CONFIG.teamName + "."));
+    return box;
+  }
+
+  box.appendChild(el("h3", null, "Send to " + CONFIG.teamName));
+
+  if (missingCount) {
+    box.appendChild(el("p", null, "Fill in the answers listed above and this section will unlock."));
+    return box;
+  }
+
+  const ack = el("button", "opt");
+  ack.type = "button";
+  ack.dataset.shape = "check";
+  ack.style.alignItems = "flex-start";
+  ack.setAttribute("aria-pressed", consent ? "true" : "false");
+  const bx = el("span", "box", consent ? "✓" : "");
+  bx.style.marginTop = "2px";
+  ack.appendChild(bx);
+  ack.appendChild(el("span", null, CONFIG.consentText));
+  ack.addEventListener("click", () => { consent = !consent; render(); });
+  box.appendChild(ack);
+
+  const go = el("button", "btn primary", "Send my answers");
+  go.type = "button";
+  go.style.cssText = "width:100%;margin-top:12px";
+  if (!consent) { go.disabled = true; go.style.opacity = ".45"; go.style.cursor = "not-allowed"; }
+  go.addEventListener("click", () => { if (consent) submit(a, go); });
+  box.appendChild(go);
+
+  const p = el("p", "sendnote", "Sent over an encrypted connection. Your answers stay on this device too, so nothing is lost if the connection drops.");
+  box.appendChild(p);
+  return box;
+}
+
+function buildPayload(a) {
+  const fields = {};
+  a.sections.forEach(s => s.questions.forEach(q => {
+    if (!visible(a.id, q)) return;
+    fields[s.n + ". " + s.title + " — " + q.label] = displayValue(a.id, q);
+  }));
+  return {
+    subject: a.title + " — " + (get("health", "fullName") || clientCode || "new client"),
+    assessment: a.id,
+    assessmentTitle: a.title,
+    clientCode: clientCode || "",
+    clientName: get("health", "fullName") || "",
+    clientEmail: get("health", "email") || "",
+    submittedAt: new Date().toISOString(),
+    consentGiven: CONFIG.consentText,
+    summary: plainText(a),
+    answers: fields
+  };
+}
+
+async function submit(a, btn) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+  const box = btn.closest(".send");
+  const old = box.querySelector(".senderr");
+  if (old) old.remove();
+
+  try {
+    const res = await fetch(CONFIG.endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(buildPayload(a))
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    submissions[a.id] = { at: new Date().toISOString() };
+    queueSave();
+    consent = false;
+    render();
+    window.scrollTo(0, 0);
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = label;
+    const err = el("p", "senderr", "That did not go through. Your answers are safe on this device — try again, or save the PDF below and email it to " + CONFIG.teamName + ".");
+    box.appendChild(err);
+  }
+}
+
+function flash(msg) {
+  const f = document.querySelector(".flash");
+  if (f) { f.textContent = msg; setTimeout(() => { f.textContent = ""; }, 3200); }
+}
+
+function displayValue(aid, q) {
+  const v = get(aid, q.id);
+  const other = (get(aid, q.id + "__other") || "").trim();
+  if (q.type === "ack") return v === true ? "Confirmed" : "";
+  if (q.type === "multi") {
+    if (!Array.isArray(v) || !v.length) return "";
+    return v.map(x => x === "Other" && other ? "Other: " + other : x).join(", ");
+  }
+  if (v == null || String(v).trim() === "") return "";
+  if (v === "Other" && other) return "Other: " + other;
+  if (q.type === "scale") return v + " / 10";
+  return String(v);
+}
+
+function buildDoc(a) {
+  const doc = el("div", "doc");
+  const head = el("div", "doc-head");
+  head.appendChild(el("div", "org", "DARE"));
+  head.appendChild(el("h2", null, a.title));
+  head.appendChild(el("p", null, a.blurb));
+  doc.appendChild(head);
+
+  a.sections.forEach(s => {
+    const vis = s.questions.filter(q => visible(a.id, q));
+    if (!vis.length) return;
+    const sec = el("div", "doc-sec");
+    sec.appendChild(el("h3", null, s.n + ". " + s.title));
+    vis.forEach(q => {
+      const d = el("div", "da");
+      d.appendChild(el("p", "dq", q.label));
+      const val = displayValue(a.id, q);
+      d.appendChild(el("p", "dv" + (val ? "" : " empty"), val || "Not answered"));
+      sec.appendChild(d);
+    });
+    doc.appendChild(sec);
+  });
+  return doc;
+}
+
+function plainText(a) {
+  const lines = [];
+  lines.push("DARE");
+  lines.push(a.title.toUpperCase());
+  lines.push("Completed " + new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }));
+  a.sections.forEach(s => {
+    const vis = s.questions.filter(q => visible(a.id, q));
+    if (!vis.length) return;
+    lines.push("");
+    lines.push("— " + s.n + ". " + s.title.toUpperCase() + " —");
+    vis.forEach(q => {
+      lines.push("");
+      lines.push(q.label);
+      lines.push("> " + (displayValue(a.id, q) || "(not answered)"));
+    });
+  });
+  return lines.join("\n");
+}
+
+async function copyText(a) {
+  const txt = plainText(a);
+  try {
+    await navigator.clipboard.writeText(txt);
+    flash("Copied. Paste it anywhere you like.");
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = txt;
+    ta.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); flash("Copied. Paste it anywhere you like."); }
+    catch (e2) { flash("Copying is blocked here — select the text above instead."); }
+    document.body.removeChild(ta);
+  }
+}
+
+/* =========================================================
+   5. NAVIGATION
+   ========================================================= */
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+  const a = A(view.aid);
+  const s = a.sections[view.si];
+  const bad = s.questions.filter(q => visible(a.id, q) && q.required && !hasValue(a.id, q));
+  if (bad.length) {
+    bad.forEach(q => { const n = document.getElementById("q_" + q.id); if (n) n.classList.add("invalid"); });
+    const first = document.getElementById("q_" + bad[0].id);
+    if (first && first.scrollIntoView) first.scrollIntoView({ block: "center", behavior: "smooth" });
+    return;
+  }
+  if (view.si === a.sections.length - 1) view.screen = "review";
+  else view.si += 1;
+  render();
+});
+
+document.getElementById("backBtn").addEventListener("click", () => {
+  if (view.si === 0) { view = { screen: "home", aid: null, si: 0 }; }
+  else view.si -= 1;
+  render();
+});
+
+bar.home.addEventListener("click", () => { view = { screen: "home", aid: null, si: 0 }; render(); });
+
+/* =========================================================
+   6. GO
+   ========================================================= */
+(async function init() {
+  storageOK = Store.kind !== "memory";
+  await loadSaved();
+  const fromUrl = readClientCode();
+  if (fromUrl) { clientCode = fromUrl; queueSave(); }
+  render();
+})();
+</script>
+</body>
+</html>

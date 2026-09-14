@@ -3,6 +3,7 @@ Allow: /
 Disallow: /client.html
 Disallow: /coach.html
 Disallow: /reset.html
+Disallow: /assessments.html
 Disallow: /data/
 Disallow: /bot/
 
